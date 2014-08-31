@@ -121,11 +121,17 @@ sViewAngle viewAngle;
 
 - (IBAction)onDebugSwitchTapped:(id)sender {
 	self.debugActive = self.debugSwitch.on;
+	
+	self.toLatitudeTextField.enabled = !self.debugActive;
+	self.toLongitudeTextField.enabled = !self.debugActive;
+	self.toAltitudeTextField.enabled = !self.debugActive;
+
 	[self updateViewAngle];
 }
 
 - (void)resignOnTap:(id)sender {
     [self.currentResponder resignFirstResponder];
+	[self updateViewAngle];
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -184,6 +190,7 @@ sViewAngle viewAngle;
 
 - (void)updateViewAngle {
 	if (self.debugActive) {
+		[self.placesPicker selectRow:0 inComponent:0 animated:YES];
 		fromLat = 39;
 		fromLon = -75;
 		fromAlt = 4000;
