@@ -105,6 +105,11 @@ sViewAngle viewAngle;
 {
 //    NSLog(@"didUpdateToLocation: %@", newLocation);
     _currentLocation = newLocation;
+	
+	if (_currentLocation != nil) {
+		[locationManager stopUpdatingLocation];
+		[self updateViewAngle];
+	}
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
@@ -203,8 +208,8 @@ sViewAngle viewAngle;
 		fromAlt = _currentLocation.altitude;
 	}
 
-	[self latitudeLabel].text = [NSString stringWithFormat:@"%.8f", fromLat];
-	[self longitudeLabel].text = [NSString stringWithFormat:@"%.8f", fromLon];
+	[self latitudeLabel].text = [NSString stringWithFormat:@"%.4f", fromLat];
+	[self longitudeLabel].text = [NSString stringWithFormat:@"%.4f", fromLon];
 	[self altitudeLabel].text = [NSString stringWithFormat:@"%.2f", fromAlt];
 	
 	self.toLatitudeTextField.text = [NSString stringWithFormat:@"%f", toLat];
@@ -213,8 +218,8 @@ sViewAngle viewAngle;
 	
 	viewAngle = [self findViewAngleFromLat:fromLat fromLon:fromLon fromAlt:fromAlt toLat:toLat toLon:toLon toAlt:toAlt];
 	
-	self.azimuthLabel.text = [NSString stringWithFormat:@"%f", viewAngle.azimuth];
-	self.elevationLabel.text = [NSString stringWithFormat:@"%f", viewAngle.elevation];
+	self.azimuthLabel.text = [NSString stringWithFormat:@"%.2f", viewAngle.azimuth];
+	self.elevationLabel.text = [NSString stringWithFormat:@"%.2f", viewAngle.elevation];
 
 	[self updateArrows];
 }
