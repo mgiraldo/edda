@@ -18,10 +18,10 @@
 
 CLLocationManager *locationManager;
 
+CMMotionManager *motionManager;
+
 NSArray *_places;
 NSArray *_placeCoordinates;
-CLHeading *_currentHeading;
-CLLocation *_currentLocation;
 
 // proj4
 projPJ pj_geoc;
@@ -45,6 +45,13 @@ sViewAngle viewAngle;
 	
 	[self.debugSwitch setOn:self.debugActive];
 	
+	// the indicator
+	self.indicatorView.layer.cornerRadius = 30.0f;
+	self.indicatorView.layer.backgroundColor = [UIColor yellowColor].CGColor;
+	self.indicatorView.layer.opacity = 0.0;
+	self.indicatorView.layer.borderWidth = 0.0;
+	self.indicatorView.layer.borderColor = [UIColor greenColor].CGColor;
+
 	// picker stuff
 	_places = @[@"Select", @"Bogotá", @"Jakarta", @"Johannesburg", @"Kampala", @"London", @"Los Angeles", @"Madrid", @"New York", @"NYC Antipode", @"Paris", @"Perth", @"São Paulo", @"Tokio"];
 	_placeCoordinates = @[ @[@0.0f, @0.0f, @0.0f] // "None"
@@ -76,6 +83,20 @@ sViewAngle viewAngle;
     [singleTap setNumberOfTouchesRequired:1];
     [self.view addGestureRecognizer:singleTap];
 	
+	// init motion manager
+	motionManager = [[CMMotionManager alloc] init];
+	NSTimeInterval updateInterval = 0.015;
+	
+	eddaMainViewController * __weak weakSelf = self;
+	
+	if ([motionManager isDeviceMotionAvailable] == YES) {
+		[motionManager setDeviceMotionUpdateInterval:updateInterval];
+		[motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *deviceMotion, NSError *error) {
+			// attitude
+			weakSelf.currentMotion = deviceMotion;
+		}];
+	}
+
 	// init location manager
 	locationManager = [[CLLocationManager alloc] init];
 	// now get the location
@@ -89,12 +110,60 @@ sViewAngle viewAngle;
         NSLog(@"Could not initialise MERCATOR");
 	if (!(pj_geoc = pj_init_plus("+proj=geocent +datum=WGS84")) )
         NSLog(@"Could not initialise CARTESIAN");
+	
+	// interface refresh timer
+	[NSTimer scheduledTimerWithTimeInterval:0.1
+									 target:self
+								   selector:@selector(updateInterface:)
+								   userInfo:nil
+									repeats:YES];
+	[self.placesPicker selectRow:1 inComponent:0 animated:NO];
+	toLat = [_placeCoordinates[1][0] doubleValue];
+	toLon = [_placeCoordinates[1][1] doubleValue];
+	toAlt = [_placeCoordinates[1][2] doubleValue];
+	[self updateViewAngle];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)updateInterface:(NSTimer *)timer {
+	if (self.currentHeading == nil || self.currentLocation == nil) return;
+	// for the elevation indicator
+	float pitchDeg = RAD_TO_DEG * self.currentMotion.attitude.pitch;
+	float pitchAdjusted = pitchDeg - 90;
+	float correctPitch = abs(viewAngle.elevation - pitchAdjusted);
+	float elevationTransparency = ofMap(correctPitch, 0, 180, 1.0, 0.0, true);
+	self.indicatorView.layer.opacity = elevationTransparency;
+	
+	// for the heading indicator
+	float correctHeading = abs(viewAngle.azimuth - self.currentHeading.trueHeading);
+	float headingTransparency = ofMap(correctHeading, 0, 360, 30.0, 0.0, true);
+	self.indicatorView.layer.borderWidth = headingTransparency;
+//	NSLog(@"azim: %f elev: %f head: %f pitch: %f adj: %f", viewAngle.azimuth, viewAngle.elevation, self.currentHeading.trueHeading, pitchDeg, pitchAdjusted);
+}
+
+- (void)updateArrows {
+	CGFloat duration = 0.01;
+	float h = 0.0;
+	
+	if (self.currentHeading != nil) {
+		h = self.currentHeading.trueHeading;
+	}
+	
+	// azimuth arrow
+	CABasicAnimation *animationB = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+	animationB.fromValue = [[self.azimuthImage.layer presentationLayer] valueForKeyPath:@"transform.rotation.z"];
+	animationB.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*(h-viewAngle.azimuth)];;
+	animationB.duration = duration;
+	animationB.fillMode = kCAFillModeForwards;
+	animationB.repeatCount = 0;
+	animationB.removedOnCompletion = NO;
+	animationB.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+	[self.azimuthImage.layer addAnimation:animationB forKey:@"transform.rotation.z"];
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -109,9 +178,9 @@ sViewAngle viewAngle;
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
 //    NSLog(@"didUpdateToLocation: %@", newLocation);
-    _currentLocation = newLocation;
+    self.currentLocation = newLocation;
 	
-	if (_currentLocation != nil) {
+	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
 		[self updateViewAngle];
 	}
@@ -119,12 +188,19 @@ sViewAngle viewAngle;
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
 //    NSLog(@"didUpdateHeading: %@", newHeading);
-    _currentHeading = newHeading;
+    self.currentHeading = newHeading;
 	
-    if (_currentHeading != nil) {
-        [self headingLabel].text = [NSString stringWithFormat:@"%.1f", _currentHeading.trueHeading];
+    if (self.currentHeading != nil) {
+        [self headingLabel].text = [NSString stringWithFormat:@"%.1f", self.currentHeading.trueHeading];
 		[self updateArrows];
 	}
+}
+
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
+	if( !self.currentHeading ) return YES; // Got nothing, We can assume we got to calibrate.
+	else if( self.currentHeading.headingAccuracy < 0 ) return YES; // 0 means invalid heading. we probably need to calibrate
+	else if( self.currentHeading.headingAccuracy > 5 )return YES; // 5 degrees is a small value correct for my needs. Tweak yours according to your needs.
+	else return NO; // All is good. Compass is precise enough.
 }
 
 #pragma mark - UI Interaction
@@ -170,37 +246,6 @@ sViewAngle viewAngle;
 
 #pragma mark - GIS stuff
 
-- (void)updateArrows {
-	CGFloat duration = 0.01;
-	float h = 0.0;
-
-	if (_currentHeading != nil) {
-		h = _currentHeading.trueHeading;
-		// north arrow
-		
-		CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-		animation.fromValue = [[self.northImage.layer presentationLayer] valueForKeyPath:@"transform.rotation.z"];
-		animation.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*h];;
-		animation.duration = duration;
-		animation.fillMode = kCAFillModeForwards;
-		animation.repeatCount = 0;
-		animation.removedOnCompletion = NO;
-		animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-		[self.northImage.layer addAnimation:animation forKey:@"transform.rotation.z"];
-	}
-	
-	// azimuth arrow
-	CABasicAnimation *animationB = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-	animationB.fromValue = [[self.azimuthImage.layer presentationLayer] valueForKeyPath:@"transform.rotation.z"];
-	animationB.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*(h-viewAngle.azimuth)];;
-	animationB.duration = duration;
-	animationB.fillMode = kCAFillModeForwards;
-	animationB.repeatCount = 0;
-	animationB.removedOnCompletion = NO;
-	animationB.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-	[self.azimuthImage.layer addAnimation:animationB forKey:@"transform.rotation.z"];
-}
-
 - (void)updateViewAngle {
 	if (self.debugActive) {
 		[self.placesPicker selectRow:0 inComponent:0 animated:YES];
@@ -210,10 +255,10 @@ sViewAngle viewAngle;
 		toLat = 39;
 		toLon = -76;
 		toAlt = 12000;
-	} else if (_currentLocation != nil) {
-		fromLat = _currentLocation.coordinate.latitude;
-		fromLon = _currentLocation.coordinate.longitude;
-		fromAlt = _currentLocation.altitude;
+	} else if (self.currentLocation != nil) {
+		fromLat = self.currentLocation.coordinate.latitude;
+		fromLon = self.currentLocation.coordinate.longitude;
+		fromAlt = self.currentLocation.altitude;
 	}
 
 	[self latitudeLabel].text = [NSString stringWithFormat:@"%.4f", fromLat];
@@ -273,6 +318,10 @@ sViewAngle viewAngle;
 	
 	if (isnan(azimuth)) azimuth = 0.0;
 	if (isnan(elevation)) elevation = 0.0;
+	
+	if (azimuth < 0) {
+		azimuth += 360;
+	}
 		
 	output.azimuth = azimuth;
 	output.elevation = elevation;
@@ -322,6 +371,28 @@ sViewAngle viewAngle;
 - (NSString*)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     return _places[row];
+}
+
+#pragma mark - from oF
+float ofMap(float value, float inputMin, float inputMax, float outputMin, float outputMax, bool clamp) {
+	
+	if (fabs(inputMin - inputMax) < FLT_EPSILON){
+		return outputMin;
+	} else {
+		float outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
+		
+		if( clamp ){
+			if(outputMax < outputMin){
+				if( outVal < outputMax )outVal = outputMax;
+				else if( outVal > outputMin )outVal = outputMin;
+			}else{
+				if( outVal > outputMax )outVal = outputMax;
+				else if( outVal < outputMin )outVal = outputMin;
+			}
+		}
+		return outVal;
+	}
+	
 }
 
 @end

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC7329D019B6D899005FEC7D /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC7329CF19B6D899005FEC7D /* CoreMotion.framework */; };
 		CC77D4F119B003E8009BA59F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F019B003E8009BA59F /* Foundation.framework */; };
 		CC77D4F319B003E8009BA59F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F219B003E8009BA59F /* CoreGraphics.framework */; };
 		CC77D4F519B003E8009BA59F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F419B003E8009BA59F /* UIKit.framework */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CC7329CF19B6D899005FEC7D /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		CC77D4ED19B003E8009BA59F /* edda.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = edda.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC77D4F019B003E8009BA59F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CC77D4F219B003E8009BA59F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -86,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC7329D019B6D899005FEC7D /* CoreMotion.framework in Frameworks */,
 				CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */,
 				CC77D53919B00DB9009BA59F /* libz.dylib in Frameworks */,
 				CC77D53719B00876009BA59F /* CoreLocation.framework in Frameworks */,
@@ -135,6 +138,7 @@
 		CC77D4EF19B003E8009BA59F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CC7329CF19B6D899005FEC7D /* CoreMotion.framework */,
 				CCA397D019B529B000754BEB /* Accelerate.framework */,
 				CC77D53819B00DB9009BA59F /* libz.dylib */,
 				CC77D53619B00876009BA59F /* CoreLocation.framework */,

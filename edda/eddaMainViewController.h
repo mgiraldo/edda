@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Ping Pong Estudio. All rights reserved.
 //
 #import <CoreLocation/CoreLocation.h>
+#import <CoreMotion/CoreMotion.h>
 #import "eddaFlipsideViewController.h"
 #import "proj_api.h"
 
@@ -17,7 +18,7 @@ struct sViewAngle {
 };
 typedef struct sViewAngle sViewAngle;
 
-@property (weak, nonatomic) IBOutlet UIImageView *northImage;
+@property (weak, nonatomic) IBOutlet UIView *indicatorView;
 @property (weak, nonatomic) IBOutlet UIImageView *azimuthImage;
 @property (weak, nonatomic) IBOutlet UIPickerView *placesPicker;
 @property (weak, nonatomic) IBOutlet UISwitch *debugSwitch;
@@ -31,6 +32,9 @@ typedef struct sViewAngle sViewAngle;
 
 @property (nonatomic, assign) id currentResponder;
 @property (nonatomic, assign) BOOL debugActive;
+@property (nonatomic, retain) CLHeading *currentHeading;
+@property (nonatomic, retain) CLLocation *currentLocation;
+@property (nonatomic, retain) CMDeviceMotion *currentMotion;
 @property (weak, nonatomic) IBOutlet UITextField *toLatitudeTextField;
 @property (weak, nonatomic) IBOutlet UITextField *toLongitudeTextField;
 @property (weak, nonatomic) IBOutlet UITextField *toAltitudeTextField;
