@@ -9,13 +9,13 @@
 #import "eddaFlipsideViewController.h"
 #import "proj_api.h"
 
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, CLLocationManagerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
+
 struct sViewAngle {
 	double azimuth;
 	double elevation;
 };
 typedef struct sViewAngle sViewAngle;
-
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, CLLocationManagerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIImageView *northImage;
 @property (weak, nonatomic) IBOutlet UIImageView *azimuthImage;

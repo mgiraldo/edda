@@ -7,6 +7,8 @@
 //
 
 #import "eddaMainViewController.h"
+#import <Accelerate/Accelerate.h>
+#include "geodesic.h"
 
 @interface eddaMainViewController ()
 
@@ -44,18 +46,21 @@ sViewAngle viewAngle;
 	[self.debugSwitch setOn:self.debugActive];
 	
 	// picker stuff
-	_places = @[@"Select", @"Bogotá", @"Jakarta", @"Kampala", @"London", @"Madrid", @"New York", @"Paris", @"Perth", @"Tokio", @"São Paulo"];
+	_places = @[@"Select", @"Bogotá", @"Jakarta", @"Johannesburg", @"Kampala", @"London", @"Los Angeles", @"Madrid", @"New York", @"NYC Antipode", @"Paris", @"Perth", @"São Paulo", @"Tokio"];
 	_placeCoordinates = @[ @[@0.0f, @0.0f, @0.0f] // "None"
 						   , @[@4.598056f, @-74.075833f, @2600.0f] // "Bogotá"
 						   , @[@-6.208763f, @106.845599f, @5.0f] // "Jakarta"
+						   , @[@-26.204103f, @28.047305f, @1755.0f] // "Johannesburg"
 						   , @[@0.313611f, @32.581111f, @1222.0f] // "Kampala"
 						   , @[@51.507351f, @-0.127758f, @7.0f] // "London"
+						   , @[@34.052234f, @-118.243685f, @89.0f] // "Los Angeles"
 						   , @[@40.416775f, @-3.703790f, @650.0f] // "Madrid"
 						   , @[@40.712784f, @-74.005941f, @10.0f] // "New York"
+						   , @[@-40.718315f, @106.043472f, @0.0f] // "NYC Antipode"
 						   , @[@48.856614f, @2.352222f, @45.0f] // "Paris"
 						   , @[@-31.953004f, @115.857469f, @54.0f] // "Perth"
-						   , @[@35.689487f, @139.691706f, @19.0f] // "Tokio"
 						   , @[@-23.550520f, @-46.633309f, @733.0f] // "São Paulo"
+						   , @[@35.689487f, @139.691706f, @19.0f] // "Tokio"
 						];
 	
 	self.placesPicker.dataSource = self;
@@ -166,31 +171,34 @@ sViewAngle viewAngle;
 #pragma mark - GIS stuff
 
 - (void)updateArrows {
+	CGFloat duration = 0.01;
+	float h = 0.0;
+
 	if (_currentHeading != nil) {
+		h = _currentHeading.trueHeading;
 		// north arrow
-		CGFloat duration = 0.01;
 		
 		CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
 		animation.fromValue = [[self.northImage.layer presentationLayer] valueForKeyPath:@"transform.rotation.z"];
-		animation.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*_currentHeading.trueHeading];;
+		animation.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*h];;
 		animation.duration = duration;
 		animation.fillMode = kCAFillModeForwards;
 		animation.repeatCount = 0;
 		animation.removedOnCompletion = NO;
 		animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
 		[self.northImage.layer addAnimation:animation forKey:@"transform.rotation.z"];
-
-		// azimuth arrow
-		CABasicAnimation *animationB = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-		animationB.fromValue = [[self.azimuthImage.layer presentationLayer] valueForKeyPath:@"transform.rotation.z"];
-		animationB.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*(_currentHeading.trueHeading-viewAngle.azimuth)];;
-		animationB.duration = duration;
-		animationB.fillMode = kCAFillModeForwards;
-		animationB.repeatCount = 0;
-		animationB.removedOnCompletion = NO;
-		animationB.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-		[self.azimuthImage.layer addAnimation:animationB forKey:@"transform.rotation.z"];
 	}
+	
+	// azimuth arrow
+	CABasicAnimation *animationB = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+	animationB.fromValue = [[self.azimuthImage.layer presentationLayer] valueForKeyPath:@"transform.rotation.z"];
+	animationB.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*(h-viewAngle.azimuth)];;
+	animationB.duration = duration;
+	animationB.fillMode = kCAFillModeForwards;
+	animationB.repeatCount = 0;
+	animationB.removedOnCompletion = NO;
+	animationB.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+	[self.azimuthImage.layer addAnimation:animationB forKey:@"transform.rotation.z"];
 }
 
 - (void)updateViewAngle {
@@ -247,29 +255,29 @@ sViewAngle viewAngle;
 	dx = toX-x;
 	dy = toY-y;
 	dz = toZ-z;
-	
-	double cosAzimuth = (-z*x*dx - z*y*dy + ((x*x)+(y*y))*dz) / sqrt(((x*x)+(y*y))*((x*x)+(y*y)+(z*z))*((dx*dx)+(dy*dy)+(dz*dz)));
-	
-	double sinAzimuth = (-y*dx + x*dy) / sqrt(((x*x)+(y*y))*((dx*dx)+(dy*dy)+(dz*dz)));
 		
-	double azimuth = RAD_TO_DEG * (atan(sinAzimuth/cosAzimuth));
-	
-//	if (azimuth<0) {
-//		azimuth += 360;
-//	}
-	
 	double cosElevation = (x*dx + y*dy + z*dz) / sqrt(((x*x)+(y*y)+(z*z))*((dx*dx)+(dy*dy)+(dz*dz)));
 	
 	double elevation = 90 - RAD_TO_DEG * (acos(cosElevation));
+	
+	double azimuth;
+	
+	double a = 6378137, f = 1/298.257223563; /* WGS84 */
+	double azi2, s12;
+	struct geod_geodesic g;
+	
+	geod_init(&g, a, f);
+	geod_inverse(&g, fromLat, fromLon, toLat, toLon, &s12, &azimuth, &azi2);
+	NSLog(@"MGA: %.15f %.15f %.10f",azimuth, azi2, s12);
 	
 	sViewAngle output;
 	
 	if (isnan(azimuth)) azimuth = 0.0;
 	if (isnan(elevation)) elevation = 0.0;
-	
+		
 	output.azimuth = azimuth;
 	output.elevation = elevation;
-	
+		
 	return output;
 }
 
@@ -300,13 +308,13 @@ sViewAngle viewAngle;
 }
 
 // The number of columns of data
-- (int)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
 {
     return 1;
 }
 
 // The number of rows of data
-- (int)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     return _places.count;
 }

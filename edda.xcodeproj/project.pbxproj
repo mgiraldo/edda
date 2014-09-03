@@ -29,6 +29,8 @@
 		CC77D53719B00876009BA59F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D53619B00876009BA59F /* CoreLocation.framework */; };
 		CC77D53919B00DB9009BA59F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D53819B00DB9009BA59F /* libz.dylib */; };
 		CC77D53C19B02740009BA59F /* arrowLong.png in Resources */ = {isa = PBXBuildFile; fileRef = CC77D53B19B02740009BA59F /* arrowLong.png */; };
+		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
+		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +76,9 @@
 		CC77D53619B00876009BA59F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		CC77D53819B00DB9009BA59F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		CC77D53B19B02740009BA59F /* arrowLong.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrowLong.png; sourceTree = "<group>"; };
+		CCA397D019B529B000754BEB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		CCA397D919B6987A00754BEB /* geodesic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geodesic.h; sourceTree = "<group>"; };
+		CCA397E119B6A00B00754BEB /* geodesic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geodesic.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */,
 				CC77D53919B00DB9009BA59F /* libz.dylib in Frameworks */,
 				CC77D53719B00876009BA59F /* CoreLocation.framework in Frameworks */,
 				CC77D4F319B003E8009BA59F /* CoreGraphics.framework in Frameworks */,
@@ -108,7 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				CC77D53A19B02734009BA59F /* images */,
-				CC77D53219B003FF009BA59F /* Proj4 */,
+				CC77D53219B003FF009BA59F /* geo */,
 				CC77D52819B003F3009BA59F /* TestFlightSDK3.0.2 */,
 				CC77D4F619B003E8009BA59F /* edda */,
 				CC77D51819B003E8009BA59F /* eddaTests */,
@@ -129,6 +135,7 @@
 		CC77D4EF19B003E8009BA59F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CCA397D019B529B000754BEB /* Accelerate.framework */,
 				CC77D53819B00DB9009BA59F /* libz.dylib */,
 				CC77D53619B00876009BA59F /* CoreLocation.framework */,
 				CC77D4F019B003E8009BA59F /* Foundation.framework */,
@@ -197,13 +204,15 @@
 			path = TestFlightSDK3.0.2;
 			sourceTree = "<group>";
 		};
-		CC77D53219B003FF009BA59F /* Proj4 */ = {
+		CC77D53219B003FF009BA59F /* geo */ = {
 			isa = PBXGroup;
 			children = (
+				CCA397D919B6987A00754BEB /* geodesic.h */,
+				CCA397E119B6A00B00754BEB /* geodesic.c */,
 				CC77D53319B00419009BA59F /* proj_api.h */,
 				CC77D53419B00419009BA59F /* libProj4.a */,
 			);
-			name = Proj4;
+			name = geo;
 			sourceTree = "<group>";
 		};
 		CC77D53A19B02734009BA59F /* images */ = {
@@ -320,6 +329,7 @@
 			files = (
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
+				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,
 				CC77D50719B003E8009BA59F /* eddaMainViewController.m in Sources */,
 			);
@@ -461,6 +471,7 @@
 					"$(PROJECT_DIR)/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)",
 				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -488,6 +499,7 @@
 					"$(PROJECT_DIR)/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)",
 				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
