@@ -268,7 +268,6 @@ sViewAngle viewAngle;
 	
 	geod_init(&g, a, f);
 	geod_inverse(&g, fromLat, fromLon, toLat, toLon, &s12, &azimuth, &azi2);
-	NSLog(@"MGA: %.15f %.15f %.10f",azimuth, azi2, s12);
 	
 	sViewAngle output;
 	
