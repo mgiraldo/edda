@@ -27,20 +27,25 @@ NSArray *_placeCoordinates;
 projPJ pj_geoc;
 projPJ pj_geod;
 
-double fromLat = 0.0;
-double fromLon = 0.0;
-double fromAlt = 0.0;
+double _fromLat = 0.0;
+double _fromLon = 0.0;
+double _fromAlt = 0.0;
 
-double toLat = 0.0;
-double toLon = 0.0;
-double toAlt = 0.0;
+double _toLat = 0.0;
+double _toLon = 0.0;
+double _toAlt = 0.0;
 
 sViewAngle viewAngle;
+
+// arrows
+float _arrowSize = 15.0f;
+float _arrowMargin = 5.0f;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	
+	// debug view
 	self.debugActive = NO;
 	
 	[self.debugSwitch setOn:self.debugActive];
@@ -118,16 +123,86 @@ sViewAngle viewAngle;
 								   userInfo:nil
 									repeats:YES];
 	[self.placesPicker selectRow:1 inComponent:0 animated:NO];
-	toLat = [_placeCoordinates[1][0] doubleValue];
-	toLon = [_placeCoordinates[1][1] doubleValue];
-	toAlt = [_placeCoordinates[1][2] doubleValue];
+	_toLat = [_placeCoordinates[1][0] doubleValue];
+	_toLon = [_placeCoordinates[1][1] doubleValue];
+	_toAlt = [_placeCoordinates[1][2] doubleValue];
 	[self updateViewAngle];
+	[self startVideoCapture];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) viewDidLayoutSubviews {
+	CGRect viewBounds = self.view.bounds;
+	
+    CGFloat topBarOffset = self.topLayoutGuide.length;
+	
+	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
+	
+	// help arrows
+	self.NE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.NE_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
+	[self.view addSubview:self.NE_arrowView];
+	
+	self.NW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.NW_arrowView.transform = CGAffineTransformMakeRotation(M_PI_2);
+	self.NW_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
+	[self.view addSubview:self.NW_arrowView];
+
+	self.SW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.SW_arrowView.transform = CGAffineTransformMakeRotation(M_PI);
+	self.SW_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
+	[self.view addSubview:self.SW_arrowView];
+
+	self.SE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.SE_arrowView.transform = CGAffineTransformMakeRotation(M_PI + M_PI_2);
+	self.SE_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
+	[self.view addSubview:self.SE_arrowView];
+
+	self.N_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.N_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4);
+	self.N_arrowView.center = CGPointMake(viewBounds.size.width * .5, topBarOffset + _arrowSize * .5 + _arrowMargin);
+	[self.view addSubview:self.N_arrowView];
+
+	self.S_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.S_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4 + M_PI);
+	self.S_arrowView.center = CGPointMake(viewBounds.size.width * .5, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
+	[self.view addSubview:self.S_arrowView];
+	
+	self.E_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.E_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4 + M_PI_2);
+	self.E_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height * .5);
+	[self.view addSubview:self.E_arrowView];
+
+	self.W_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.W_arrowView.transform = CGAffineTransformMakeRotation(-M_PI_4);
+	self.W_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height * .5);
+	[self.view addSubview:self.W_arrowView];
+	
+	[self.view layoutSubviews];
+}
+
+- (void)startVideoCapture {
+	AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
+	AVCaptureDevice *videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+	NSError *error = nil;
+	AVCaptureDeviceInput *videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:&error];
+	if (videoInput) {
+		[captureSession addInput:videoInput];
+		AVCaptureVideoPreviewLayer *previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:captureSession];
+		UIView *aView = self.videoView;
+		previewLayer.frame = aView.bounds; // Assume you want the preview layer to fill the view.
+		[aView.layer addSublayer:previewLayer];
+		[captureSession startRunning];
+	}
+	else {
+		// Handle the failure.
+		NSLog(@"Cannot handle video");
+	}
 }
 
 - (void)updateInterface:(NSTimer *)timer {
@@ -141,7 +216,12 @@ sViewAngle viewAngle;
 	
 	// for the heading indicator
 	float correctHeading = abs(viewAngle.azimuth - self.currentHeading.trueHeading);
-	float headingTransparency = ofMap(correctHeading, 0, 360, 30.0, 0.0, true);
+	float headingTransparency;
+	if (correctHeading < 180) {
+		headingTransparency = ofMap(correctHeading, 0, 180, 30.0, 0.0, true);
+	} else {
+		headingTransparency = ofMap(correctHeading, 180, 360, 0.0, 30.0, true);
+	}
 	self.indicatorView.layer.borderWidth = headingTransparency;
 //	NSLog(@"azim: %f elev: %f head: %f pitch: %f adj: %f", viewAngle.azimuth, viewAngle.elevation, self.currentHeading.trueHeading, pitchDeg, pitchAdjusted);
 }
@@ -233,11 +313,11 @@ sViewAngle viewAngle;
     if ([textField.text isEqualToString:@""])
         return;
 	if (textField == _toLatitudeTextField) {
-		toLat = textField.text.doubleValue;
+		_toLat = textField.text.doubleValue;
 	} else if (textField == _toLongitudeTextField) {
-		toLon = textField.text.doubleValue;
+		_toLon = textField.text.doubleValue;
 	} else if (textField == _toAltitudeTextField) {
-		toAlt = textField.text.doubleValue;
+		_toAlt = textField.text.doubleValue;
 	}
 	self.currentResponder = nil;
 	[self.placesPicker selectRow:0 inComponent:0 animated:YES];
@@ -249,27 +329,27 @@ sViewAngle viewAngle;
 - (void)updateViewAngle {
 	if (self.debugActive) {
 		[self.placesPicker selectRow:0 inComponent:0 animated:YES];
-		fromLat = 39;
-		fromLon = -75;
-		fromAlt = 4000;
-		toLat = 39;
-		toLon = -76;
-		toAlt = 12000;
+		_fromLat = 39;
+		_fromLon = -75;
+		_fromAlt = 4000;
+		_toLat = 39;
+		_toLon = -76;
+		_toAlt = 12000;
 	} else if (self.currentLocation != nil) {
-		fromLat = self.currentLocation.coordinate.latitude;
-		fromLon = self.currentLocation.coordinate.longitude;
-		fromAlt = self.currentLocation.altitude;
+		_fromLat = self.currentLocation.coordinate.latitude;
+		_fromLon = self.currentLocation.coordinate.longitude;
+		_fromAlt = self.currentLocation.altitude;
 	}
 
-	[self latitudeLabel].text = [NSString stringWithFormat:@"%.4f", fromLat];
-	[self longitudeLabel].text = [NSString stringWithFormat:@"%.4f", fromLon];
-	[self altitudeLabel].text = [NSString stringWithFormat:@"%.2f", fromAlt];
+	[self latitudeLabel].text = [NSString stringWithFormat:@"%.4f", _fromLat];
+	[self longitudeLabel].text = [NSString stringWithFormat:@"%.4f", _fromLon];
+	[self altitudeLabel].text = [NSString stringWithFormat:@"%.2f", _fromAlt];
 	
-	self.toLatitudeTextField.text = [NSString stringWithFormat:@"%f", toLat];
-	self.toLongitudeTextField.text = [NSString stringWithFormat:@"%f", toLon];
-	self.toAltitudeTextField.text = [NSString stringWithFormat:@"%f", toAlt];
+	self.toLatitudeTextField.text = [NSString stringWithFormat:@"%f", _toLat];
+	self.toLongitudeTextField.text = [NSString stringWithFormat:@"%f", _toLon];
+	self.toAltitudeTextField.text = [NSString stringWithFormat:@"%f", _toAlt];
 	
-	viewAngle = [self findViewAngleFromLat:fromLat fromLon:fromLon fromAlt:fromAlt toLat:toLat toLon:toLon toAlt:toAlt];
+	viewAngle = [self findViewAngleFromLat:_fromLat fromLon:_fromLon fromAlt:_fromAlt toLat:_toLat toLon:_toLon toAlt:_toAlt];
 	
 	self.azimuthLabel.text = [NSString stringWithFormat:@"%.2f", viewAngle.azimuth];
 	self.elevationLabel.text = [NSString stringWithFormat:@"%.2f", viewAngle.elevation];
@@ -349,9 +429,9 @@ sViewAngle viewAngle;
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
 	if (row == 0) return;
-	toLat = [_placeCoordinates[row][0] doubleValue];
-	toLon = [_placeCoordinates[row][1] doubleValue];
-	toAlt = [_placeCoordinates[row][2] doubleValue];
+	_toLat = [_placeCoordinates[row][0] doubleValue];
+	_toLon = [_placeCoordinates[row][1] doubleValue];
+	_toAlt = [_placeCoordinates[row][2] doubleValue];
 	[self updateViewAngle];
 }
 

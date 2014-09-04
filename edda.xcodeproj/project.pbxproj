@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
+		CC40DE3419B8271300E86968 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3219B8271300E86968 /* arrow.png */; };
+		CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3319B8271300E86968 /* arrow@2x.png */; };
 		CC7329D019B6D899005FEC7D /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC7329CF19B6D899005FEC7D /* CoreMotion.framework */; };
 		CC77D4F119B003E8009BA59F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F019B003E8009BA59F /* Foundation.framework */; };
 		CC77D4F319B003E8009BA59F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F219B003E8009BA59F /* CoreGraphics.framework */; };
@@ -45,6 +48,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CC40DE2D19B813A000E86968 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
+		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
 		CC7329CF19B6D899005FEC7D /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		CC77D4ED19B003E8009BA59F /* edda.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = edda.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC77D4F019B003E8009BA59F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -88,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */,
 				CC7329D019B6D899005FEC7D /* CoreMotion.framework in Frameworks */,
 				CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */,
 				CC77D53919B00DB9009BA59F /* libz.dylib in Frameworks */,
@@ -138,6 +145,7 @@
 		CC77D4EF19B003E8009BA59F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CC40DE2D19B813A000E86968 /* AVFoundation.framework */,
 				CC7329CF19B6D899005FEC7D /* CoreMotion.framework */,
 				CCA397D019B529B000754BEB /* Accelerate.framework */,
 				CC77D53819B00DB9009BA59F /* libz.dylib */,
@@ -222,6 +230,8 @@
 		CC77D53A19B02734009BA59F /* images */ = {
 			isa = PBXGroup;
 			children = (
+				CC40DE3219B8271300E86968 /* arrow.png */,
+				CC40DE3319B8271300E86968 /* arrow@2x.png */,
 				CC77D53B19B02740009BA59F /* arrowLong.png */,
 			);
 			name = images;
@@ -311,7 +321,9 @@
 				CC77D53C19B02740009BA59F /* arrowLong.png in Resources */,
 				CC77D4FB19B003E8009BA59F /* InfoPlist.strings in Resources */,
 				CC77D53019B003F3009BA59F /* README.md in Resources */,
+				CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */,
 				CC77D50419B003E8009BA59F /* Main.storyboard in Resources */,
+				CC40DE3419B8271300E86968 /* arrow.png in Resources */,
 				CC77D53119B003F3009BA59F /* release_notes.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
