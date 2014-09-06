@@ -20,6 +20,13 @@ CLLocationManager *locationManager;
 
 CMMotionManager *motionManager;
 
+BOOL _debugActive = NO;
+BOOL _videoActive = NO;
+BOOL _videoInited = NO;
+
+float _headingThreshold = 10.0f;
+float _pitchThreshold = 5.0f;
+
 NSArray *_places;
 NSArray *_placeCoordinates;
 
@@ -46,19 +53,20 @@ float _arrowMargin = 5.0f;
     [super viewDidLoad];
 	
 	// debug view
-	self.debugActive = NO;
-	
-	[self.debugSwitch setOn:self.debugActive];
-	
+	[self.debugSwitch setOn:_debugActive];
+
 	// the indicator
-	self.indicatorView.layer.cornerRadius = 30.0f;
+	self.otherView.layer.cornerRadius = self.otherView.bounds.size.width * .5f;
+	self.otherView.layer.backgroundColor = [UIColor redColor].CGColor;
+	self.otherView.layer.opacity = 0.0;
+	self.indicatorView.layer.cornerRadius = self.indicatorView.bounds.size.width * .5f;
 	self.indicatorView.layer.backgroundColor = [UIColor yellowColor].CGColor;
 	self.indicatorView.layer.opacity = 0.0;
 	self.indicatorView.layer.borderWidth = 0.0;
 	self.indicatorView.layer.borderColor = [UIColor greenColor].CGColor;
 
 	// picker stuff
-	_places = @[@"Select", @"Bogotá", @"Jakarta", @"Johannesburg", @"Kampala", @"London", @"Los Angeles", @"Madrid", @"New York", @"NYC Antipode", @"Paris", @"Perth", @"São Paulo", @"Tokio"];
+	_places = @[@"Select", @"Bogotá", @"Jakarta", @"Johannesburg", @"Kampala", @"London", @"Los Angeles", @"Madrid", @"Mecca", @"New York", @"NYC Antipode", @"Paris", @"Perth", @"São Paulo", @"Tokio"];
 	_placeCoordinates = @[ @[@0.0f, @0.0f, @0.0f] // "None"
 						   , @[@4.598056f, @-74.075833f, @2600.0f] // "Bogotá"
 						   , @[@-6.208763f, @106.845599f, @5.0f] // "Jakarta"
@@ -67,6 +75,7 @@ float _arrowMargin = 5.0f;
 						   , @[@51.507351f, @-0.127758f, @7.0f] // "London"
 						   , @[@34.052234f, @-118.243685f, @89.0f] // "Los Angeles"
 						   , @[@40.416775f, @-3.703790f, @650.0f] // "Madrid"
+						   , @[@21.4167f, @39.8167, @334.0f] // "Mecca"
 						   , @[@40.712784f, @-74.005941f, @10.0f] // "New York"
 						   , @[@-40.718315f, @106.043472f, @0.0f] // "NYC Antipode"
 						   , @[@48.856614f, @2.352222f, @45.0f] // "Paris"
@@ -126,8 +135,15 @@ float _arrowMargin = 5.0f;
 	_toLat = [_placeCoordinates[1][0] doubleValue];
 	_toLon = [_placeCoordinates[1][1] doubleValue];
 	_toAlt = [_placeCoordinates[1][2] doubleValue];
+	self.cityLabel.text = _places[1];
+
 	[self updateViewAngle];
-	[self startVideoCapture];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[self hideArrows];
+	[self hideDebug];
+	[super viewDidAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -187,21 +203,32 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)startVideoCapture {
-	AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
-	AVCaptureDevice *videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-	NSError *error = nil;
-	AVCaptureDeviceInput *videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:&error];
-	if (videoInput) {
-		[captureSession addInput:videoInput];
-		AVCaptureVideoPreviewLayer *previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:captureSession];
-		UIView *aView = self.videoView;
-		previewLayer.frame = aView.bounds; // Assume you want the preview layer to fill the view.
-		[aView.layer addSublayer:previewLayer];
-		[captureSession startRunning];
+	if (!_videoInited) {
+		_videoInited = YES;
+		NSError *error = nil;
+		self.captureSession = [[AVCaptureSession alloc] init];
+		self.videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+		self.videoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.videoCaptureDevice error:&error];
+		if (self.videoInput) {
+			[self.captureSession addInput:self.videoInput];
+			self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];
+			self.previewLayer.frame = self.videoView.bounds; // Assume you want the preview layer to fill the view.
+		} else {
+			// Handle the failure.
+			NSLog(@"Cannot handle video");
+			_videoInited = NO;
+		}
 	}
-	else {
-		// Handle the failure.
-		NSLog(@"Cannot handle video");
+	if (_videoInited) {
+		[self.videoView.layer addSublayer:self.previewLayer];
+		[self.captureSession startRunning];
+	}
+}
+
+- (void)stopVideoCapture {
+	if (_videoInited) {
+		[self.captureSession stopRunning];
+		[self.previewLayer removeFromSuperlayer];
 	}
 }
 
@@ -209,21 +236,53 @@ float _arrowMargin = 5.0f;
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
 	// for the elevation indicator
 	float pitchDeg = RAD_TO_DEG * self.currentMotion.attitude.pitch;
-	float pitchAdjusted = pitchDeg - 90;
-	float correctPitch = abs(viewAngle.elevation - pitchAdjusted);
-	float elevationTransparency = ofMap(correctPitch, 0, 180, 1.0, 0.0, true);
+	float correctPitch = pitchDeg - 90;
+	float pitchRaw = viewAngle.elevation - correctPitch;
+	float pitchAdjusted = abs(pitchRaw);
+	float elevationTransparency = ofMap(pitchAdjusted, 0, 180, 1.0, 0.0, true);
 	self.indicatorView.layer.opacity = elevationTransparency;
 	
 	// for the heading indicator
-	float correctHeading = abs(viewAngle.azimuth - self.currentHeading.trueHeading);
+	float correctHeading = viewAngle.azimuth - self.currentHeading.trueHeading;
+	float headingAdjusted = abs(correctHeading);
 	float headingTransparency;
-	if (correctHeading < 180) {
-		headingTransparency = ofMap(correctHeading, 0, 180, 30.0, 0.0, true);
+	if (headingAdjusted < 180) {
+		headingTransparency = ofMap(headingAdjusted, 0, 180, 30.0, 0.0, true);
 	} else {
-		headingTransparency = ofMap(correctHeading, 180, 360, 0.0, 30.0, true);
+		headingTransparency = ofMap(headingAdjusted, 180, 360, 0.0, 30.0, true);
 	}
 	self.indicatorView.layer.borderWidth = headingTransparency;
-//	NSLog(@"azim: %f elev: %f head: %f pitch: %f adj: %f", viewAngle.azimuth, viewAngle.elevation, self.currentHeading.trueHeading, pitchDeg, pitchAdjusted);
+	
+	float normalizedHeadingTransparency = ofMap(headingTransparency, 0.0, 30.0, 0.0, 1.0, true);
+//	NSLog(@"head: %.0f chead: %.0f cheadadj: %.0f cpitch: %.0f pitchdeg: %.0f cpitchadj: %.0f pitchraw: %.0f",
+//		  self.currentHeading.trueHeading, correctHeading, headingAdjusted, correctPitch, pitchDeg, pitchAdjusted, pitchRaw);
+	
+	self.otherView.layer.opacity = elevationTransparency * .7 + normalizedHeadingTransparency * .3;
+	
+	[self hideArrows];
+	
+	if ((correctHeading > 180 && correctHeading < 360 - _headingThreshold) || (correctHeading < 0 && headingAdjusted < 180)) {
+		self.W_arrowView.hidden = NO;
+	} else if ((correctHeading <= 180 && correctHeading > _headingThreshold) || (correctHeading < 0 && headingAdjusted >= 180)) {
+		self.E_arrowView.hidden = NO;
+	}
+
+	if (pitchRaw > _pitchThreshold) {
+		self.N_arrowView.hidden = NO;
+	} else if (pitchRaw < -_pitchThreshold) {
+		self.S_arrowView.hidden = NO;
+	}
+}
+
+- (void)hideArrows {
+	self.N_arrowView.hidden = YES;
+	self.S_arrowView.hidden = YES;
+	self.E_arrowView.hidden = YES;
+	self.W_arrowView.hidden = YES;
+	self.NE_arrowView.hidden = YES;
+	self.NW_arrowView.hidden = YES;
+	self.SE_arrowView.hidden = YES;
+	self.SW_arrowView.hidden = YES;
 }
 
 - (void)updateArrows {
@@ -244,6 +303,24 @@ float _arrowMargin = 5.0f;
 	animationB.removedOnCompletion = NO;
 	animationB.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
 	[self.azimuthImage.layer addAnimation:animationB forKey:@"transform.rotation.z"];
+}
+
+- (void)showDebug {
+	[UIView beginAnimations:@"hideDebug" context:NULL];
+	[UIView setAnimationDelegate:self];
+	[UIView setAnimationDuration:0.25];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+	self.debugView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.debugView.frame.size.height);
+	[UIView commitAnimations];
+}
+
+- (void)hideDebug {
+	[UIView beginAnimations:@"showDebug" context:NULL];
+	[UIView setAnimationDelegate:self];
+	[UIView setAnimationDuration:0.25];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
+	[UIView commitAnimations];
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -285,12 +362,25 @@ float _arrowMargin = 5.0f;
 
 #pragma mark - UI Interaction
 
+- (IBAction)onStartTapped:(id)sender {
+	_videoActive = !_videoActive;
+	if (_videoActive) {
+		[self.startButton setTitle:@"Stop Video" forState:UIControlStateNormal];
+		[self startVideoCapture];
+	} else {
+		[self.startButton setTitle:@"Start Video" forState:UIControlStateNormal];
+		[self stopVideoCapture];
+	}
+}
+
 - (IBAction)onDebugSwitchTapped:(id)sender {
-	self.debugActive = self.debugSwitch.on;
+	_debugActive = self.debugSwitch.on;
 	
-	self.toLatitudeTextField.enabled = !self.debugActive;
-	self.toLongitudeTextField.enabled = !self.debugActive;
-	self.toAltitudeTextField.enabled = !self.debugActive;
+	if (_debugActive) {
+		[self showDebug];
+	} else {
+		[self hideDebug];
+	}
 
 	[self updateViewAngle];
 }
@@ -327,19 +417,11 @@ float _arrowMargin = 5.0f;
 #pragma mark - GIS stuff
 
 - (void)updateViewAngle {
-	if (self.debugActive) {
-		[self.placesPicker selectRow:0 inComponent:0 animated:YES];
-		_fromLat = 39;
-		_fromLon = -75;
-		_fromAlt = 4000;
-		_toLat = 39;
-		_toLon = -76;
-		_toAlt = 12000;
-	} else if (self.currentLocation != nil) {
-		_fromLat = self.currentLocation.coordinate.latitude;
-		_fromLon = self.currentLocation.coordinate.longitude;
-		_fromAlt = self.currentLocation.altitude;
-	}
+	if (self.currentLocation == nil) return;
+	
+	_fromLat = self.currentLocation.coordinate.latitude;
+	_fromLon = self.currentLocation.coordinate.longitude;
+	_fromAlt = self.currentLocation.altitude;
 
 	[self latitudeLabel].text = [NSString stringWithFormat:@"%.4f", _fromLat];
 	[self longitudeLabel].text = [NSString stringWithFormat:@"%.4f", _fromLon];
@@ -432,6 +514,7 @@ float _arrowMargin = 5.0f;
 	_toLat = [_placeCoordinates[row][0] doubleValue];
 	_toLon = [_placeCoordinates[row][1] doubleValue];
 	_toAlt = [_placeCoordinates[row][2] doubleValue];
+	self.cityLabel.text = _places[row];
 	[self updateViewAngle];
 }
 
