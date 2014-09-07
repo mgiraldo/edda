@@ -34,6 +34,7 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) UIImageView *E_arrowView;
 @property (nonatomic) UIImageView *W_arrowView;
 
+@property (weak, nonatomic) IBOutlet UIImageView *previewImage;
 @property (weak, nonatomic) IBOutlet UIView *otherView;
 @property (weak, nonatomic) IBOutlet UIView *debugView;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
@@ -42,6 +43,7 @@ typedef struct sViewAngle sViewAngle;
 @property (weak, nonatomic) IBOutlet UIPickerView *placesPicker;
 @property (weak, nonatomic) IBOutlet UISwitch *debugSwitch;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *cameraToggle;
 
 @property (weak, nonatomic) IBOutlet UILabel *cityLabel;
 @property (weak, nonatomic) IBOutlet UILabel *altitudeLabel;
@@ -55,11 +57,17 @@ typedef struct sViewAngle sViewAngle;
 @property (weak, nonatomic) IBOutlet UITextField *toLongitudeTextField;
 @property (weak, nonatomic) IBOutlet UITextField *toAltitudeTextField;
 
-@property (nonatomic) AVCaptureDevice *videoCaptureDevice;
-@property (nonatomic) AVCaptureSession *captureSession;
-@property (nonatomic) AVCaptureDeviceInput *videoInput;
-@property (nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic) AVCaptureDevice *rearVideoCaptureDevice;
+@property (nonatomic) AVCaptureSession *rearSession;
+@property (nonatomic) AVCaptureDeviceInput *rearVideoInput;
+@property (nonatomic) AVCaptureVideoPreviewLayer *rearPreviewLayer;
+@property (nonatomic) AVCaptureDevice *frontVideoCaptureDevice;
+@property (nonatomic) AVCaptureSession *frontSession;
+@property (nonatomic) AVCaptureDeviceInput *frontVideoInput;
+@property (nonatomic) AVCaptureVideoPreviewLayer *frontPreviewLayer;
+@property (nonatomic) AVCaptureStillImageOutput *stillImageOutput;
 
+- (IBAction)onCameraToggleChange:(id)sender;
 - (IBAction)onStartTapped:(id)sender;
 - (IBAction)onDebugSwitchTapped:(id)sender;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;

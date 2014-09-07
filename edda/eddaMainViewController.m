@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 Ping Pong Estudio. All rights reserved.
 //
 
-#import "eddaMainViewController.h"
 #import <Accelerate/Accelerate.h>
+#import <ImageIO/ImageIO.h>
+#import "eddaMainViewController.h"
 #include "geodesic.h"
 
 @interface eddaMainViewController ()
@@ -22,7 +23,11 @@ CMMotionManager *motionManager;
 
 BOOL _debugActive = NO;
 BOOL _videoActive = NO;
-BOOL _videoInited = NO;
+BOOL _rearVideoInited = NO;
+BOOL _frontVideoInited = NO;
+BOOL _haveImage = NO;
+
+int _activeCamera = 0; // front default
 
 float _headingThreshold = 10.0f;
 float _pitchThreshold = 5.0f;
@@ -54,11 +59,13 @@ float _arrowMargin = 5.0f;
 	
 	// debug view
 	[self.debugSwitch setOn:_debugActive];
+//	self.otherView.layer.cornerRadius = self.otherView.bounds.size.width * .5f;
+//	self.otherView.layer.backgroundColor = [UIColor blackColor].CGColor;
+	self.otherView.layer.opacity = 0.0;
+	self.otherView.layer.borderWidth = 10;
+	self.otherView.layer.borderColor = [UIColor yellowColor].CGColor;
 
 	// the indicator
-	self.otherView.layer.cornerRadius = self.otherView.bounds.size.width * .5f;
-	self.otherView.layer.backgroundColor = [UIColor redColor].CGColor;
-	self.otherView.layer.opacity = 0.0;
 	self.indicatorView.layer.cornerRadius = self.indicatorView.bounds.size.width * .5f;
 	self.indicatorView.layer.backgroundColor = [UIColor yellowColor].CGColor;
 	self.indicatorView.layer.opacity = 0.0;
@@ -142,7 +149,7 @@ float _arrowMargin = 5.0f;
 
 - (void)viewDidAppear:(BOOL)animated {
 	[self hideArrows];
-	[self hideDebug];
+	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
 	[super viewDidAppear:animated];
 }
 
@@ -202,36 +209,6 @@ float _arrowMargin = 5.0f;
 	[self.view layoutSubviews];
 }
 
-- (void)startVideoCapture {
-	if (!_videoInited) {
-		_videoInited = YES;
-		NSError *error = nil;
-		self.captureSession = [[AVCaptureSession alloc] init];
-		self.videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-		self.videoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.videoCaptureDevice error:&error];
-		if (self.videoInput) {
-			[self.captureSession addInput:self.videoInput];
-			self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];
-			self.previewLayer.frame = self.videoView.bounds; // Assume you want the preview layer to fill the view.
-		} else {
-			// Handle the failure.
-			NSLog(@"Cannot handle video");
-			_videoInited = NO;
-		}
-	}
-	if (_videoInited) {
-		[self.videoView.layer addSublayer:self.previewLayer];
-		[self.captureSession startRunning];
-	}
-}
-
-- (void)stopVideoCapture {
-	if (_videoInited) {
-		[self.captureSession stopRunning];
-		[self.previewLayer removeFromSuperlayer];
-	}
-}
-
 - (void)updateInterface:(NSTimer *)timer {
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
 	// for the elevation indicator
@@ -257,20 +234,33 @@ float _arrowMargin = 5.0f;
 //	NSLog(@"head: %.0f chead: %.0f cheadadj: %.0f cpitch: %.0f pitchdeg: %.0f cpitchadj: %.0f pitchraw: %.0f",
 //		  self.currentHeading.trueHeading, correctHeading, headingAdjusted, correctPitch, pitchDeg, pitchAdjusted, pitchRaw);
 	
-	self.otherView.layer.opacity = elevationTransparency * .7 + normalizedHeadingTransparency * .3;
+	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
+	self.otherView.layer.opacity = layerTransparency;
+	self.frontPreviewLayer.opacity = layerTransparency;
 	
 	[self hideArrows];
 	
+	BOOL rightHead = YES;
+	BOOL rightPitch = YES;
+	
 	if ((correctHeading > 180 && correctHeading < 360 - _headingThreshold) || (correctHeading < 0 && headingAdjusted < 180)) {
 		self.W_arrowView.hidden = NO;
+		rightHead = NO;
 	} else if ((correctHeading <= 180 && correctHeading > _headingThreshold) || (correctHeading < 0 && headingAdjusted >= 180)) {
 		self.E_arrowView.hidden = NO;
+		rightHead = NO;
 	}
 
 	if (pitchRaw > _pitchThreshold) {
 		self.N_arrowView.hidden = NO;
+		rightPitch = NO;
 	} else if (pitchRaw < -_pitchThreshold) {
 		self.S_arrowView.hidden = NO;
+		rightPitch = NO;
+	}
+	
+	if (rightHead && rightPitch) {
+		if (!_haveImage) [self takePicture];
 	}
 }
 
@@ -323,54 +313,152 @@ float _arrowMargin = 5.0f;
 	[UIView commitAnimations];
 }
 
-#pragma mark - CLLocationManagerDelegate
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
-{
-    NSLog(@"didFailWithError: %@", error);
-    UIAlertView *errorAlert = [[UIAlertView alloc]
-							   initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [errorAlert show];
-}
+#pragma mark - video stuff
+- (void)initFrontCamera {
+	if (!_frontVideoInited) {
+		_frontVideoInited = YES;
+		self.frontSession = [[AVCaptureSession alloc] init];
+		self.frontSession.sessionPreset = AVCaptureSessionPresetLow;
+		
+		NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+		self.frontVideoCaptureDevice = nil;
+		
+		for (AVCaptureDevice *d in videoDevices){
+			if (d.position == AVCaptureDevicePositionFront){
+				self.frontVideoCaptureDevice = d;
+				break;
+			}
+		}
+		
+		NSError *error = nil;
+		self.frontVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.frontVideoCaptureDevice error:&error];
+		if (self.frontVideoInput) {
+			[self.frontSession addInput:self.frontVideoInput];
+			
+//			self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+//			NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
+//			[self.stillImageOutput setOutputSettings:outputSettings];
+//			[self.frontSession addOutput:self.stillImageOutput];
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
-{
-//    NSLog(@"didUpdateToLocation: %@", newLocation);
-    self.currentLocation = newLocation;
-	
-	if (self.currentLocation != nil) {
-		[locationManager stopUpdatingLocation];
-		[self updateViewAngle];
+			self.frontPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.frontSession];
+			self.frontPreviewLayer.frame = self.otherView.bounds;
+		} else {
+			// Handle the error appropriately.
+			NSLog(@"ERROR: trying to open camera: %@", error);
+			_frontVideoInited = NO;
+		}
 	}
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-//    NSLog(@"didUpdateHeading: %@", newHeading);
-    self.currentHeading = newHeading;
+- (void)takePicture {
+    AVCaptureConnection *videoConnection = nil;
+    for (AVCaptureConnection *connection in self.stillImageOutput.connections){
+        for (AVCaptureInputPort *port in [connection inputPorts]){
+            if ([[port mediaType] isEqual:AVMediaTypeVideo]){
+                videoConnection = connection;
+                break;
+            }
+        }
+        if (videoConnection) {
+			break;
+        }
+    }
 	
-    if (self.currentHeading != nil) {
-        [self headingLabel].text = [NSString stringWithFormat:@"%.1f", self.currentHeading.trueHeading];
-		[self updateArrows];
+    NSLog(@"about to request a capture from: %@ connections: %i", self.stillImageOutput, self.stillImageOutput.connections.count);
+	if (self.stillImageOutput.connections.count > 0) {
+		[self.stillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error){
+			
+			CFDictionaryRef exifAttachments = CMGetAttachment( imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
+			if (exifAttachments) {
+				// Do something with the attachments if you want to.
+				NSLog(@"attachements: %@", exifAttachments);
+			} else {
+				NSLog(@"no attachments");
+			}
+			NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+			UIImage *image = [[UIImage alloc] initWithData:imageData];
+			
+			self.previewImage.image = image;
+		}];
 	}
 }
 
-- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
-	if( !self.currentHeading ) return YES; // Got nothing, We can assume we got to calibrate.
-	else if( self.currentHeading.headingAccuracy < 0 ) return YES; // 0 means invalid heading. we probably need to calibrate
-	else if( self.currentHeading.headingAccuracy > 5 )return YES; // 5 degrees is a small value correct for my needs. Tweak yours according to your needs.
-	else return NO; // All is good. Compass is precise enough.
+- (void)initRearCamera {
+	if (!_rearVideoInited) {
+		_rearVideoInited = YES;
+		NSError *error = nil;
+		self.rearSession = [[AVCaptureSession alloc] init];
+		self.rearVideoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+		self.rearVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.rearVideoCaptureDevice error:&error];
+		if (self.rearVideoInput) {
+			[self.rearSession addInput:self.rearVideoInput];
+			self.rearPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.rearSession];
+			self.rearPreviewLayer.frame = self.videoView.bounds; // Assume you want the preview layer to fill the view.
+		} else {
+			// Handle the failure.
+			NSLog(@"Cannot handle video");
+			_rearVideoInited = NO;
+		}
+	}
+}
+
+- (void)startRearCapture {
+	[self initRearCamera];
+	if (_rearVideoInited) {
+		[self.videoView.layer addSublayer:self.rearPreviewLayer];
+		[self.rearSession startRunning];
+	}
+}
+
+- (void)stopRearCapture {
+	if (_rearVideoInited) {
+		[self.rearSession stopRunning];
+		[self.rearPreviewLayer removeFromSuperlayer];
+	}
+}
+
+- (void)startFrontCapture {
+	[self initFrontCamera];
+	if (_frontVideoInited) {
+		[self.otherView.layer addSublayer:self.frontPreviewLayer];
+		[self.frontSession startRunning];
+	}
+}
+
+- (void)stopFrontCapture {
+	if (_frontVideoInited) {
+		[self.frontSession stopRunning];
+		[self.frontPreviewLayer removeFromSuperlayer];
+	}
+}
+
+- (void)refreshVideoFeeds {
+	[self stopRearCapture];
+	[self stopFrontCapture];
+	if (_videoActive) {
+		if (_activeCamera==0) {
+			[self startFrontCapture];
+		} else {
+			[self startRearCapture];
+		}
+	}
 }
 
 #pragma mark - UI Interaction
+
+- (IBAction)onCameraToggleChange:(id)sender {
+	_activeCamera = (int)self.cameraToggle.selectedSegmentIndex;
+	[self refreshVideoFeeds];
+}
 
 - (IBAction)onStartTapped:(id)sender {
 	_videoActive = !_videoActive;
 	if (_videoActive) {
 		[self.startButton setTitle:@"Stop Video" forState:UIControlStateNormal];
-		[self startVideoCapture];
 	} else {
 		[self.startButton setTitle:@"Start Video" forState:UIControlStateNormal];
-		[self stopVideoCapture];
 	}
+	[self refreshVideoFeeds];
 }
 
 - (IBAction)onDebugSwitchTapped:(id)sender {
@@ -412,6 +500,43 @@ float _arrowMargin = 5.0f;
 	self.currentResponder = nil;
 	[self.placesPicker selectRow:0 inComponent:0 animated:YES];
 	[self updateViewAngle];
+}
+
+#pragma mark - CLLocationManagerDelegate
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    NSLog(@"didFailWithError: %@", error);
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+							   initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+{
+	//    NSLog(@"didUpdateToLocation: %@", newLocation);
+    self.currentLocation = newLocation;
+	
+	if (self.currentLocation != nil) {
+		[locationManager stopUpdatingLocation];
+		[self updateViewAngle];
+	}
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+	//    NSLog(@"didUpdateHeading: %@", newHeading);
+    self.currentHeading = newHeading;
+	
+    if (self.currentHeading != nil) {
+        [self headingLabel].text = [NSString stringWithFormat:@"%.1f", self.currentHeading.trueHeading];
+		[self updateArrows];
+	}
+}
+
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
+	if( !self.currentHeading ) return YES; // Got nothing, We can assume we got to calibrate.
+	else if( self.currentHeading.headingAccuracy < 0 ) return YES; // 0 means invalid heading. we probably need to calibrate
+	else if( self.currentHeading.headingAccuracy > 5 )return YES; // 5 degrees is a small value correct for my needs. Tweak yours according to your needs.
+	else return NO; // All is good. Compass is precise enough.
 }
 
 #pragma mark - GIS stuff
