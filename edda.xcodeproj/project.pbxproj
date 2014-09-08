@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */; };
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
 		CC40DE3419B8271300E86968 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3219B8271300E86968 /* arrow.png */; };
 		CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3319B8271300E86968 /* arrow@2x.png */; };
@@ -48,6 +49,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaOtherView.h; sourceTree = "<group>"; };
+		CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaOtherView.m; sourceTree = "<group>"; };
 		CC40DE2D19B813A000E86968 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
@@ -166,6 +169,8 @@
 				CC77D50219B003E8009BA59F /* Main.storyboard */,
 				CC77D50519B003E8009BA59F /* eddaMainViewController.h */,
 				CC77D50619B003E8009BA59F /* eddaMainViewController.m */,
+				CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */,
+				CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */,
 				CC77D50819B003E8009BA59F /* eddaFlipsideViewController.h */,
 				CC77D50919B003E8009BA59F /* eddaFlipsideViewController.m */,
 				CC77D50B19B003E8009BA59F /* Images.xcassets */,
@@ -344,6 +349,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
+				CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,

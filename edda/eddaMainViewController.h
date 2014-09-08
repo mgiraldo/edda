@@ -9,9 +9,10 @@
 #import <CoreMotion/CoreMotion.h>
 #import <AVFoundation/AVFoundation.h>
 #import "eddaFlipsideViewController.h"
+#import "eddaOtherView.h"
 #import "proj_api.h"
 
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, CLLocationManagerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, CLLocationManagerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 
 struct sViewAngle {
 	double azimuth;
@@ -33,9 +34,9 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) UIImageView *S_arrowView;
 @property (nonatomic) UIImageView *E_arrowView;
 @property (nonatomic) UIImageView *W_arrowView;
+@property (nonatomic) eddaOtherView *otherView;
 
 @property (weak, nonatomic) IBOutlet UIImageView *previewImage;
-@property (weak, nonatomic) IBOutlet UIView *otherView;
 @property (weak, nonatomic) IBOutlet UIView *debugView;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIView *indicatorView;
@@ -71,5 +72,7 @@ typedef struct sViewAngle sViewAngle;
 - (IBAction)onStartTapped:(id)sender;
 - (IBAction)onDebugSwitchTapped:(id)sender;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;
+- (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view;
+- (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view;
 
 @end

@@ -59,12 +59,11 @@ float _arrowMargin = 5.0f;
 	
 	// debug view
 	[self.debugSwitch setOn:_debugActive];
-//	self.otherView.layer.cornerRadius = self.otherView.bounds.size.width * .5f;
-//	self.otherView.layer.backgroundColor = [UIColor blackColor].CGColor;
-	self.otherView.layer.opacity = 0.0;
-	self.otherView.layer.borderWidth = 10;
-	self.otherView.layer.borderColor = [UIColor yellowColor].CGColor;
-
+	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+	[self.otherView setActiveState:NO];
+	self.otherView.delegate = self;
+	[self.view addSubview:self.otherView];
+	
 	// the indicator
 	self.indicatorView.layer.cornerRadius = self.indicatorView.bounds.size.width * .5f;
 	self.indicatorView.layer.backgroundColor = [UIColor yellowColor].CGColor;
@@ -73,16 +72,19 @@ float _arrowMargin = 5.0f;
 	self.indicatorView.layer.borderColor = [UIColor greenColor].CGColor;
 
 	// picker stuff
-	_places = @[@"Select", @"Bogotá", @"Jakarta", @"Johannesburg", @"Kampala", @"London", @"Los Angeles", @"Madrid", @"Mecca", @"New York", @"NYC Antipode", @"Paris", @"Perth", @"São Paulo", @"Tokio"];
+	_places = @[@"Select", @"Beijing", @"Bogotá", @"Buenos Aires", @"Jakarta", @"Johannesburg", @"Kampala", @"London", @"Los Angeles", @"Madrid", @"Mecca", @"Moscow", @"New York", @"NYC Antipode", @"Paris", @"Perth", @"São Paulo", @"Tokio"];
 	_placeCoordinates = @[ @[@0.0f, @0.0f, @0.0f] // "None"
+						   , @[@39.904030f, @116.407526f, @52.0f] // "Beijing"
 						   , @[@4.598056f, @-74.075833f, @2600.0f] // "Bogotá"
+						   , @[@-34.603723f, @-58.381593f, @26.0f] // "Buenos Aires"
 						   , @[@-6.208763f, @106.845599f, @5.0f] // "Jakarta"
 						   , @[@-26.204103f, @28.047305f, @1755.0f] // "Johannesburg"
 						   , @[@0.313611f, @32.581111f, @1222.0f] // "Kampala"
 						   , @[@51.507351f, @-0.127758f, @7.0f] // "London"
 						   , @[@34.052234f, @-118.243685f, @89.0f] // "Los Angeles"
 						   , @[@40.416775f, @-3.703790f, @650.0f] // "Madrid"
-						   , @[@21.4167f, @39.8167, @334.0f] // "Mecca"
+						   , @[@21.4167f, @39.8167f, @334.0f] // "Mecca"
+						   , @[@55.755826f, @37.617300f, @126.0f] // "Moscow"
 						   , @[@40.712784f, @-74.005941f, @10.0f] // "New York"
 						   , @[@-40.718315f, @106.043472f, @0.0f] // "NYC Antipode"
 						   , @[@48.856614f, @2.352222f, @45.0f] // "Paris"
@@ -235,8 +237,9 @@ float _arrowMargin = 5.0f;
 //		  self.currentHeading.trueHeading, correctHeading, headingAdjusted, correctPitch, pitchDeg, pitchAdjusted, pitchRaw);
 	
 	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
-	self.otherView.layer.opacity = layerTransparency;
 	self.frontPreviewLayer.opacity = layerTransparency;
+	
+	// arrows
 	
 	[self hideArrows];
 	
@@ -260,8 +263,12 @@ float _arrowMargin = 5.0f;
 	}
 	
 	if (rightHead && rightPitch) {
-		if (!_haveImage) [self takePicture];
+//		if (!_haveImage) [self takePicture];
 	}
+	
+	// yellow rect
+	[self.otherView updatePosition:CGPointMake(correctHeading*2 + self.view.frame.size.width*.5f, pitchRaw*2 + self.view.frame.size.height*.5f)];
+	[self.otherView setTappable:(rightHead && rightPitch)];
 }
 
 - (void)hideArrows {
@@ -314,42 +321,6 @@ float _arrowMargin = 5.0f;
 }
 
 #pragma mark - video stuff
-- (void)initFrontCamera {
-	if (!_frontVideoInited) {
-		_frontVideoInited = YES;
-		self.frontSession = [[AVCaptureSession alloc] init];
-		self.frontSession.sessionPreset = AVCaptureSessionPresetLow;
-		
-		NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-		self.frontVideoCaptureDevice = nil;
-		
-		for (AVCaptureDevice *d in videoDevices){
-			if (d.position == AVCaptureDevicePositionFront){
-				self.frontVideoCaptureDevice = d;
-				break;
-			}
-		}
-		
-		NSError *error = nil;
-		self.frontVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.frontVideoCaptureDevice error:&error];
-		if (self.frontVideoInput) {
-			[self.frontSession addInput:self.frontVideoInput];
-			
-//			self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-//			NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
-//			[self.stillImageOutput setOutputSettings:outputSettings];
-//			[self.frontSession addOutput:self.stillImageOutput];
-
-			self.frontPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.frontSession];
-			self.frontPreviewLayer.frame = self.otherView.bounds;
-		} else {
-			// Handle the error appropriately.
-			NSLog(@"ERROR: trying to open camera: %@", error);
-			_frontVideoInited = NO;
-		}
-	}
-}
-
 - (void)takePicture {
     AVCaptureConnection *videoConnection = nil;
     for (AVCaptureConnection *connection in self.stillImageOutput.connections){
@@ -417,10 +388,46 @@ float _arrowMargin = 5.0f;
 	}
 }
 
+- (void)initFrontCamera {
+	if (!_frontVideoInited) {
+		_frontVideoInited = YES;
+		self.frontSession = [[AVCaptureSession alloc] init];
+		self.frontSession.sessionPreset = AVCaptureSessionPresetLow;
+		
+		NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+		self.frontVideoCaptureDevice = nil;
+		
+		for (AVCaptureDevice *d in videoDevices){
+			if (d.position == AVCaptureDevicePositionFront){
+				self.frontVideoCaptureDevice = d;
+				break;
+			}
+		}
+		
+		NSError *error = nil;
+		self.frontVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.frontVideoCaptureDevice error:&error];
+		if (self.frontVideoInput) {
+			[self.frontSession addInput:self.frontVideoInput];
+			
+			//			self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+			//			NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
+			//			[self.stillImageOutput setOutputSettings:outputSettings];
+			//			[self.frontSession addOutput:self.stillImageOutput];
+			
+			self.frontPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.frontSession];
+			self.frontPreviewLayer.frame = self.otherView.bounds;
+		} else {
+			// Handle the error appropriately.
+			NSLog(@"ERROR: trying to open camera: %@", error);
+			_frontVideoInited = NO;
+		}
+	}
+}
+
 - (void)startFrontCapture {
 	[self initFrontCamera];
 	if (_frontVideoInited) {
-		[self.otherView.layer addSublayer:self.frontPreviewLayer];
+		[self.otherView setVideo:self.frontPreviewLayer];
 		[self.frontSession startRunning];
 	}
 }
@@ -428,7 +435,7 @@ float _arrowMargin = 5.0f;
 - (void)stopFrontCapture {
 	if (_frontVideoInited) {
 		[self.frontSession stopRunning];
-		[self.frontPreviewLayer removeFromSuperlayer];
+		[self.otherView removeVideo];
 	}
 }
 
@@ -445,6 +452,10 @@ float _arrowMargin = 5.0f;
 }
 
 #pragma mark - UI Interaction
+
+- (void)onOtherTapped:(UITapGestureRecognizer *)recognizer {
+	NSLog(@"TAPPED!");
+}
 
 - (IBAction)onCameraToggleChange:(id)sender {
 	_activeCamera = (int)self.cameraToggle.selectedSegmentIndex;
@@ -500,6 +511,16 @@ float _arrowMargin = 5.0f;
 	self.currentResponder = nil;
 	[self.placesPicker selectRow:0 inComponent:0 animated:YES];
 	[self updateViewAngle];
+}
+
+#pragma mark - eddaOtherViewDelegate
+
+- (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
+	
+}
+
+- (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
+	
 }
 
 #pragma mark - CLLocationManagerDelegate
