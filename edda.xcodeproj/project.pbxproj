@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */; };
+		CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */; };
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
 		CC40DE3419B8271300E86968 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3219B8271300E86968 /* arrow.png */; };
 		CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3319B8271300E86968 /* arrow@2x.png */; };
@@ -51,6 +52,8 @@
 /* Begin PBXFileReference section */
 		CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaOtherView.h; sourceTree = "<group>"; };
 		CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaOtherView.m; sourceTree = "<group>"; };
+		CC3F1C1219BE8D4D00F6AD43 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
 		CC40DE2D19B813A000E86968 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
@@ -123,11 +126,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CC3F1C0B19BE8A1B00F6AD43 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				CC77D53219B003FF009BA59F /* geo */,
+				CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */,
+				CC3F1C1219BE8D4D00F6AD43 /* utils.h */,
+			);
+			name = utils;
+			sourceTree = "<group>";
+		};
 		CC77D4E419B003E8009BA59F = {
 			isa = PBXGroup;
 			children = (
+				CC3F1C0B19BE8A1B00F6AD43 /* utils */,
 				CC77D53A19B02734009BA59F /* images */,
-				CC77D53219B003FF009BA59F /* geo */,
 				CC77D52819B003F3009BA59F /* TestFlightSDK3.0.2 */,
 				CC77D4F619B003E8009BA59F /* edda */,
 				CC77D51819B003E8009BA59F /* eddaTests */,
@@ -351,6 +364,7 @@
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
 				CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
+				CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */,
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,
 				CC77D50719B003E8009BA59F /* eddaMainViewController.m in Sources */,

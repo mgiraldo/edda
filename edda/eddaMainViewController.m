@@ -9,7 +9,8 @@
 #import <Accelerate/Accelerate.h>
 #import <ImageIO/ImageIO.h>
 #import "eddaMainViewController.h"
-#include "geodesic.h"
+#import "geodesic.h"
+#include "utils.h"
 
 @interface eddaMainViewController ()
 
@@ -22,12 +23,12 @@ CLLocationManager *locationManager;
 CMMotionManager *motionManager;
 
 BOOL _debugActive = NO;
-BOOL _videoActive = NO;
+BOOL _videoActive = YES;
 BOOL _rearVideoInited = NO;
 BOOL _frontVideoInited = NO;
 BOOL _haveImage = NO;
 
-int _activeCamera = 0; // front default
+int _activeCamera = 1; // front default
 
 float _headingThreshold = 10.0f;
 float _pitchThreshold = 5.0f;
@@ -150,8 +151,8 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	[self hideArrows];
 	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
+	[self refreshVideoFeeds];
 	[super viewDidAppear:animated];
 }
 
@@ -161,68 +162,18 @@ float _arrowMargin = 5.0f;
     // Dispose of any resources that can be recreated.
 }
 
-- (void) viewDidLayoutSubviews {
-	CGRect viewBounds = self.view.bounds;
-	
-    CGFloat topBarOffset = self.topLayoutGuide.length;
-	
-	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
-	
-	// help arrows
-	self.NE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.NE_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
-	[self.view addSubview:self.NE_arrowView];
-	
-	self.NW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.NW_arrowView.transform = CGAffineTransformMakeRotation(M_PI_2);
-	self.NW_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
-	[self.view addSubview:self.NW_arrowView];
-
-	self.SW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.SW_arrowView.transform = CGAffineTransformMakeRotation(M_PI);
-	self.SW_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
-	[self.view addSubview:self.SW_arrowView];
-
-	self.SE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.SE_arrowView.transform = CGAffineTransformMakeRotation(M_PI + M_PI_2);
-	self.SE_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
-	[self.view addSubview:self.SE_arrowView];
-
-	self.N_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.N_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4);
-	self.N_arrowView.center = CGPointMake(viewBounds.size.width * .5, topBarOffset + _arrowSize * .5 + _arrowMargin);
-	[self.view addSubview:self.N_arrowView];
-
-	self.S_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.S_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4 + M_PI);
-	self.S_arrowView.center = CGPointMake(viewBounds.size.width * .5, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
-	[self.view addSubview:self.S_arrowView];
-	
-	self.E_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.E_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4 + M_PI_2);
-	self.E_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height * .5);
-	[self.view addSubview:self.E_arrowView];
-
-	self.W_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.W_arrowView.transform = CGAffineTransformMakeRotation(-M_PI_4);
-	self.W_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height * .5);
-	[self.view addSubview:self.W_arrowView];
-	
-	[self.view layoutSubviews];
-}
-
 - (void)updateInterface:(NSTimer *)timer {
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
 	// for the elevation indicator
 	float pitchDeg = RAD_TO_DEG * self.currentMotion.attitude.pitch;
-	float correctPitch = pitchDeg - 90;
-	float pitchRaw = viewAngle.elevation - correctPitch;
-	float pitchAdjusted = abs(pitchRaw);
+	float pitchRaw = pitchDeg - 90;
+	float correctPitch = viewAngle.elevation - pitchRaw;
+	float pitchAdjusted = abs(correctPitch);
 	float elevationTransparency = ofMap(pitchAdjusted, 0, 180, 1.0, 0.0, true);
 	self.indicatorView.layer.opacity = elevationTransparency;
 	
 	// for the heading indicator
-	float correctHeading = viewAngle.azimuth - self.currentHeading.trueHeading;
+	float correctHeading = self.currentHeading.trueHeading - viewAngle.azimuth;
 	float headingAdjusted = abs(correctHeading);
 	float headingTransparency;
 	if (headingAdjusted < 180) {
@@ -239,47 +190,45 @@ float _arrowMargin = 5.0f;
 	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
 	self.frontPreviewLayer.opacity = layerTransparency;
 	
-	// arrows
-	
-	[self hideArrows];
-	
 	BOOL rightHead = YES;
 	BOOL rightPitch = YES;
 	
-	if ((correctHeading > 180 && correctHeading < 360 - _headingThreshold) || (correctHeading < 0 && headingAdjusted < 180)) {
-		self.W_arrowView.hidden = NO;
-		rightHead = NO;
-	} else if ((correctHeading <= 180 && correctHeading > _headingThreshold) || (correctHeading < 0 && headingAdjusted >= 180)) {
-		self.E_arrowView.hidden = NO;
-		rightHead = NO;
-	}
+	float newX, newY;
+	float radius = 600 * ofMap(correctPitch, -90, 90, 0, 1, true);
+	float radians = -DEG_TO_RAD*correctHeading;
+	float inverted = radians-M_PI_2;
+	newX = radius * cos(inverted) + self.view.window.bounds.size.width * .5;
 
-	if (pitchRaw > _pitchThreshold) {
-		self.N_arrowView.hidden = NO;
-		rightPitch = NO;
-	} else if (pitchRaw < -_pitchThreshold) {
-		self.S_arrowView.hidden = NO;
-		rightPitch = NO;
-	}
-	
-	if (rightHead && rightPitch) {
-//		if (!_haveImage) [self takePicture];
-	}
-	
-	// yellow rect
-	[self.otherView updatePosition:CGPointMake(correctHeading*2 + self.view.frame.size.width*.5f, pitchRaw*2 + self.view.frame.size.height*.5f)];
+	newY = ofMap(correctPitch, -90, 90, 600, -600, true) + self.view.frame.size.height*.5f;
+
 	[self.otherView setTappable:(rightHead && rightPitch)];
+
+	[self pointObjects:correctHeading pitch:correctPitch];
 }
 
-- (void)hideArrows {
-	self.N_arrowView.hidden = YES;
-	self.S_arrowView.hidden = YES;
-	self.E_arrowView.hidden = YES;
-	self.W_arrowView.hidden = YES;
-	self.NE_arrowView.hidden = YES;
-	self.NW_arrowView.hidden = YES;
-	self.SE_arrowView.hidden = YES;
-	self.SW_arrowView.hidden = YES;
+- (void)pointObjects:(float)heading pitch:(float)pitch {
+	float xArrow, yArrow, xBox, yBox, arrowMax = 100, boxMax = 600;
+	float radiusArrow = arrowMax * ofMap(pitch, -90, 90, 0, 1, true);
+	float radiusBox = boxMax * ofMap(pitch, -90, 90, 0, 1, true);
+	float radians = -DEG_TO_RAD*heading;
+	float inverted = radians-M_PI_2;
+	xArrow = radiusArrow * cos(inverted) + self.view.frame.size.width * .5;
+	yArrow = radiusArrow * sin(inverted) + self.view.frame.size.height * .5;
+	xBox = radiusBox * cos(inverted) + self.view.frame.size.width * .5;
+	yBox = ofMap(pitch, -90, 90, boxMax, -boxMax, true) + self.view.frame.size.height*.5f;
+//	yBox = radiusBox * sin(inverted) + self.view.window.bounds.size.height * .5;
+	[self.otherView updatePosition:CGPointMake(xBox, yBox)];
+//	NSLog(@"head: %.1f, x: %.3f y: %.3f radians: %.3f inverted: %.3f",
+//		  heading, xArrow, yArrow, radians, inverted);
+	[UIView animateWithDuration:0.1
+						  delay:0
+						options:UIViewAnimationOptionAllowAnimatedContent
+					 animations:^{
+						 self.pointerView.transform = CGAffineTransformMakeRotation(radians);
+						 self.pointerView.center = CGPointMake(xArrow, yArrow);
+					 }
+					 completion:^(BOOL finished){
+					 }];
 }
 
 - (void)updateArrows {
@@ -335,7 +284,7 @@ float _arrowMargin = 5.0f;
         }
     }
 	
-    NSLog(@"about to request a capture from: %@ connections: %i", self.stillImageOutput, self.stillImageOutput.connections.count);
+    NSLog(@"about to request a capture from: %@ connections: %lu", self.stillImageOutput, (unsigned long)self.stillImageOutput.connections.count);
 	if (self.stillImageOutput.connections.count > 0) {
 		[self.stillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error){
 			
@@ -516,11 +465,11 @@ float _arrowMargin = 5.0f;
 #pragma mark - eddaOtherViewDelegate
 
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
-	
+//	[view setNeedsDisplay];
 }
 
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
-	
+//	[view setNeedsDisplay];
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -680,28 +629,6 @@ float _arrowMargin = 5.0f;
 - (NSString*)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     return _places[row];
-}
-
-#pragma mark - from oF
-float ofMap(float value, float inputMin, float inputMax, float outputMin, float outputMax, bool clamp) {
-	
-	if (fabs(inputMin - inputMax) < FLT_EPSILON){
-		return outputMin;
-	} else {
-		float outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
-		
-		if( clamp ){
-			if(outputMax < outputMin){
-				if( outVal < outputMax )outVal = outputMax;
-				else if( outVal > outputMin )outVal = outputMin;
-			}else{
-				if( outVal > outputMax )outVal = outputMax;
-				else if( outVal < outputMin )outVal = outputMin;
-			}
-		}
-		return outVal;
-	}
-	
 }
 
 @end

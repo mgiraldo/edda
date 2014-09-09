@@ -14,13 +14,13 @@ BOOL _zoomed = NO;
 BOOL _touchDown = NO;
 BOOL _tappable = NO;
 
-float _borderWidth = 10;
+float _borderWidth = 5;
 float _zoomDuration = .25;
-float _otherSize = 100.0f;
+float _otherSize = 50.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:CGRectMake(0, 0, _otherSize, _otherSize)];
+    self = [super initWithFrame:CGRectMake(-_otherSize, -_otherSize, _otherSize, _otherSize)];
     if (self) {
         // Initialization code
 //		self.contentMode = UIViewContentModeRedraw;
@@ -55,7 +55,17 @@ float _otherSize = 100.0f;
 #pragma mark - View state
 
 - (void)updatePosition:(CGPoint)position {
-	if (!_zoomed) self.center = position;
+	if (!_zoomed) {
+		[UIView animateWithDuration:0.1
+							  delay:0
+							options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction
+						 animations:^{
+							 self.center = position;
+						 }
+						 completion:^(BOOL finished){
+							 [self setNeedsDisplay];
+						 }];
+	}
 }
 
 - (void)setTappable:(BOOL)tappable {
@@ -89,6 +99,8 @@ float _otherSize = 100.0f;
 - (void)zoomOut {
 	_zoomed = NO;
 	[UIView animateWithDuration:_zoomDuration
+						  delay:0
+						options:UIViewAnimationOptionAllowAnimatedContent
 					 animations:^{
 						 CGRect frame = CGRectMake(0, 0, _otherSize, _otherSize);
 						 self.layer.cornerRadius = _otherSize * .5;
@@ -105,11 +117,13 @@ float _otherSize = 100.0f;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+//	NSLog(@"touchbegan");
 	_touchDown = YES;
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+//	NSLog(@"touchend");
     // Triggered when touch is released
     if (_touchDown) {
         if (_zoomed) {
@@ -123,6 +137,7 @@ float _otherSize = 100.0f;
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
+//	NSLog(@"touchcancel");
 	if (_zoomed) {
 		[self zoomOut];
 	} else {

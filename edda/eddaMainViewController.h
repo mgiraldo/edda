@@ -26,14 +26,7 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CMDeviceMotion *currentMotion;
 
-@property (nonatomic) UIImageView *NE_arrowView;
-@property (nonatomic) UIImageView *NW_arrowView;
-@property (nonatomic) UIImageView *SE_arrowView;
-@property (nonatomic) UIImageView *SW_arrowView;
-@property (nonatomic) UIImageView *N_arrowView;
-@property (nonatomic) UIImageView *S_arrowView;
-@property (nonatomic) UIImageView *E_arrowView;
-@property (nonatomic) UIImageView *W_arrowView;
+@property (weak, nonatomic) IBOutlet UIImageView *pointerView;
 @property (nonatomic) eddaOtherView *otherView;
 
 @property (weak, nonatomic) IBOutlet UIImageView *previewImage;
