@@ -82,6 +82,7 @@ float _otherSize = 50.0f;
 }
 
 - (void)zoomIn {
+	[self.delegate eddaOtherViewStartedZoomIn:self];
 	_zoomed = YES;
 	[UIView animateWithDuration:_zoomDuration
 					 animations:^{
@@ -97,6 +98,7 @@ float _otherSize = 50.0f;
 }
 
 - (void)zoomOut {
+	[self.delegate eddaOtherViewStartedZoomOut:self];
 	_zoomed = NO;
 	[UIView animateWithDuration:_zoomDuration
 						  delay:0

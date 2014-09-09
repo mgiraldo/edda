@@ -28,7 +28,7 @@ BOOL _rearVideoInited = NO;
 BOOL _frontVideoInited = NO;
 BOOL _haveImage = NO;
 
-int _activeCamera = 1; // front default
+int _activeCamera = 1; // rear default
 
 float _headingThreshold = 10.0f;
 float _pitchThreshold = 5.0f;
@@ -406,11 +406,6 @@ float _arrowMargin = 5.0f;
 	NSLog(@"TAPPED!");
 }
 
-- (IBAction)onCameraToggleChange:(id)sender {
-	_activeCamera = (int)self.cameraToggle.selectedSegmentIndex;
-	[self refreshVideoFeeds];
-}
-
 - (IBAction)onStartTapped:(id)sender {
 	_videoActive = !_videoActive;
 	if (_videoActive) {
@@ -464,12 +459,25 @@ float _arrowMargin = 5.0f;
 
 #pragma mark - eddaOtherViewDelegate
 
+- (void)eddaOtherViewStartedZoomIn:(eddaOtherView *)view {
+	//	[view setNeedsDisplay];
+}
+
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
-//	[view setNeedsDisplay];
+	_activeCamera = 0;
+	[self refreshVideoFeeds];
+}
+
+- (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view {
+	_activeCamera = 0;
+	_videoActive = NO;
+	[self refreshVideoFeeds];
 }
 
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
-//	[view setNeedsDisplay];
+	_activeCamera = 1;
+	_videoActive = YES;
+	[self refreshVideoFeeds];
 }
 
 #pragma mark - CLLocationManagerDelegate

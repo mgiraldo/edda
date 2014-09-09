@@ -44,17 +44,6 @@
                                     <action selector="onStartTapped:" destination="rQl-PL-IFJ" eventType="touchUpInside" id="JVO-wp-Us3"/>
                                 </connections>
                             </button>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="pKS-bk-mAR">
-                                <rect key="frame" x="71" y="230" width="179" height="29"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <segments>
-                                    <segment title="Front Cam"/>
-                                    <segment title="Rear Cam"/>
-                                </segments>
-                                <connections>
-                                    <action selector="onCameraToggleChange:" destination="rQl-PL-IFJ" eventType="valueChanged" id="DxA-QM-lvp"/>
-                                </connections>
-                            </segmentedControl>
                             <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="jqg-sy-dxO">
                                 <rect key="frame" x="149" y="52" width="22" height="22"/>
                                 <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
@@ -231,7 +220,6 @@
                         <outlet property="altitudeLabel" destination="SD3-4q-LpM" id="STm-RQ-AVG"/>
                         <outlet property="azimuthImage" destination="IkC-Z1-M3x" id="Okt-kg-REw"/>
                         <outlet property="azimuthLabel" destination="J1h-ZT-RpA" id="MXl-bw-2tD"/>
-                        <outlet property="cameraToggle" destination="pKS-bk-mAR" id="VW5-Xp-Fph"/>
                         <outlet property="cityLabel" destination="g06-wE-tuY" id="8T9-pb-NBF"/>
                         <outlet property="debugSwitch" destination="zrr-gC-snH" id="IKk-vR-DMd"/>
                         <outlet property="debugView" destination="JSX-a3-pet" id="5PT-UI-Qua"/>

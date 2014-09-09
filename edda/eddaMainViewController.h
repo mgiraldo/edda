@@ -37,7 +37,6 @@ typedef struct sViewAngle sViewAngle;
 @property (weak, nonatomic) IBOutlet UIPickerView *placesPicker;
 @property (weak, nonatomic) IBOutlet UISwitch *debugSwitch;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *cameraToggle;
 
 @property (weak, nonatomic) IBOutlet UILabel *cityLabel;
 @property (weak, nonatomic) IBOutlet UILabel *altitudeLabel;
@@ -61,7 +60,6 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureVideoPreviewLayer *frontPreviewLayer;
 @property (nonatomic) AVCaptureStillImageOutput *stillImageOutput;
 
-- (IBAction)onCameraToggleChange:(id)sender;
 - (IBAction)onStartTapped:(id)sender;
 - (IBAction)onDebugSwitchTapped:(id)sender;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;

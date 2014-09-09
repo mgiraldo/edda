@@ -26,7 +26,9 @@
 
 @protocol eddaOtherViewDelegate
 
+- (void)eddaOtherViewStartedZoomIn:(eddaOtherView *)view;
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view;
+- (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view;
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view;
 
 @end
