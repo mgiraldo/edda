@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC01E03119D0FD260069C168 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC01E03019D0FD260069C168 /* Parse.framework */; };
+		CC01E03A19D110DC0069C168 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A54819C2680700C73E59 /* MobileCoreServices.framework */; };
+		CC01E04319D114E60069C168 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC01E03C19D114DA0069C168 /* Bolts.framework */; };
+		CC01E04419D114E60069C168 /* ParseFacebookUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC01E03D19D114DA0069C168 /* ParseFacebookUtils.framework */; };
+		CC01E04A19D1333D0069C168 /* ParseHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CC01E04919D1333D0069C168 /* ParseHelper.m */; };
 		CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */; };
 		CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */; };
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
@@ -35,8 +40,39 @@
 		CC77D53719B00876009BA59F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D53619B00876009BA59F /* CoreLocation.framework */; };
 		CC77D53919B00DB9009BA59F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D53819B00DB9009BA59F /* libz.dylib */; };
 		CC77D53C19B02740009BA59F /* arrowLong.png in Resources */ = {isa = PBXBuildFile; fileRef = CC77D53B19B02740009BA59F /* arrowLong.png */; };
+		CC78A53F19C25BFB00C73E59 /* configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC78A53E19C25BFB00C73E59 /* configuration.plist */; };
+		CC78A54719C267EF00C73E59 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A54619C267EF00C73E59 /* SystemConfiguration.framework */; };
+		CC78A54D19C2682A00C73E59 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A54C19C2682A00C73E59 /* AudioToolbox.framework */; };
+		CC78A54F19C2683600C73E59 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A54E19C2683600C73E59 /* CoreMedia.framework */; };
+		CC78A55119C2684400C73E59 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55019C2684400C73E59 /* CoreVideo.framework */; };
+		CC78A55319C268BB00C73E59 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55219C268BB00C73E59 /* QuartzCore.framework */; };
+		CC78A55B19C26B4500C73E59 /* configuration.plist.example in Resources */ = {isa = PBXBuildFile; fileRef = CC78A55A19C26B4500C73E59 /* configuration.plist.example */; };
+		CC78A55D19C3D1C800C73E59 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55C19C3D1C800C73E59 /* CoreTelephony.framework */; };
+		CC78A56019C3D1D400C73E59 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55E19C3D1D400C73E59 /* GLKit.framework */; };
+		CC78A56119C3D1D400C73E59 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55F19C3D1D400C73E59 /* OpenGLES.framework */; };
+		CC78A56319C3D1F700C73E59 /* OpenTok.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56219C3D1F700C73E59 /* OpenTok.framework */; };
+		CC78A56519C3D20F00C73E59 /* libstdc++.6.0.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56419C3D20F00C73E59 /* libstdc++.6.0.9.dylib */; };
+		CC78A56719C3D21700C73E59 /* libpthread.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56619C3D21700C73E59 /* libpthread.dylib */; };
+		CC78A56919C3D22800C73E59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56819C3D22800C73E59 /* libsqlite3.dylib */; };
+		CC78A56B19C3D23200C73E59 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56A19C3D23200C73E59 /* libxml2.dylib */; };
 		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
 		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
+		CCFFAF5F19CF9782008555A1 /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */; };
+		CCFFAF6019CF9782008555A1 /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */; };
+		CCFFAF6119CF9782008555A1 /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */; };
+		CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5219CF9782008555A1 /* AppIcon40x40@2x.png */; };
+		CCFFAF6319CF9782008555A1 /* AppIcon50x50.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5319CF9782008555A1 /* AppIcon50x50.png */; };
+		CCFFAF6419CF9782008555A1 /* AppIcon50x50@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5419CF9782008555A1 /* AppIcon50x50@2x.png */; };
+		CCFFAF6519CF9782008555A1 /* AppIcon57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5519CF9782008555A1 /* AppIcon57x57.png */; };
+		CCFFAF6619CF9782008555A1 /* AppIcon57x57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5619CF9782008555A1 /* AppIcon57x57@2x.png */; };
+		CCFFAF6719CF9782008555A1 /* AppIcon60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5719CF9782008555A1 /* AppIcon60x60.png */; };
+		CCFFAF6819CF9782008555A1 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5819CF9782008555A1 /* AppIcon60x60@2x.png */; };
+		CCFFAF6919CF9782008555A1 /* AppIcon72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5919CF9782008555A1 /* AppIcon72x72.png */; };
+		CCFFAF6A19CF9782008555A1 /* AppIcon72x72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5A19CF9782008555A1 /* AppIcon72x72@2x.png */; };
+		CCFFAF6B19CF9782008555A1 /* AppIcon76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5B19CF9782008555A1 /* AppIcon76x76.png */; };
+		CCFFAF6C19CF9782008555A1 /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5C19CF9782008555A1 /* AppIcon76x76@2x.png */; };
+		CCFFAF6D19CF9782008555A1 /* iTunesArtwork.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5D19CF9782008555A1 /* iTunesArtwork.png */; };
+		CCFFAF6E19CF9782008555A1 /* iTunesArtwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5E19CF9782008555A1 /* iTunesArtwork@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +86,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CC01E03019D0FD260069C168 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = "../../../stuff/xcode/parse-library-1.4.0/Parse.framework"; sourceTree = "<group>"; };
+		CC01E03519D10EF20069C168 /* ParseFacebookUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ParseFacebookUtils.framework; path = "../../../stuff/xcode/parse-library-1.4.0/ParseFacebookUtils.framework"; sourceTree = "<group>"; };
+		CC01E03719D1104F0069C168 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = "../../../stuff/xcode/parse-library-1.4.0/Bolts.framework"; sourceTree = "<group>"; };
+		CC01E03C19D114DA0069C168 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = "../../../stuff/xcode/parse-library-1.4.0/Bolts.framework"; sourceTree = "<group>"; };
+		CC01E03D19D114DA0069C168 /* ParseFacebookUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ParseFacebookUtils.framework; path = "../../../stuff/xcode/parse-library-1.4.0/ParseFacebookUtils.framework"; sourceTree = "<group>"; };
+		CC01E04819D1333D0069C168 /* ParseHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseHelper.h; sourceTree = "<group>"; };
+		CC01E04919D1333D0069C168 /* ParseHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseHelper.m; sourceTree = "<group>"; };
 		CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaOtherView.h; sourceTree = "<group>"; };
 		CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaOtherView.m; sourceTree = "<group>"; };
 		CC3F1C1219BE8D4D00F6AD43 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
@@ -58,14 +101,14 @@
 		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
 		CC7329CF19B6D899005FEC7D /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
-		CC77D4ED19B003E8009BA59F /* edda.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = edda.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC77D4ED19B003E8009BA59F /* Edda.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Edda.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC77D4F019B003E8009BA59F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CC77D4F219B003E8009BA59F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		CC77D4F419B003E8009BA59F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		CC77D4F819B003E8009BA59F /* edda-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "edda-Info.plist"; sourceTree = "<group>"; };
+		CC77D4F819B003E8009BA59F /* Edda-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Edda-Info.plist"; sourceTree = "<group>"; };
 		CC77D4FA19B003E8009BA59F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CC77D4FC19B003E8009BA59F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		CC77D4FE19B003E8009BA59F /* edda-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "edda-Prefix.pch"; sourceTree = "<group>"; };
+		CC77D4FE19B003E8009BA59F /* Edda-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Edda-Prefix.pch"; sourceTree = "<group>"; };
 		CC77D4FF19B003E8009BA59F /* eddaAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = eddaAppDelegate.h; sourceTree = "<group>"; };
 		CC77D50019B003E8009BA59F /* eddaAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = eddaAppDelegate.m; sourceTree = "<group>"; };
 		CC77D50319B003E8009BA59F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -74,9 +117,9 @@
 		CC77D50819B003E8009BA59F /* eddaFlipsideViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = eddaFlipsideViewController.h; sourceTree = "<group>"; };
 		CC77D50919B003E8009BA59F /* eddaFlipsideViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = eddaFlipsideViewController.m; sourceTree = "<group>"; };
 		CC77D50B19B003E8009BA59F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		CC77D51119B003E8009BA59F /* eddaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eddaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC77D51119B003E8009BA59F /* EddaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EddaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC77D51219B003E8009BA59F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		CC77D51A19B003E8009BA59F /* eddaTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "eddaTests-Info.plist"; sourceTree = "<group>"; };
+		CC77D51A19B003E8009BA59F /* EddaTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "EddaTests-Info.plist"; sourceTree = "<group>"; };
 		CC77D51C19B003E8009BA59F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CC77D51E19B003E8009BA59F /* eddaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = eddaTests.m; sourceTree = "<group>"; };
 		CC77D52919B003F3009BA59F /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
@@ -90,9 +133,47 @@
 		CC77D53619B00876009BA59F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		CC77D53819B00DB9009BA59F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		CC77D53B19B02740009BA59F /* arrowLong.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrowLong.png; sourceTree = "<group>"; };
+		CC78A53E19C25BFB00C73E59 /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = configuration.plist; sourceTree = "<group>"; };
+		CC78A54219C267A100C73E59 /* Quickblox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quickblox.framework; path = "../../../stuff/xcode/quickblox-ios-sdk-master/Framework/Quickblox.framework"; sourceTree = "<group>"; };
+		CC78A54419C267E300C73E59 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		CC78A54619C267EF00C73E59 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		CC78A54819C2680700C73E59 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		CC78A54A19C2681D00C73E59 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		CC78A54C19C2682A00C73E59 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		CC78A54E19C2683600C73E59 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		CC78A55019C2684400C73E59 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		CC78A55219C268BB00C73E59 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		CC78A55419C268C500C73E59 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		CC78A55619C268D800C73E59 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		CC78A55819C26A6B00C73E59 /* libxml2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.dylib; path = usr/lib/libxml2.2.dylib; sourceTree = SDKROOT; };
+		CC78A55A19C26B4500C73E59 /* configuration.plist.example */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = configuration.plist.example; sourceTree = "<group>"; };
+		CC78A55C19C3D1C800C73E59 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		CC78A55E19C3D1D400C73E59 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		CC78A55F19C3D1D400C73E59 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		CC78A56219C3D1F700C73E59 /* OpenTok.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenTok.framework; path = "../../../stuff/xcode/OpenTok-iOS-2.2.1/OpenTok.framework"; sourceTree = "<group>"; };
+		CC78A56419C3D20F00C73E59 /* libstdc++.6.0.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.0.9.dylib"; path = "usr/lib/libstdc++.6.0.9.dylib"; sourceTree = SDKROOT; };
+		CC78A56619C3D21700C73E59 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
+		CC78A56819C3D22800C73E59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		CC78A56A19C3D23200C73E59 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		CCA397D019B529B000754BEB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		CCA397D919B6987A00754BEB /* geodesic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geodesic.h; sourceTree = "<group>"; };
 		CCA397E119B6A00B00754BEB /* geodesic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geodesic.c; sourceTree = "<group>"; };
+		CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon29x29.png; path = edda/icons/AppIcon29x29.png; sourceTree = "<group>"; };
+		CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon29x29@2x.png"; path = "edda/icons/AppIcon29x29@2x.png"; sourceTree = "<group>"; };
+		CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon40x40.png; path = edda/icons/AppIcon40x40.png; sourceTree = "<group>"; };
+		CCFFAF5219CF9782008555A1 /* AppIcon40x40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon40x40@2x.png"; path = "edda/icons/AppIcon40x40@2x.png"; sourceTree = "<group>"; };
+		CCFFAF5319CF9782008555A1 /* AppIcon50x50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon50x50.png; path = edda/icons/AppIcon50x50.png; sourceTree = "<group>"; };
+		CCFFAF5419CF9782008555A1 /* AppIcon50x50@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon50x50@2x.png"; path = "edda/icons/AppIcon50x50@2x.png"; sourceTree = "<group>"; };
+		CCFFAF5519CF9782008555A1 /* AppIcon57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon57x57.png; path = edda/icons/AppIcon57x57.png; sourceTree = "<group>"; };
+		CCFFAF5619CF9782008555A1 /* AppIcon57x57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon57x57@2x.png"; path = "edda/icons/AppIcon57x57@2x.png"; sourceTree = "<group>"; };
+		CCFFAF5719CF9782008555A1 /* AppIcon60x60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon60x60.png; path = edda/icons/AppIcon60x60.png; sourceTree = "<group>"; };
+		CCFFAF5819CF9782008555A1 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon60x60@2x.png"; path = "edda/icons/AppIcon60x60@2x.png"; sourceTree = "<group>"; };
+		CCFFAF5919CF9782008555A1 /* AppIcon72x72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon72x72.png; path = edda/icons/AppIcon72x72.png; sourceTree = "<group>"; };
+		CCFFAF5A19CF9782008555A1 /* AppIcon72x72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon72x72@2x.png"; path = "edda/icons/AppIcon72x72@2x.png"; sourceTree = "<group>"; };
+		CCFFAF5B19CF9782008555A1 /* AppIcon76x76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon76x76.png; path = edda/icons/AppIcon76x76.png; sourceTree = "<group>"; };
+		CCFFAF5C19CF9782008555A1 /* AppIcon76x76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon76x76@2x.png"; path = "edda/icons/AppIcon76x76@2x.png"; sourceTree = "<group>"; };
+		CCFFAF5D19CF9782008555A1 /* iTunesArtwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iTunesArtwork.png; path = edda/icons/iTunesArtwork.png; sourceTree = "<group>"; };
+		CCFFAF5E19CF9782008555A1 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iTunesArtwork@2x.png"; path = "edda/icons/iTunesArtwork@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +181,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC01E04319D114E60069C168 /* Bolts.framework in Frameworks */,
+				CC01E04419D114E60069C168 /* ParseFacebookUtils.framework in Frameworks */,
+				CC01E03A19D110DC0069C168 /* MobileCoreServices.framework in Frameworks */,
+				CC01E03119D0FD260069C168 /* Parse.framework in Frameworks */,
+				CC78A56B19C3D23200C73E59 /* libxml2.dylib in Frameworks */,
+				CC78A56919C3D22800C73E59 /* libsqlite3.dylib in Frameworks */,
+				CC78A56719C3D21700C73E59 /* libpthread.dylib in Frameworks */,
+				CC78A56519C3D20F00C73E59 /* libstdc++.6.0.9.dylib in Frameworks */,
+				CC78A56319C3D1F700C73E59 /* OpenTok.framework in Frameworks */,
+				CC78A56019C3D1D400C73E59 /* GLKit.framework in Frameworks */,
+				CC78A56119C3D1D400C73E59 /* OpenGLES.framework in Frameworks */,
+				CC78A55D19C3D1C800C73E59 /* CoreTelephony.framework in Frameworks */,
+				CC78A55319C268BB00C73E59 /* QuartzCore.framework in Frameworks */,
+				CC78A55119C2684400C73E59 /* CoreVideo.framework in Frameworks */,
+				CC78A54F19C2683600C73E59 /* CoreMedia.framework in Frameworks */,
+				CC78A54D19C2682A00C73E59 /* AudioToolbox.framework in Frameworks */,
+				CC78A54719C267EF00C73E59 /* SystemConfiguration.framework in Frameworks */,
 				CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */,
 				CC7329D019B6D899005FEC7D /* CoreMotion.framework in Frameworks */,
 				CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */,
@@ -139,6 +237,8 @@
 		CC77D4E419B003E8009BA59F = {
 			isa = PBXGroup;
 			children = (
+				CC01E03C19D114DA0069C168 /* Bolts.framework */,
+				CC01E03D19D114DA0069C168 /* ParseFacebookUtils.framework */,
 				CC3F1C0B19BE8A1B00F6AD43 /* utils */,
 				CC77D53A19B02734009BA59F /* images */,
 				CC77D52819B003F3009BA59F /* TestFlightSDK3.0.2 */,
@@ -152,8 +252,8 @@
 		CC77D4EE19B003E8009BA59F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CC77D4ED19B003E8009BA59F /* edda.app */,
-				CC77D51119B003E8009BA59F /* eddaTests.xctest */,
+				CC77D4ED19B003E8009BA59F /* Edda.app */,
+				CC77D51119B003E8009BA59F /* EddaTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -161,6 +261,29 @@
 		CC77D4EF19B003E8009BA59F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CC01E03719D1104F0069C168 /* Bolts.framework */,
+				CC01E03519D10EF20069C168 /* ParseFacebookUtils.framework */,
+				CC01E03019D0FD260069C168 /* Parse.framework */,
+				CC78A56A19C3D23200C73E59 /* libxml2.dylib */,
+				CC78A56819C3D22800C73E59 /* libsqlite3.dylib */,
+				CC78A56619C3D21700C73E59 /* libpthread.dylib */,
+				CC78A56419C3D20F00C73E59 /* libstdc++.6.0.9.dylib */,
+				CC78A56219C3D1F700C73E59 /* OpenTok.framework */,
+				CC78A55E19C3D1D400C73E59 /* GLKit.framework */,
+				CC78A55F19C3D1D400C73E59 /* OpenGLES.framework */,
+				CC78A55C19C3D1C800C73E59 /* CoreTelephony.framework */,
+				CC78A55819C26A6B00C73E59 /* libxml2.2.dylib */,
+				CC78A55619C268D800C73E59 /* libresolv.dylib */,
+				CC78A55419C268C500C73E59 /* Security.framework */,
+				CC78A55219C268BB00C73E59 /* QuartzCore.framework */,
+				CC78A55019C2684400C73E59 /* CoreVideo.framework */,
+				CC78A54E19C2683600C73E59 /* CoreMedia.framework */,
+				CC78A54C19C2682A00C73E59 /* AudioToolbox.framework */,
+				CC78A54A19C2681D00C73E59 /* CoreData.framework */,
+				CC78A54819C2680700C73E59 /* MobileCoreServices.framework */,
+				CC78A54619C267EF00C73E59 /* SystemConfiguration.framework */,
+				CC78A54419C267E300C73E59 /* CFNetwork.framework */,
+				CC78A54219C267A100C73E59 /* Quickblox.framework */,
 				CC40DE2D19B813A000E86968 /* AVFoundation.framework */,
 				CC7329CF19B6D899005FEC7D /* CoreMotion.framework */,
 				CCA397D019B529B000754BEB /* Accelerate.framework */,
@@ -177,6 +300,8 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
+				CC01E04819D1333D0069C168 /* ParseHelper.h */,
+				CC01E04919D1333D0069C168 /* ParseHelper.m */,
 				CC77D4FF19B003E8009BA59F /* eddaAppDelegate.h */,
 				CC77D50019B003E8009BA59F /* eddaAppDelegate.m */,
 				CC77D50219B003E8009BA59F /* Main.storyboard */,
@@ -195,10 +320,12 @@
 		CC77D4F719B003E8009BA59F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				CC77D4F819B003E8009BA59F /* edda-Info.plist */,
+				CC77D4F819B003E8009BA59F /* Edda-Info.plist */,
 				CC77D4F919B003E8009BA59F /* InfoPlist.strings */,
 				CC77D4FC19B003E8009BA59F /* main.m */,
-				CC77D4FE19B003E8009BA59F /* edda-Prefix.pch */,
+				CC77D4FE19B003E8009BA59F /* Edda-Prefix.pch */,
+				CC78A53E19C25BFB00C73E59 /* configuration.plist */,
+				CC78A55A19C26B4500C73E59 /* configuration.plist.example */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -215,7 +342,7 @@
 		CC77D51919B003E8009BA59F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				CC77D51A19B003E8009BA59F /* eddaTests-Info.plist */,
+				CC77D51A19B003E8009BA59F /* EddaTests-Info.plist */,
 				CC77D51B19B003E8009BA59F /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -248,6 +375,7 @@
 		CC77D53A19B02734009BA59F /* images */ = {
 			isa = PBXGroup;
 			children = (
+				CCFFAF6F19CF9788008555A1 /* icons */,
 				CC40DE3219B8271300E86968 /* arrow.png */,
 				CC40DE3319B8271300E86968 /* arrow@2x.png */,
 				CC77D53B19B02740009BA59F /* arrowLong.png */,
@@ -255,12 +383,35 @@
 			name = images;
 			sourceTree = "<group>";
 		};
+		CCFFAF6F19CF9788008555A1 /* icons */ = {
+			isa = PBXGroup;
+			children = (
+				CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */,
+				CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */,
+				CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */,
+				CCFFAF5219CF9782008555A1 /* AppIcon40x40@2x.png */,
+				CCFFAF5319CF9782008555A1 /* AppIcon50x50.png */,
+				CCFFAF5419CF9782008555A1 /* AppIcon50x50@2x.png */,
+				CCFFAF5519CF9782008555A1 /* AppIcon57x57.png */,
+				CCFFAF5619CF9782008555A1 /* AppIcon57x57@2x.png */,
+				CCFFAF5719CF9782008555A1 /* AppIcon60x60.png */,
+				CCFFAF5819CF9782008555A1 /* AppIcon60x60@2x.png */,
+				CCFFAF5919CF9782008555A1 /* AppIcon72x72.png */,
+				CCFFAF5A19CF9782008555A1 /* AppIcon72x72@2x.png */,
+				CCFFAF5B19CF9782008555A1 /* AppIcon76x76.png */,
+				CCFFAF5C19CF9782008555A1 /* AppIcon76x76@2x.png */,
+				CCFFAF5D19CF9782008555A1 /* iTunesArtwork.png */,
+				CCFFAF5E19CF9782008555A1 /* iTunesArtwork@2x.png */,
+			);
+			name = icons;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CC77D4EC19B003E8009BA59F /* edda */ = {
+		CC77D4EC19B003E8009BA59F /* Edda */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CC77D52219B003E8009BA59F /* Build configuration list for PBXNativeTarget "edda" */;
+			buildConfigurationList = CC77D52219B003E8009BA59F /* Build configuration list for PBXNativeTarget "Edda" */;
 			buildPhases = (
 				CC77D4E919B003E8009BA59F /* Sources */,
 				CC77D4EA19B003E8009BA59F /* Frameworks */,
@@ -270,14 +421,14 @@
 			);
 			dependencies = (
 			);
-			name = edda;
+			name = Edda;
 			productName = edda;
-			productReference = CC77D4ED19B003E8009BA59F /* edda.app */;
+			productReference = CC77D4ED19B003E8009BA59F /* Edda.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CC77D51019B003E8009BA59F /* eddaTests */ = {
+		CC77D51019B003E8009BA59F /* EddaTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CC77D52519B003E8009BA59F /* Build configuration list for PBXNativeTarget "eddaTests" */;
+			buildConfigurationList = CC77D52519B003E8009BA59F /* Build configuration list for PBXNativeTarget "EddaTests" */;
 			buildPhases = (
 				CC77D50D19B003E8009BA59F /* Sources */,
 				CC77D50E19B003E8009BA59F /* Frameworks */,
@@ -288,9 +439,9 @@
 			dependencies = (
 				CC77D51719B003E8009BA59F /* PBXTargetDependency */,
 			);
-			name = eddaTests;
+			name = EddaTests;
 			productName = eddaTests;
-			productReference = CC77D51119B003E8009BA59F /* eddaTests.xctest */;
+			productReference = CC77D51119B003E8009BA59F /* EddaTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -311,7 +462,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CC77D4E819B003E8009BA59F /* Build configuration list for PBXProject "edda" */;
+			buildConfigurationList = CC77D4E819B003E8009BA59F /* Build configuration list for PBXProject "Edda" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -324,8 +475,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CC77D4EC19B003E8009BA59F /* edda */,
-				CC77D51019B003E8009BA59F /* eddaTests */,
+				CC77D4EC19B003E8009BA59F /* Edda */,
+				CC77D51019B003E8009BA59F /* EddaTests */,
 			);
 		};
 /* End PBXProject section */
@@ -335,14 +486,32 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCFFAF6619CF9782008555A1 /* AppIcon57x57@2x.png in Resources */,
 				CC77D50C19B003E8009BA59F /* Images.xcassets in Resources */,
 				CC77D53C19B02740009BA59F /* arrowLong.png in Resources */,
+				CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */,
+				CCFFAF6A19CF9782008555A1 /* AppIcon72x72@2x.png in Resources */,
 				CC77D4FB19B003E8009BA59F /* InfoPlist.strings in Resources */,
+				CCFFAF6119CF9782008555A1 /* AppIcon40x40.png in Resources */,
+				CCFFAF6319CF9782008555A1 /* AppIcon50x50.png in Resources */,
 				CC77D53019B003F3009BA59F /* README.md in Resources */,
+				CCFFAF6019CF9782008555A1 /* AppIcon29x29@2x.png in Resources */,
+				CC78A53F19C25BFB00C73E59 /* configuration.plist in Resources */,
+				CCFFAF6819CF9782008555A1 /* AppIcon60x60@2x.png in Resources */,
 				CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */,
+				CCFFAF6B19CF9782008555A1 /* AppIcon76x76.png in Resources */,
 				CC77D50419B003E8009BA59F /* Main.storyboard in Resources */,
+				CCFFAF6919CF9782008555A1 /* AppIcon72x72.png in Resources */,
 				CC40DE3419B8271300E86968 /* arrow.png in Resources */,
+				CCFFAF6419CF9782008555A1 /* AppIcon50x50@2x.png in Resources */,
+				CCFFAF6519CF9782008555A1 /* AppIcon57x57.png in Resources */,
+				CCFFAF5F19CF9782008555A1 /* AppIcon29x29.png in Resources */,
+				CCFFAF6C19CF9782008555A1 /* AppIcon76x76@2x.png in Resources */,
 				CC77D53119B003F3009BA59F /* release_notes.md in Resources */,
+				CCFFAF6719CF9782008555A1 /* AppIcon60x60.png in Resources */,
+				CCFFAF6E19CF9782008555A1 /* iTunesArtwork@2x.png in Resources */,
+				CCFFAF6D19CF9782008555A1 /* iTunesArtwork.png in Resources */,
+				CC78A55B19C26B4500C73E59 /* configuration.plist.example in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +533,7 @@
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
 				CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
+				CC01E04A19D1333D0069C168 /* ParseHelper.m in Sources */,
 				CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */,
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,
@@ -384,7 +554,7 @@
 /* Begin PBXTargetDependency section */
 		CC77D51719B003E8009BA59F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CC77D4EC19B003E8009BA59F /* edda */;
+			target = CC77D4EC19B003E8009BA59F /* Edda */;
 			targetProxy = CC77D51619B003E8009BA59F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -494,23 +664,33 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* (*) .DS_Store CVS .svn .git .hg .example";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Volumes/billy/stuff/xcode/OpenTok-iOS-2.2.1",
+					"/Volumes/billy/stuff/xcode/parse-library-1.4.0",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "edda/edda-Prefix.pch";
+				GCC_PREFIX_HEADER = "edda/Edda-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					$SDKROOT/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "edda/edda-Info.plist";
+				INFOPLIST_FILE = "edda/Edda-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "dfd84c3c-12be-44fd-a215-3f4b5c144a4d";
+				PRODUCT_NAME = Edda;
+				PROVISIONING_PROFILE = "ca77f6e2-93fa-4320-a253-0787fb0da298";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -522,23 +702,32 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* (*) .DS_Store CVS .svn .git .hg .example";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Volumes/billy/stuff/xcode/OpenTok-iOS-2.2.1",
+					"/Volumes/billy/stuff/xcode/parse-library-1.4.0",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "edda/edda-Prefix.pch";
+				GCC_PREFIX_HEADER = "edda/Edda-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					$SDKROOT/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "edda/edda-Info.plist";
+				INFOPLIST_FILE = "edda/Edda-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)",
 				);
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d18b45d5-544f-4694-b851-f8b74b322ee5";
+				PRODUCT_NAME = Edda;
+				PROVISIONING_PROFILE = "4d7a5b0b-a9be-4e56-9d20-171b3fd0388d";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -558,8 +747,8 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "eddaTests/eddaTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "eddaTests/EddaTests-Info.plist";
+				PRODUCT_NAME = EddaTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -576,8 +765,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "edda/edda-Prefix.pch";
-				INFOPLIST_FILE = "eddaTests/eddaTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "eddaTests/EddaTests-Info.plist";
+				PRODUCT_NAME = EddaTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -586,7 +775,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CC77D4E819B003E8009BA59F /* Build configuration list for PBXProject "edda" */ = {
+		CC77D4E819B003E8009BA59F /* Build configuration list for PBXProject "Edda" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CC77D52019B003E8009BA59F /* Debug */,
@@ -595,7 +784,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CC77D52219B003E8009BA59F /* Build configuration list for PBXNativeTarget "edda" */ = {
+		CC77D52219B003E8009BA59F /* Build configuration list for PBXNativeTarget "Edda" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CC77D52319B003E8009BA59F /* Debug */,
@@ -604,7 +793,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CC77D52519B003E8009BA59F /* Build configuration list for PBXNativeTarget "eddaTests" */ = {
+		CC77D52519B003E8009BA59F /* Build configuration list for PBXNativeTarget "EddaTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CC77D52619B003E8009BA59F /* Debug */,

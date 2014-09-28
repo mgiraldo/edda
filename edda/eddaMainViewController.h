@@ -8,11 +8,22 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <AVFoundation/AVFoundation.h>
+#import <Parse/Parse.h>
+#import <Opentok/Opentok.h>
+#import "eddaAppDelegate.h"
 #import "eddaFlipsideViewController.h"
 #import "eddaOtherView.h"
 #import "proj_api.h"
 
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, CLLocationManagerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+@class eddaMainViewController;
+
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, CLLocationManagerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+
+enum streamingMode
+{
+	streamingModeIncoming = 0,
+	streamingModeOutgoing = 1
+};
 
 struct sViewAngle {
 	double azimuth;
@@ -25,6 +36,15 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) CLHeading *currentHeading;
 @property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CMDeviceMotion *currentMotion;
+
+@property (nonatomic) UIImageView *NE_arrowView;
+@property (nonatomic) UIImageView *NW_arrowView;
+@property (nonatomic) UIImageView *SE_arrowView;
+@property (nonatomic) UIImageView *SW_arrowView;
+@property (nonatomic) UIImageView *N_arrowView;
+@property (nonatomic) UIImageView *S_arrowView;
+@property (nonatomic) UIImageView *E_arrowView;
+@property (nonatomic) UIImageView *W_arrowView;
 
 @property (weak, nonatomic) IBOutlet UIImageView *pointerView;
 @property (nonatomic) eddaOtherView *otherView;
@@ -59,6 +79,8 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureDeviceInput *frontVideoInput;
 @property (nonatomic) AVCaptureVideoPreviewLayer *frontPreviewLayer;
 @property (nonatomic) AVCaptureStillImageOutput *stillImageOutput;
+
+@property (copy, nonatomic) NSString* callReceiverID;
 
 - (IBAction)onStartTapped:(id)sender;
 - (IBAction)onDebugSwitchTapped:(id)sender;

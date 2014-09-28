@@ -8,9 +8,29 @@
 
 #import <UIKit/UIKit.h>
 #import "TestFlight.h"
+#import "ParseHelper.h"
 
 @interface eddaAppDelegate : UIResponder <UIApplicationDelegate>
+{
+	UIBackgroundTaskIdentifier backgroundTask;
+}
 
-@property (strong, nonatomic) UIWindow *window;
+@property (nonatomic) UIWindow *window;
+@property (nonatomic) NSString *otAPIKey;
+@property (nonatomic) NSString *otProjectSecret;
+@property (nonatomic) NSString *pApplicationID;
+@property (nonatomic) NSString *pClientKey;
+
+@property (copy, nonatomic) NSString* userTitle;
+@property (copy, nonatomic) NSString* callerTitle;
+@property (copy, nonatomic) NSString* sessionID;
+@property (copy, nonatomic) NSString* publisherToken;
+@property (copy, nonatomic) NSString* subscriberToken;
+
+@property (nonatomic) CLLocation *currentLocation;
+@property (assign, nonatomic) bool bFullyLoggedIn;  //to say user also entered his title
+@property (nonatomic) NSTimer * appTimer;
+
+-(void)fireListeningTimer;
 
 @end

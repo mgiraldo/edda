@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:edda.xcodeproj">
+      location = "self:Edda.xcodeproj">
    </FileRef>
 </Workspace>

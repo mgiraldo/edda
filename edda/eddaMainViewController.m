@@ -9,17 +9,35 @@
 #import <Accelerate/Accelerate.h>
 #import <ImageIO/ImageIO.h>
 #import "eddaMainViewController.h"
+#import "eddaAppDelegate.h"
 #import "geodesic.h"
-#include "utils.h"
+#import "utils.h"
 
 @interface eddaMainViewController ()
+<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate>
+
+@property (strong, nonatomic) NSMutableSet *disconnectListeners;
 
 @end
 
-@implementation eddaMainViewController
+@implementation eddaMainViewController {
+	OTSession* _session;
+	OTPublisher* _publisher;
+	OTSubscriber* _subscriber;
+	int m_mode;
+	int m_connectionAttempts;
+	NSString * m_receiverID;
+	eddaAppDelegate *appDelegate;
+}
+
+// Change to NO to subscribe to streams other than your own.
+static bool subscribeToSelf = NO;
+
+// self preview size
+float _previewWidth = 60;
+float _previewHeight = 90;
 
 CLLocationManager *locationManager;
-
 CMMotionManager *motionManager;
 
 BOOL _debugActive = NO;
@@ -58,8 +76,14 @@ float _arrowMargin = 5.0f;
 {
     [super viewDidLoad];
 	
+	appDelegate = [[UIApplication sharedApplication] delegate];
+
+	[self registerNotifs];
+	
 	// debug view
 	[self.debugSwitch setOn:_debugActive];
+	
+	// other view
 	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
 	[self.otherView setActiveState:NO];
 	self.otherView.delegate = self;
@@ -123,10 +147,17 @@ float _arrowMargin = 5.0f;
 
 	// init location manager
 	locationManager = [[CLLocationManager alloc] init];
-	// now get the location
 	locationManager.delegate = self;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    [locationManager startUpdatingLocation];
+	locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+
+	// now get the location
+
+	// iOS 8 not authorized by default
+	if([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+		[locationManager requestWhenInUseAuthorization];
+	}
+	
+	[locationManager startUpdatingLocation];
 	[locationManager startUpdatingHeading];
 
 	// init Proj.4 params
@@ -141,19 +172,68 @@ float _arrowMargin = 5.0f;
 								   selector:@selector(updateInterface:)
 								   userInfo:nil
 									repeats:YES];
-	[self.placesPicker selectRow:1 inComponent:0 animated:NO];
-	_toLat = [_placeCoordinates[1][0] doubleValue];
-	_toLon = [_placeCoordinates[1][1] doubleValue];
-	_toAlt = [_placeCoordinates[1][2] doubleValue];
-	self.cityLabel.text = _places[1];
+	int randomPlace = (rand() % (_places.count-2)) + 1;
+	[self.placesPicker selectRow:randomPlace inComponent:0 animated:NO];
+	_toLat = [_placeCoordinates[randomPlace][0] doubleValue];
+	_toLon = [_placeCoordinates[randomPlace][1] doubleValue];
+	_toAlt = [_placeCoordinates[randomPlace][2] doubleValue];
+	self.cityLabel.text = _places[randomPlace];
 
 	[self updateViewAngle];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void) registerNotifs
+{
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallArrive) name:kIncomingCallNotification object:nil];
+}
+
+//if and when a call arrives
+- (void) didCallArrive
+{
+	//pass blank because call has arrived, no need for receiverID.
+	m_receiverID = @"";
+	NSLog(@"RIIIIINGGGG!!!");
+}
+
+- (BOOL)prefersStatusBarHidden {
+	return YES;
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionSaved) name:kSessionSavedNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
 	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
 	[self refreshVideoFeeds];
 	[super viewDidAppear:animated];
+}
+
+- (void)connectionStuffUnused {
+	if (self.callReceiverID && ![self.callReceiverID isEqualToString:@""])
+	{
+		m_mode = streamingModeOutgoing; //generate session
+		NSLog(@"callReceiverID: %@", self.callReceiverID);
+		[self initOutGoingCall];
+		//connect, publish/subscriber -> will be taken care by
+		//sessionSaved observer handler.
+	}
+	else
+	{
+		m_mode = streamingModeIncoming; //connect, publish, subscribe
+		m_connectionAttempts = 1;
+		[self connectWithPublisherToken];
+	}
+
+}
+
+- (void) viewDidLayoutSubviews {
+	[self setupArrows];
+	[self hideArrows];
+	[self.view layoutSubviews];
 }
 
 - (void)didReceiveMemoryWarning
@@ -164,6 +244,7 @@ float _arrowMargin = 5.0f;
 
 - (void)updateInterface:(NSTimer *)timer {
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
+
 	// for the elevation indicator
 	float pitchDeg = RAD_TO_DEG * self.currentMotion.attitude.pitch;
 	float pitchRaw = pitchDeg - 90;
@@ -183,7 +264,22 @@ float _arrowMargin = 5.0f;
 	}
 	self.indicatorView.layer.borderWidth = headingTransparency;
 	
+	// arrows on/off
+	[self hideArrows];
+
+	if ((correctHeading > 180 && correctHeading < 360 - _headingThreshold) || (correctHeading < 0 && headingAdjusted < 180)) {
+		self.E_arrowView.hidden = NO;
+	} else if ((correctHeading <= 180 && correctHeading > _headingThreshold) || (correctHeading < 0 && headingAdjusted >= 180)) {
+		self.W_arrowView.hidden = NO;
+	}
+	if (correctPitch > _pitchThreshold) {
+		self.N_arrowView.hidden = NO;
+	} else if (correctPitch < -_pitchThreshold) {
+		self.S_arrowView.hidden = NO;
+	}
+
 	float normalizedHeadingTransparency = ofMap(headingTransparency, 0.0, 30.0, 0.0, 1.0, true);
+
 //	NSLog(@"head: %.0f chead: %.0f cheadadj: %.0f cpitch: %.0f pitchdeg: %.0f cpitchadj: %.0f pitchraw: %.0f",
 //		  self.currentHeading.trueHeading, correctHeading, headingAdjusted, correctPitch, pitchDeg, pitchAdjusted, pitchRaw);
 	
@@ -220,15 +316,71 @@ float _arrowMargin = 5.0f;
 	[self.otherView updatePosition:CGPointMake(xBox, yBox)];
 //	NSLog(@"head: %.1f, x: %.3f y: %.3f radians: %.3f inverted: %.3f",
 //		  heading, xArrow, yArrow, radians, inverted);
-	[UIView animateWithDuration:0.1
-						  delay:0
-						options:UIViewAnimationOptionAllowAnimatedContent
-					 animations:^{
-						 self.pointerView.transform = CGAffineTransformMakeRotation(radians);
-						 self.pointerView.center = CGPointMake(xArrow, yArrow);
-					 }
-					 completion:^(BOOL finished){
-					 }];
+//	[UIView animateWithDuration:0.1
+//						  delay:0
+//						options:UIViewAnimationOptionAllowAnimatedContent
+//					 animations:^{
+//						 self.pointerView.transform = CGAffineTransformMakeRotation(radians);
+//						 self.pointerView.center = CGPointMake(xArrow, yArrow);
+//					 }
+//					 completion:^(BOOL finished){
+//					 }];
+}
+
+- (void)setupArrows {
+	CGRect viewBounds = self.view.bounds;
+	CGFloat topBarOffset = self.topLayoutGuide.length;
+	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
+	// help arrows
+	self.NW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.NW_arrowView.transform = CGAffineTransformMakeRotation(-M_PI_4);
+	self.NW_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
+	[self.view addSubview:self.NW_arrowView];
+	
+	self.NE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.NE_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4);
+	self.NE_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
+	[self.view addSubview:self.NE_arrowView];
+	
+	self.SE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.SE_arrowView.transform = CGAffineTransformMakeRotation(M_PI - M_PI_4);
+	self.SE_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
+	[self.view addSubview:self.SE_arrowView];
+	
+	self.SW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.SW_arrowView.transform = CGAffineTransformMakeRotation(M_PI + M_PI_4);
+	self.SW_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
+	[self.view addSubview:self.SW_arrowView];
+	
+	self.N_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.N_arrowView.center = CGPointMake(viewBounds.size.width * .5, topBarOffset + _arrowSize * .5 + _arrowMargin);
+	[self.view addSubview:self.N_arrowView];
+	
+	self.S_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.S_arrowView.transform = CGAffineTransformMakeRotation(M_PI);
+	self.S_arrowView.center = CGPointMake(viewBounds.size.width * .5, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
+	[self.view addSubview:self.S_arrowView];
+	
+	self.E_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.E_arrowView.transform = CGAffineTransformMakeRotation(M_PI_2);
+	self.E_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height * .5);
+	[self.view addSubview:self.E_arrowView];
+	
+	self.W_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.W_arrowView.transform = CGAffineTransformMakeRotation(M_PI + M_PI_2);
+	self.W_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height * .5);
+	[self.view addSubview:self.W_arrowView];
+}
+
+- (void)hideArrows {
+	self.N_arrowView.hidden = YES;
+	self.S_arrowView.hidden = YES;
+	self.E_arrowView.hidden = YES;
+	self.W_arrowView.hidden = YES;
+	self.NE_arrowView.hidden = YES;
+	self.NW_arrowView.hidden = YES;
+	self.SE_arrowView.hidden = YES;
+	self.SW_arrowView.hidden = YES;
 }
 
 - (void)updateArrows {
@@ -337,6 +489,8 @@ float _arrowMargin = 5.0f;
 	}
 }
 
+# pragma mark - Video chat stuff
+
 - (void)initFrontCamera {
 	if (!_frontVideoInited) {
 		_frontVideoInited = YES;
@@ -358,10 +512,10 @@ float _arrowMargin = 5.0f;
 		if (self.frontVideoInput) {
 			[self.frontSession addInput:self.frontVideoInput];
 			
-			//			self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-			//			NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
-			//			[self.stillImageOutput setOutputSettings:outputSettings];
-			//			[self.frontSession addOutput:self.stillImageOutput];
+//			self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+//			NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
+//			[self.stillImageOutput setOutputSettings:outputSettings];
+//			[self.frontSession addOutput:self.stillImageOutput];
 			
 			self.frontPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.frontSession];
 			self.frontPreviewLayer.frame = self.otherView.bounds;
@@ -392,12 +546,21 @@ float _arrowMargin = 5.0f;
 	[self stopRearCapture];
 	[self stopFrontCapture];
 	if (_videoActive) {
-		if (_activeCamera==0) {
-			[self startFrontCapture];
-		} else {
-			[self startRearCapture];
-		}
+		[self startRearCapture];
 	}
+}
+
+- (void)startVideoChat {
+}
+
+- (void)endVideoChat {
+	OTError* error = nil;
+	[_session disconnect:&error];
+	if (error) {
+		NSLog(@"disconnect failed with error: (%@)", error);
+	}
+	[self cleanupPublisher];
+	[self cleanupSubscriber];
 }
 
 #pragma mark - UI Interaction
@@ -464,14 +627,18 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
-	_activeCamera = 0;
+//	_activeCamera = 0;
+	_videoActive = NO;
 	[self refreshVideoFeeds];
+
+	[self startVideoChat];
 }
 
 - (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view {
-	_activeCamera = 0;
-	_videoActive = NO;
-	[self refreshVideoFeeds];
+//	_activeCamera = 0;
+//	_videoActive = NO;
+//	[self refreshVideoFeeds];
+	[self endVideoChat];
 }
 
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
@@ -491,17 +658,19 @@ float _arrowMargin = 5.0f;
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-	//    NSLog(@"didUpdateToLocation: %@", newLocation);
+	NSLog(@"didUpdateToLocation: %@", newLocation);
     self.currentLocation = newLocation;
 	
 	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
+		PFUser * thisUser = [ParseHelper loggedInUser] ;
+		[ParseHelper saveUserWithLocationToParse:thisUser :[PFGeoPoint geoPointWithLocation:self.currentLocation]];
 		[self updateViewAngle];
 	}
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-	//    NSLog(@"didUpdateHeading: %@", newHeading);
+//	NSLog(@"didUpdateHeading: %@", newHeading);
     self.currentHeading = newHeading;
 	
     if (self.currentHeading != nil) {
@@ -637,6 +806,301 @@ float _arrowMargin = 5.0f;
 - (NSString*)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     return _places[row];
+}
+
+#pragma mark - Parse stuff
+
+- (void) initOutGoingCall
+{
+	NSMutableDictionary * inputDict = [NSMutableDictionary dictionary];
+	[inputDict setObject:[ParseHelper loggedInUser].objectId forKey:@"callerID"];
+	[inputDict setObject:appDelegate.userTitle forKey:@"callerTitle"];
+	[inputDict setObject:self.callReceiverID forKey:@"receiverID"];
+	m_connectionAttempts = 1;
+	[ParseHelper saveSessionToParse:inputDict];
+}
+
+- (void) sessionSaved
+{
+	[self connectWithSubscriberToken];
+}
+
+-(void) showReceiverBusyMsg
+{
+	NSLog(@"Receiver is busy on another call. Please try later.");
+}
+
+- (void) connectWithPublisherToken
+{
+	NSLog(@"connectWithPublisherToken");
+	[self doConnect:appDelegate.publisherToken :appDelegate.sessionID];
+}
+
+- (void) connectWithSubscriberToken
+{
+	NSLog(@"connectWithSubscriberToken");
+	[self doConnect:appDelegate.subscriberToken :appDelegate.sessionID];
+}
+
+- (void)doConnect : (NSString *) token :(NSString *) sessionID
+{
+	NSLog(@"token: %@ sessionid: %@", token, sessionID);
+	_session = [[OTSession alloc] initWithApiKey:appDelegate.otAPIKey
+									   sessionId:sessionID
+										delegate:self];
+	
+	[_session addObserver:self forKeyPath:@"connectionCount"
+				  options:NSKeyValueObservingOptionNew
+				  context:nil];
+	
+	OTError *error = nil;
+	[_session connectWithToken:token error:&error];
+
+	if (error)
+	{
+		[self showAlert:[error localizedDescription]];
+	}
+}
+
+- (void)doDisconnect
+{
+	OTError *error = nil;
+	[_session disconnect:&error];
+
+	if (error)
+	{
+		[self showAlert:[error localizedDescription]];
+	}
+}
+
+#pragma mark - OpenTok methods
+
+/**
+ * Asynchronously begins the session connect process. Some time later, we will
+ * expect a delegate method to call us back with the results of this action.
+ */
+//- (void)doConnect
+//{
+//    OTError *error = nil;
+//    
+//    [_session connectWithToken:kToken error:&error];
+//    if (error)
+//    {
+//        [self showAlert:[error localizedDescription]];
+//    }
+//}
+
+/**
+ * Sets up an instance of OTPublisher to use with this session. OTPubilsher
+ * binds to the device camera and microphone, and will provide A/V streams
+ * to the OpenTok session.
+ */
+- (void)doPublish
+{
+    _publisher =
+    [[OTPublisher alloc] initWithDelegate:self
+                                     name:[[UIDevice currentDevice] name]];
+	
+    OTError *error = nil;
+    [_session publish:_publisher error:&error];
+    if (error)
+    {
+        [self showAlert:[error localizedDescription]];
+    }
+    
+	CGRect viewBounds = self.view.bounds;
+	CGFloat topBarOffset = self.topLayoutGuide.length;
+
+	[self.otherView insertSubview:_publisher.view atIndex:1];
+    [_publisher.view setFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
+}
+
+/**
+ * Cleans up the publisher and its view. At this point, the publisher should not
+ * be attached to the session any more.
+ */
+- (void)cleanupPublisher {
+    [_publisher.view removeFromSuperview];
+    _publisher = nil;
+    // this is a good place to notify the end-user that publishing has stopped.
+}
+
+/**
+ * Instantiates a subscriber for the given stream and asynchronously begins the
+ * process to begin receiving A/V content for this stream. Unlike doPublish,
+ * this method does not add the subscriber to the view hierarchy. Instead, we
+ * add the subscriber only after it has connected and begins receiving data.
+ */
+- (void)doSubscribe:(OTStream*)stream
+{
+    _subscriber = [[OTSubscriber alloc] initWithStream:stream delegate:self];
+    
+    OTError *error = nil;
+    [_session subscribe:_subscriber error:&error];
+    if (error)
+    {
+        [self showAlert:[error localizedDescription]];
+    }
+}
+
+/**
+ * Cleans the subscriber from the view hierarchy, if any.
+ * NB: You do *not* have to call unsubscribe in your controller in response to
+ * a streamDestroyed event. Any subscribers (or the publisher) for a stream will
+ * be automatically removed from the session during cleanup of the stream.
+ */
+- (void)cleanupSubscriber
+{
+    [_subscriber.view removeFromSuperview];
+    _subscriber = nil;
+}
+
+# pragma mark - OTSession delegate callbacks
+
+- (void)ensureSessionDisconnectedBeforeBlock:(void (^)(void))resumeBlock {
+	
+	// If the session exists, and it is connected or connecting, then save this block as a listener and start disconnecting
+	if (_session && (_session.sessionConnectionStatus == OTSessionConnectionStatusConnected ||
+						 _session.sessionConnectionStatus == OTSessionConnectionStatusConnecting)) {
+		
+		[self.disconnectListeners addObject:resumeBlock];
+		NSError *error;
+		[_session disconnect:&error];
+		
+		// Otherwise, we can execute the block right now
+	} else {
+		resumeBlock();
+	}
+}
+
+- (void)sessionDidConnect:(OTSession*)session
+{
+    NSLog(@"sessionDidConnect (%@)", session.sessionId);
+    
+    // Step 2: We have successfully connected, now instantiate a publisher and
+    // begin pushing A/V streams into OpenTok.
+    [self doPublish];
+}
+
+- (void)sessionDidDisconnect:(OTSession*)session
+{
+    NSString* alertMessage =
+    [NSString stringWithFormat:@"Session disconnected: (%@)",
+     session.sessionId];
+    NSLog(@"sessionDidDisconnect (%@)", alertMessage);
+}
+
+
+- (void)session:(OTSession*)mySession
+  streamCreated:(OTStream *)stream
+{
+    NSLog(@"session streamCreated (%@)", stream.streamId);
+    
+    // Step 3a: (if NO == subscribeToSelf): Begin subscribing to a stream we
+    // have seen on the OpenTok session.
+    if (nil == _subscriber && !subscribeToSelf)
+    {
+        [self doSubscribe:stream];
+    }
+}
+
+- (void)session:(OTSession*)session
+streamDestroyed:(OTStream *)stream
+{
+    NSLog(@"session streamDestroyed (%@)", stream.streamId);
+    
+    if ([_subscriber.stream.streamId isEqualToString:stream.streamId])
+    {
+        [self cleanupSubscriber];
+    }
+}
+
+- (void)  session:(OTSession *)session
+connectionCreated:(OTConnection *)connection
+{
+    NSLog(@"session connectionCreated (%@)", connection.connectionId);
+}
+
+- (void)    session:(OTSession *)session
+connectionDestroyed:(OTConnection *)connection
+{
+    NSLog(@"session connectionDestroyed (%@)", connection.connectionId);
+    if ([_subscriber.stream.connection.connectionId
+         isEqualToString:connection.connectionId])
+    {
+        [self cleanupSubscriber];
+    }
+}
+
+- (void) session:(OTSession*)session
+didFailWithError:(OTError*)error
+{
+    NSLog(@"didFailWithError: (%@)", error);
+}
+
+# pragma mark - OTSubscriber delegate callbacks
+
+- (void)subscriberDidConnectToStream:(OTSubscriberKit*)subscriber
+{
+    NSLog(@"subscriberDidConnectToStream (%@)",
+          subscriber.stream.connection.connectionId);
+    assert(_subscriber == subscriber);
+    [_subscriber.view setFrame:self.otherView.frame];
+	[self.otherView insertSubview:_subscriber.view atIndex:0];
+}
+
+- (void)subscriber:(OTSubscriberKit*)subscriber
+  didFailWithError:(OTError*)error
+{
+    NSLog(@"subscriber %@ didFailWithError %@",
+          subscriber.stream.streamId,
+          error);
+}
+
+# pragma mark - OTPublisher delegate callbacks
+
+- (void)publisher:(OTPublisherKit *)publisher
+    streamCreated:(OTStream *)stream
+{
+    // Step 3b: (if YES == subscribeToSelf): Our own publisher is now visible to
+    // all participants in the OpenTok session. We will attempt to subscribe to
+    // our own stream. Expect to see a slight delay in the subscriber video and
+    // an echo of the audio coming from the device microphone.
+    if (nil == _subscriber && subscribeToSelf)
+    {
+        [self doSubscribe:stream];
+    }
+}
+
+- (void)publisher:(OTPublisherKit*)publisher
+  streamDestroyed:(OTStream *)stream
+{
+    if ([_subscriber.stream.streamId isEqualToString:stream.streamId])
+    {
+        [self cleanupSubscriber];
+    }
+    
+    [self cleanupPublisher];
+}
+
+- (void)publisher:(OTPublisherKit*)publisher
+ didFailWithError:(OTError*) error
+{
+    NSLog(@"publisher didFailWithError %@", error);
+    [self cleanupPublisher];
+}
+
+- (void)showAlert:(NSString *)string
+{
+    // show alertview on main UI
+	dispatch_async(dispatch_get_main_queue(), ^{
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OTError"
+														message:string
+													   delegate:self
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil] ;
+        [alert show];
+    });
 }
 
 @end
