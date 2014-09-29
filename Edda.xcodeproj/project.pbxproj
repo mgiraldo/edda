@@ -17,6 +17,7 @@
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
 		CC40DE3419B8271300E86968 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3219B8271300E86968 /* arrow.png */; };
 		CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3319B8271300E86968 /* arrow@2x.png */; };
+		CC5B4F9719D8D67B001BA61D /* LSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC5B4F9619D8D67B001BA61D /* LSViewController.m */; };
 		CC7329D019B6D899005FEC7D /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC7329CF19B6D899005FEC7D /* CoreMotion.framework */; };
 		CC77D4F119B003E8009BA59F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F019B003E8009BA59F /* Foundation.framework */; };
 		CC77D4F319B003E8009BA59F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F219B003E8009BA59F /* CoreGraphics.framework */; };
@@ -100,6 +101,8 @@
 		CC40DE2D19B813A000E86968 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
+		CC5B4F9519D8D67B001BA61D /* LSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSViewController.h; sourceTree = "<group>"; };
+		CC5B4F9619D8D67B001BA61D /* LSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSViewController.m; sourceTree = "<group>"; };
 		CC7329CF19B6D899005FEC7D /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		CC77D4ED19B003E8009BA59F /* Edda.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Edda.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC77D4F019B003E8009BA59F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -300,6 +303,8 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
+				CC5B4F9519D8D67B001BA61D /* LSViewController.h */,
+				CC5B4F9619D8D67B001BA61D /* LSViewController.m */,
 				CC01E04819D1333D0069C168 /* ParseHelper.h */,
 				CC01E04919D1333D0069C168 /* ParseHelper.m */,
 				CC77D4FF19B003E8009BA59F /* eddaAppDelegate.h */,
@@ -538,6 +543,7 @@
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,
 				CC77D50719B003E8009BA59F /* eddaMainViewController.m in Sources */,
+				CC5B4F9719D8D67B001BA61D /* LSViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -570,13 +570,6 @@ float _arrowMargin = 5.0f;
 }
 
 - (IBAction)onStartTapped:(id)sender {
-	_videoActive = !_videoActive;
-	if (_videoActive) {
-		[self.startButton setTitle:@"Stop Video" forState:UIControlStateNormal];
-	} else {
-		[self.startButton setTitle:@"Start Video" forState:UIControlStateNormal];
-	}
-	[self refreshVideoFeeds];
 }
 
 - (IBAction)onDebugSwitchTapped:(id)sender {
@@ -663,8 +656,8 @@ float _arrowMargin = 5.0f;
 	
 	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
-		PFUser * thisUser = [ParseHelper loggedInUser] ;
-		[ParseHelper saveUserWithLocationToParse:thisUser :[PFGeoPoint geoPointWithLocation:self.currentLocation]];
+		appDelegate.currentLocation = self.currentLocation;
+		[ParseHelper saveUserWithLocationToParse:[ParseHelper loggedInUser] :[PFGeoPoint geoPointWithLocation:self.currentLocation] :[NSNumber numberWithDouble:self.currentLocation.altitude]];
 		[self updateViewAngle];
 	}
 }
@@ -759,7 +752,7 @@ float _arrowMargin = 5.0f;
 		
 	output.azimuth = azimuth;
 	output.elevation = elevation;
-		
+
 	return output;
 }
 
@@ -772,9 +765,12 @@ float _arrowMargin = 5.0f;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+	NSLog(@"prepare for segue: [%@] sender: [%@]", [segue identifier], sender);
     if ([[segue identifier] isEqualToString:@"showAlternate"]) {
         [[segue destinationViewController] setDelegate:self];
-    }
+	} else if ([[segue identifier] isEqualToString:@"showList"]) {
+		[[segue destinationViewController] setDelegate:self];
+	}
 }
 
 #pragma mark - Picker methods

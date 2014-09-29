@@ -95,7 +95,7 @@
 
 +(void) createUsername {
 	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-	appDelegate.userTitle = @"Anonymous";
+	appDelegate.userTitle = @"";
 	appDelegate.bFullyLoggedIn = YES;
 
 	//fire appdelegate timer
@@ -112,21 +112,21 @@
         return;
     }
     
-    [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error)
-     {
-         if (error)
-         {
-             NSLog(@"Anonymous login failed.%@", [error localizedDescription]);
-             NSString * msg = [NSString stringWithFormat:@"Failed to login anonymously. Please try again.  %@", [error localizedDescription]];
-             [self showAlert:msg];
-         }
-         else
-         {            
-             loggedInUser = [PFUser user];
-             loggedInUser = user;
-             [self createUsername];
-         }
-     }];
+//    [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error)
+//     {
+//         if (error)
+//         {
+//             NSLog(@"Anonymous login failed.%@", [error localizedDescription]);
+//             NSString * msg = [NSString stringWithFormat:@"Failed to login anonymously. Please try again.  %@", [error localizedDescription]];
+//             [self showAlert:msg];
+//         }
+//         else
+//         {            
+//             loggedInUser = [PFUser user];
+//             loggedInUser = user;
+//             [self createUsername];
+//         }
+//     }];
 }
 
 +(void) initData
@@ -142,7 +142,7 @@
         //lets differe saving title till we have the location.
         //saveuserwithlocationtoparse will handle it.
         eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-        appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
+//        appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
         appDelegate.bFullyLoggedIn = YES;
         
         //fire appdelegate timer
@@ -171,7 +171,7 @@
     if (!activeUserobjID || [activeUserobjID isEqualToString:@""])
         return;
     
-    PFQuery *query = [PFQuery queryWithClassName:@"EddaUsers"];
+    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
     [query whereKey:@"userID" equalTo:activeUserobjID];
     
     [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error)
@@ -248,42 +248,43 @@
 + (void) saveCurrentUserToParse
 {
 	__block PFObject *activeUser;
-	
-	PFQuery *query = [PFQuery queryWithClassName:@"EddaUsers"];
+	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
 	[query whereKey:@"userID" equalTo:loggedInUser.objectId];
 	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
 	 {
+		 NSLog(@"current: %@",loggedInUser.objectId);
 		 if (!error)
 		 {
 			 // if user is active user already, just update the entry
 			 // otherwise create it.
 			 if (objects.count == 0)
 			 {
-				 activeUser = [PFObject objectWithClassName:@"EddaUsers"];
+				 activeUser = [PFObject objectWithClassName:@"ActiveUsers"];
 			 }
 			 else
 			 {
-				 
 				 activeUser = (PFObject *)[objects objectAtIndex:0];
 			 }
+			 NSLog(@"%i objects for id: %@", objects.count, loggedInUser.objectId);
 			 eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
 			 [activeUser setObject:loggedInUser.objectId forKey:@"userID"];
-			 [activeUser setObject:nil forKey:@"userLocation"];
+			 [activeUser setObject:[PFGeoPoint geoPoint] forKey:@"userLocation"];
+			 [activeUser setObject:[NSNumber numberWithInt:0] forKey:@"userAltitude"];
 			 [activeUser setObject:appDelegate.userTitle forKey:@"userTitle"];
 			 [activeUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
 			  {
 				  if (error)
 				  {
-					  NSString * errordesc = [NSString stringWithFormat:@"Save to EddaUsers failed.%@", [error localizedDescription]];
+					  NSString * errordesc = [NSString stringWithFormat:@"Save to ActiveUsers failed.%@", [error localizedDescription]];
 					  [self showAlert:errordesc];
 					  NSLog(@"%@", errordesc);
 				  }
 				  else
 				  {
-					  NSLog(@"Save to EddaUsers succeeded.");
+					  NSLog(@"Save to ActiveUsers succeeded.");
 					  activeUserObjectID = activeUser.objectId;
 					  
-					  NSLog(@"%@", activeUserObjectID);
+					  NSLog(@"objectID: %@ userID: %@", activeUserObjectID, loggedInUser.objectId);
 				  }
 				  [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUserLocSavedNotification object:nil]];
 			  }];
@@ -296,11 +297,11 @@
 	 }];
 }
 
-+ (void) saveUserWithLocationToParse:(PFUser*) user :(PFGeoPoint *) geopoint
++ (void) saveUserWithLocationToParse:(PFUser*)user :(PFGeoPoint *)geopoint :(NSNumber *)altitude
 {
     __block PFObject *activeUser;
 	
-    PFQuery *query = [PFQuery queryWithClassName:@"EddaUsers"];
+    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
     [query whereKey:@"userID" equalTo:user.objectId];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
     {
@@ -310,7 +311,7 @@
             // otherwise create it.
             if (objects.count == 0)
             {
-                activeUser = [PFObject objectWithClassName:@"EddaUsers"];
+				return; //activeUser = [PFObject objectWithClassName:@"ActiveUsers"];
             }
             else
             {
@@ -320,18 +321,19 @@
             eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
             [activeUser setObject:user.objectId forKey:@"userID"];
             [activeUser setObject:geopoint forKey:@"userLocation"];
+			[activeUser setObject:altitude forKey:@"userAltitude"];
             [activeUser setObject:appDelegate.userTitle forKey:@"userTitle"];
             [activeUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
             {
                 if (error)
                 {
-                    NSString * errordesc = [NSString stringWithFormat:@"Save to EddaUsers failed.%@", [error localizedDescription]];
+                    NSString * errordesc = [NSString stringWithFormat:@"Save to ActiveUsers failed.%@", [error localizedDescription]];
                     [self showAlert:errordesc];
                     NSLog(@"%@", errordesc);
                 }
                 else
                 {
-                    NSLog(@"Save to EddaUsers succeeded.");
+                    NSLog(@"Save to ActiveUsers succeeded.");
                     activeUserObjectID = activeUser.objectId;
                    
                     NSLog(@"%@", activeUserObjectID);
@@ -385,7 +387,7 @@
     if (!bPollingTimerOn)
         return;
     
-    PFQuery *query = [PFQuery queryWithClassName:@"ActiveSessions"];
+    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
     
     NSString* currentUserID = [self loggedInUser].objectId;
     [query whereKey:@"receiverID" equalTo:currentUserID];  

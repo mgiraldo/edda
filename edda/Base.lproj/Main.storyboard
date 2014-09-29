@@ -31,14 +31,14 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="cCn-TC-ql3">
-                                <rect key="frame" x="101" y="303" width="118" height="32"/>
+                                <rect key="frame" x="101" y="400" width="118" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <state key="normal" title="Stop video">
+                                <state key="normal" title="Start Call">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="onStartTapped:" destination="rQl-PL-IFJ" eventType="touchUpInside" id="JVO-wp-Us3"/>
+                                    <segue destination="CkR-h6-QIM" kind="modal" identifier="showList" modalTransitionStyle="coverVertical" id="csh-Eb-kyI"/>
                                 </connections>
                             </button>
                             <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="jqg-sy-dxO">
@@ -265,6 +265,62 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xlJ-1o-FvB" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="368" y="182"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="h0h-XH-en2">
+            <objects>
+                <navigationController id="CkR-h6-QIM" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="blackTranslucent" id="TrM-Cs-bFK">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="OUq-rZ-Utc" kind="relationship" relationship="rootViewController" id="ggK-29-Mux"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HsH-c6-TS3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="22" y="948"/>
+        </scene>
+        <!--LiveSessions-->
+        <scene sceneID="pd7-6H-1CM">
+            <objects>
+                <viewController id="OUq-rZ-Utc" customClass="LSViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="redraw" id="9b7-M3-rcr">
+                        <rect key="frame" x="0.0" y="64" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="SNk-Ny-KQF">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="OUq-rZ-Utc" id="m9A-ZG-BKz"/>
+                                    <outlet property="delegate" destination="OUq-rZ-Utc" id="SBi-gG-A2p"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="LiveSessions" id="fEw-Ug-5DS">
+                        <barButtonItem key="rightBarButtonItem" title="Refresh" id="wy0-lK-anK">
+                            <connections>
+                                <action selector="touchRefresh:" destination="OUq-rZ-Utc" id="MjY-wN-AYg"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
+                    <connections>
+                        <outlet property="m_userTableView" destination="SNk-Ny-KQF" id="quE-Ci-u9x"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7dT-ie-95q" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="382" y="935"/>
         </scene>
     </scenes>
     <resources>

@@ -36,7 +36,7 @@ static NSMutableArray * objectsUnderDeletionQueue;
 + (void)saveCurrentUserToParse;
 +(void)saveSessionToParse:(NSDictionary *)inputDict;
 +(void)saveMessageToParse:(NSDictionary *)inputDict;
-+ (void) saveUserWithLocationToParse:(PFUser*) user :(PFGeoPoint *) geopoint;
++ (void) saveUserWithLocationToParse:(PFUser*) user :(PFGeoPoint *)geopoint :(NSNumber *)altitude;
 +(void) pollParseForActiveSessions;
 +(void) pollParseForActiveMessages;
 +(void) showAlert : (NSString *) message;
