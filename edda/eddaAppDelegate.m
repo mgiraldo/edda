@@ -33,6 +33,9 @@
 	
 	self.bFullyLoggedIn = NO;
 	
+	self.callReceiverTitle = @"";
+	self.callReceiverID = @"";
+	
 	[Parse setApplicationId:self.pApplicationID clientKey:self.pClientKey];
 	[PFUser enableAutomaticUser];
 	[ParseHelper initData];

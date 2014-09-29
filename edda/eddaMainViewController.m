@@ -8,8 +8,9 @@
 
 #import <Accelerate/Accelerate.h>
 #import <ImageIO/ImageIO.h>
-#import "eddaMainViewController.h"
 #import "eddaAppDelegate.h"
+#import "eddaMainViewController.h"
+#import "LSViewController.h"
 #import "geodesic.h"
 #import "utils.h"
 
@@ -184,7 +185,9 @@ float _arrowMargin = 5.0f;
 
 - (void) registerNotifs
 {
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionSaved) name:kSessionSavedNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallArrive) name:kIncomingCallNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
 }
 
 //if and when a call arrives
@@ -193,6 +196,7 @@ float _arrowMargin = 5.0f;
 	//pass blank because call has arrived, no need for receiverID.
 	m_receiverID = @"";
 	NSLog(@"RIIIIINGGGG!!!");
+	[self.otherView zoomIn];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -201,8 +205,15 @@ float _arrowMargin = 5.0f;
 
 - (void) viewWillAppear:(BOOL)animated
 {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionSaved) name:kSessionSavedNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
+}
+
+-(void) showReceiverBusyMsg
+{
+	NSLog(@"Receiver is busy on another call. Please try later.");
+}
+
+- (void) didLogin
+{
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -213,10 +224,10 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)connectionStuffUnused {
-	if (self.callReceiverID && ![self.callReceiverID isEqualToString:@""])
+	if (appDelegate.callReceiverID && ![appDelegate.callReceiverID isEqualToString:@""])
 	{
 		m_mode = streamingModeOutgoing; //generate session
-		NSLog(@"callReceiverID: %@", self.callReceiverID);
+		NSLog(@"callReceiverID: %@", appDelegate.callReceiverID);
 		[self initOutGoingCall];
 		//connect, publish/subscriber -> will be taken care by
 		//sessionSaved observer handler.
@@ -284,7 +295,6 @@ float _arrowMargin = 5.0f;
 //		  self.currentHeading.trueHeading, correctHeading, headingAdjusted, correctPitch, pitchDeg, pitchAdjusted, pitchRaw);
 	
 	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
-	self.frontPreviewLayer.opacity = layerTransparency;
 	
 	BOOL rightHead = YES;
 	BOOL rightPitch = YES;
@@ -422,39 +432,6 @@ float _arrowMargin = 5.0f;
 }
 
 #pragma mark - video stuff
-- (void)takePicture {
-    AVCaptureConnection *videoConnection = nil;
-    for (AVCaptureConnection *connection in self.stillImageOutput.connections){
-        for (AVCaptureInputPort *port in [connection inputPorts]){
-            if ([[port mediaType] isEqual:AVMediaTypeVideo]){
-                videoConnection = connection;
-                break;
-            }
-        }
-        if (videoConnection) {
-			break;
-        }
-    }
-	
-    NSLog(@"about to request a capture from: %@ connections: %lu", self.stillImageOutput, (unsigned long)self.stillImageOutput.connections.count);
-	if (self.stillImageOutput.connections.count > 0) {
-		[self.stillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error){
-			
-			CFDictionaryRef exifAttachments = CMGetAttachment( imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
-			if (exifAttachments) {
-				// Do something with the attachments if you want to.
-				NSLog(@"attachements: %@", exifAttachments);
-			} else {
-				NSLog(@"no attachments");
-			}
-			NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
-			UIImage *image = [[UIImage alloc] initWithData:imageData];
-			
-			self.previewImage.image = image;
-		}];
-	}
-}
-
 - (void)initRearCamera {
 	if (!_rearVideoInited) {
 		_rearVideoInited = YES;
@@ -490,67 +467,29 @@ float _arrowMargin = 5.0f;
 }
 
 # pragma mark - Video chat stuff
-
-- (void)initFrontCamera {
-	if (!_frontVideoInited) {
-		_frontVideoInited = YES;
-		self.frontSession = [[AVCaptureSession alloc] init];
-		self.frontSession.sessionPreset = AVCaptureSessionPresetLow;
-		
-		NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-		self.frontVideoCaptureDevice = nil;
-		
-		for (AVCaptureDevice *d in videoDevices){
-			if (d.position == AVCaptureDevicePositionFront){
-				self.frontVideoCaptureDevice = d;
-				break;
-			}
-		}
-		
-		NSError *error = nil;
-		self.frontVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.frontVideoCaptureDevice error:&error];
-		if (self.frontVideoInput) {
-			[self.frontSession addInput:self.frontVideoInput];
-			
-//			self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-//			NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
-//			[self.stillImageOutput setOutputSettings:outputSettings];
-//			[self.frontSession addOutput:self.stillImageOutput];
-			
-			self.frontPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.frontSession];
-			self.frontPreviewLayer.frame = self.otherView.bounds;
-		} else {
-			// Handle the error appropriately.
-			NSLog(@"ERROR: trying to open camera: %@", error);
-			_frontVideoInited = NO;
-		}
-	}
-}
-
-- (void)startFrontCapture {
-	[self initFrontCamera];
-	if (_frontVideoInited) {
-		[self.otherView setVideo:self.frontPreviewLayer];
-		[self.frontSession startRunning];
-	}
-}
-
-- (void)stopFrontCapture {
-	if (_frontVideoInited) {
-		[self.frontSession stopRunning];
-		[self.otherView removeVideo];
-	}
-}
-
 - (void)refreshVideoFeeds {
 	[self stopRearCapture];
-	[self stopFrontCapture];
 	if (_videoActive) {
 		[self startRearCapture];
 	}
 }
 
 - (void)startVideoChat {
+	if (![appDelegate.callReceiverID isEqualToString:@""])
+	{
+		NSLog(@"outgoing mode");
+		m_mode = streamingModeOutgoing; //generate session
+		[self initOutGoingCall];
+		//connect, publish/subscriber -> will be taken care by
+		//sessionSaved observer handler.
+	}
+	else
+	{
+		NSLog(@"incoming mode");
+		m_mode = streamingModeIncoming; //connect, publish, subscribe
+		m_connectionAttempts = 1;
+		[self connectWithPublisherToken];
+	}
 }
 
 - (void)endVideoChat {
@@ -679,6 +618,23 @@ float _arrowMargin = 5.0f;
 	else return NO; // All is good. Compass is precise enough.
 }
 
+#pragma mark - Geocoding
+
+- (void)geocodeLocation:(CLLocation*)location
+{
+	CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+	
+	[geocoder reverseGeocodeLocation:location completionHandler:
+	 ^(NSArray* placemarks, NSError* error){
+		 if ([placemarks count] > 0)
+		 {
+			 NSLog(@"found: %@", [[placemarks objectAtIndex:0] locality]);
+			 NSString *title = [NSString stringWithFormat:@"%@",[[placemarks objectAtIndex:0] locality]];
+			 appDelegate.userTitle = title;
+		 }
+	 }];
+}
+
 #pragma mark - GIS stuff
 
 - (void)updateViewAngle {
@@ -756,6 +712,18 @@ float _arrowMargin = 5.0f;
 	return output;
 }
 
+#pragma mark - LS View
+
+- (IBAction)unwindToMainViewController:(UIStoryboardSegue *)unwindSegue
+{
+	NSLog(@"came back with place: %@ location: %@ altitude: %@", appDelegate.callReceiverTitle, appDelegate.callReceiverLocation, appDelegate.callReceiverAltitude);
+	_toLat = appDelegate.callReceiverLocation.coordinate.latitude;
+	_toLon = appDelegate.callReceiverLocation.coordinate.longitude;
+	_toAlt = [appDelegate.callReceiverAltitude doubleValue];
+	self.cityLabel.text = appDelegate.callReceiverTitle;
+	[self updateViewAngle];
+}
+
 #pragma mark - Flipside View
 
 - (void)flipsideViewControllerDidFinish:(eddaFlipsideViewController *)controller
@@ -811,7 +779,7 @@ float _arrowMargin = 5.0f;
 	NSMutableDictionary * inputDict = [NSMutableDictionary dictionary];
 	[inputDict setObject:[ParseHelper loggedInUser].objectId forKey:@"callerID"];
 	[inputDict setObject:appDelegate.userTitle forKey:@"callerTitle"];
-	[inputDict setObject:self.callReceiverID forKey:@"receiverID"];
+	[inputDict setObject:appDelegate.callReceiverID forKey:@"receiverID"];
 	m_connectionAttempts = 1;
 	[ParseHelper saveSessionToParse:inputDict];
 }
@@ -819,11 +787,6 @@ float _arrowMargin = 5.0f;
 - (void) sessionSaved
 {
 	[self connectWithSubscriberToken];
-}
-
--(void) showReceiverBusyMsg
-{
-	NSLog(@"Receiver is busy on another call. Please try later.");
 }
 
 - (void) connectWithPublisherToken
@@ -845,9 +808,9 @@ float _arrowMargin = 5.0f;
 									   sessionId:sessionID
 										delegate:self];
 	
-	[_session addObserver:self forKeyPath:@"connectionCount"
-				  options:NSKeyValueObservingOptionNew
-				  context:nil];
+//	[_session addObserver:self forKeyPath:@"connectionCount"
+//				  options:NSKeyValueObservingOptionNew
+//				  context:nil];
 	
 	OTError *error = nil;
 	[_session connectWithToken:token error:&error];

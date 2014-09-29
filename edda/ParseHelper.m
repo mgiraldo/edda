@@ -387,7 +387,7 @@
     if (!bPollingTimerOn)
         return;
     
-    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+    PFQuery *query = [PFQuery queryWithClassName:@"ActiveSessions"];
     
     NSString* currentUserID = [self loggedInUser].objectId;
     [query whereKey:@"receiverID" equalTo:currentUserID];  

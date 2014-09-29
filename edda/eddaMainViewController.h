@@ -74,13 +74,6 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureSession *rearSession;
 @property (nonatomic) AVCaptureDeviceInput *rearVideoInput;
 @property (nonatomic) AVCaptureVideoPreviewLayer *rearPreviewLayer;
-@property (nonatomic) AVCaptureDevice *frontVideoCaptureDevice;
-@property (nonatomic) AVCaptureSession *frontSession;
-@property (nonatomic) AVCaptureDeviceInput *frontVideoInput;
-@property (nonatomic) AVCaptureVideoPreviewLayer *frontPreviewLayer;
-@property (nonatomic) AVCaptureStillImageOutput *stillImageOutput;
-
-@property (copy, nonatomic) NSString* callReceiverID;
 
 - (IBAction)onStartTapped:(id)sender;
 - (IBAction)onDebugSwitchTapped:(id)sender;

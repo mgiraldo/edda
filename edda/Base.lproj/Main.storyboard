@@ -307,6 +307,12 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="LiveSessions" id="fEw-Ug-5DS">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="TWB-9Z-FMe">
+                            <connections>
+                                <action selector="touchCancel:" destination="OUq-rZ-Utc" id="k5Z-Ty-R3c"/>
+                                <segue destination="ovX-ff-FKJ" kind="unwind" identifier="unwindToMainID" unwindAction="unwindToMainViewController:" id="8DJ-Ai-pxV"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Refresh" id="wy0-lK-anK">
                             <connections>
                                 <action selector="touchRefresh:" destination="OUq-rZ-Utc" id="MjY-wN-AYg"/>
@@ -319,8 +325,9 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7dT-ie-95q" sceneMemberID="firstResponder"/>
+                <exit id="ovX-ff-FKJ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="382" y="935"/>
+            <point key="canvasLocation" x="473" y="932"/>
         </scene>
     </scenes>
     <resources>

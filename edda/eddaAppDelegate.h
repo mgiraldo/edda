@@ -27,6 +27,11 @@
 @property (copy, nonatomic) NSString* publisherToken;
 @property (copy, nonatomic) NSString* subscriberToken;
 
+@property (copy, nonatomic) NSString* callReceiverID;
+@property (copy, nonatomic) NSString* callReceiverTitle;
+@property (nonatomic) CLLocation *callReceiverLocation;
+@property (nonatomic) NSNumber *callReceiverAltitude;
+
 @property (nonatomic) CLLocation *currentLocation;
 @property (assign, nonatomic) bool bFullyLoggedIn;  //to say user also entered his title
 @property (nonatomic) NSTimer * appTimer;

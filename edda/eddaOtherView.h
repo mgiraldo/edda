@@ -21,6 +21,8 @@
 - (void)setTappable:(BOOL)tappable;
 - (void)setActiveState:(BOOL)active;
 - (void)updatePosition:(CGPoint)position;
+- (void)zoomIn;
+- (void)zoomOut;
 
 @end
 

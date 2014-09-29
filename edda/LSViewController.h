@@ -14,12 +14,16 @@
 @interface LSViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 {
     NSMutableArray * m_userArray; 
-    NSString * m_receiverID;
+	NSString * m_receiverID;
+	NSString * m_receiverTitle;
+	CLLocation * m_receiverLocation;
+	NSNumber * m_receiverAltitude;
     __weak IBOutlet UITableView *m_userTableView;
     bool bAudioOnly;
     eddaAppDelegate * appDelegate;
 	CLGeocoder *geocoder;
 }
 - (IBAction)touchRefresh:(id)sender;
+- (IBAction)touchCancel:(id)sender;
 
 @end
