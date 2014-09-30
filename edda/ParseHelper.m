@@ -408,7 +408,7 @@
                  [self setPollingTimer:NO];
                  [self deleteActiveSession];
                  
-                 NSString *msg = [NSString stringWithFormat:@"Incoming Call from %@, Accept?", appDelegate.callerTitle];
+                 NSString *msg = [NSString stringWithFormat:@"incoming call from %@, accept?", appDelegate.callerTitle];
                  
                  UIAlertView *incomingCallAlert = [[UIAlertView alloc] initWithTitle:@"Edda" message:msg delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
                 

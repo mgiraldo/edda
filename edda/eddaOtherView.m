@@ -104,7 +104,7 @@ float _otherSize = 50.0f;
 						  delay:0
 						options:UIViewAnimationOptionAllowAnimatedContent
 					 animations:^{
-						 CGRect frame = CGRectMake(0, 0, _otherSize, _otherSize);
+						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherSize)*.5, -_otherSize, _otherSize, _otherSize);
 						 self.layer.cornerRadius = _otherSize * .5;
 						 self.frame = frame;
 						 self.videoLayer.frame = frame;

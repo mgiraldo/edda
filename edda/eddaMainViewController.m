@@ -44,8 +44,7 @@ CMMotionManager *motionManager;
 BOOL _debugActive = NO;
 BOOL _videoActive = YES;
 BOOL _rearVideoInited = NO;
-BOOL _frontVideoInited = NO;
-BOOL _haveImage = NO;
+BOOL _haveArrows = NO;
 
 int _activeCamera = 1; // rear default
 
@@ -218,6 +217,16 @@ float _arrowMargin = 5.0f;
 	return YES;
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	NSLog(@"prepare for segue: [%@] sender: [%@]", [segue identifier], sender);
+	if ([[segue identifier] isEqualToString:@"showAlternate"]) {
+		[[segue destinationViewController] setDelegate:self];
+	} else if ([[segue identifier] isEqualToString:@"showList"]) {
+		[[segue destinationViewController] setDelegate:self];
+	}
+}
+
 #pragma mark - Startup
 
 - (void) registerNotifs
@@ -248,7 +257,8 @@ float _arrowMargin = 5.0f;
 
 - (void)updateInterface:(NSTimer *)timer {
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
-
+	if (_toLat==0 && _toLon==0 && _toAlt==0) return;
+	
 	// for the elevation indicator
 	float pitchDeg = RAD_TO_DEG * self.currentMotion.attitude.pitch;
 	float pitchRaw = pitchDeg - 90;
@@ -331,6 +341,8 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)setupArrows {
+	if (_haveArrows) return;
+	_haveArrows = YES;
 	CGRect viewBounds = self.view.bounds;
 	CGFloat topBarOffset = self.topLayoutGuide.length;
 	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
@@ -494,6 +506,8 @@ float _arrowMargin = 5.0f;
 	}
 	[self cleanupPublisher];
 	[self cleanupSubscriber];
+	_toLat=0, _toLon=0, _toAlt=0;
+	[self hideArrows];
 }
 
 #pragma mark - UI Interaction
@@ -723,16 +737,6 @@ float _arrowMargin = 5.0f;
 - (void)flipsideViewControllerDidFinish:(eddaFlipsideViewController *)controller
 {
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-	NSLog(@"prepare for segue: [%@] sender: [%@]", [segue identifier], sender);
-    if ([[segue identifier] isEqualToString:@"showAlternate"]) {
-        [[segue destinationViewController] setDelegate:self];
-	} else if ([[segue identifier] isEqualToString:@"showList"]) {
-		[[segue destinationViewController] setDelegate:self];
-	}
 }
 
 #pragma mark - Picker methods
