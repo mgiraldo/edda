@@ -77,7 +77,7 @@
     if (!dict)
         return nil;
     
-    NSString * userTitle = [dict objectForKey:@"userTitle"];   
+    NSString * userTitle = [NSString stringWithFormat:@"%@, %@",[dict objectForKey:@"userTitle"],[dict objectForKey:@"locality"]];
    
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -129,7 +129,6 @@
 {
     //pass blank because call has arrived, no need for receiverID.
     m_receiverID = @"";
-	appDelegate.callReceiverID = m_receiverID;
     [self goToStreamingVC];
 }
 
@@ -171,7 +170,7 @@
                     continue;
                 }
                 
-                NSString *userTitle = @"Locating…";
+                NSString *userTitle = [object valueForKey:@"userTitle"];
 				PFGeoPoint *coordinate = [object valueForKey:@"userLocation"];
 				NSNumber *userAltitude = [object valueForKey:@"userAltitude"];
 				
@@ -179,6 +178,7 @@
                 [dict setObject:userID forKey:@"userID"];
                 [dict setObject:userTitle forKey:@"userTitle"];
 				[dict setObject:coordinate forKey:@"userLocation"];
+				[dict setObject:@"Locating…" forKey:@"locality"];
 				[dict setObject:userAltitude forKey:@"userAltitude"];
 				
                 // TODO: if reverse-geocoder is added, userLocation can be converted to
@@ -236,8 +236,8 @@
 		 if ([placemarks count] > 0)
 		 {
 			 NSLog(@"found: %@", [[placemarks objectAtIndex:0] locality]);
-			 NSString *title = [NSString stringWithFormat:@"%@",[[placemarks objectAtIndex:0] locality]];
-			 [[m_userArray objectAtIndex:index] setObject:title forKey:@"userTitle"];
+			 NSString *locality = [NSString stringWithFormat:@"%@",[[placemarks objectAtIndex:0] locality]];
+			 [[m_userArray objectAtIndex:index] setObject:locality forKey:@"locality"];
 			 [m_userTableView reloadData];
 		 }
 	 }];

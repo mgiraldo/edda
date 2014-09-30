@@ -51,13 +51,13 @@
 		CC78A55D19C3D1C800C73E59 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55C19C3D1C800C73E59 /* CoreTelephony.framework */; };
 		CC78A56019C3D1D400C73E59 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55E19C3D1D400C73E59 /* GLKit.framework */; };
 		CC78A56119C3D1D400C73E59 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55F19C3D1D400C73E59 /* OpenGLES.framework */; };
-		CC78A56319C3D1F700C73E59 /* OpenTok.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56219C3D1F700C73E59 /* OpenTok.framework */; };
 		CC78A56519C3D20F00C73E59 /* libstdc++.6.0.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56419C3D20F00C73E59 /* libstdc++.6.0.9.dylib */; };
 		CC78A56719C3D21700C73E59 /* libpthread.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56619C3D21700C73E59 /* libpthread.dylib */; };
 		CC78A56919C3D22800C73E59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56819C3D22800C73E59 /* libsqlite3.dylib */; };
 		CC78A56B19C3D23200C73E59 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A56A19C3D23200C73E59 /* libxml2.dylib */; };
 		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
 		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
+		CCE2C87C19DA432600B1AC15 /* OpenTok.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCE2C87B19DA432600B1AC15 /* OpenTok.framework */; };
 		CCFFAF5F19CF9782008555A1 /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */; };
 		CCFFAF6019CF9782008555A1 /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */; };
 		CCFFAF6119CF9782008555A1 /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */; };
@@ -153,7 +153,6 @@
 		CC78A55C19C3D1C800C73E59 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		CC78A55E19C3D1D400C73E59 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		CC78A55F19C3D1D400C73E59 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		CC78A56219C3D1F700C73E59 /* OpenTok.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenTok.framework; path = "../../../stuff/xcode/OpenTok-iOS-2.2.1/OpenTok.framework"; sourceTree = "<group>"; };
 		CC78A56419C3D20F00C73E59 /* libstdc++.6.0.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.0.9.dylib"; path = "usr/lib/libstdc++.6.0.9.dylib"; sourceTree = SDKROOT; };
 		CC78A56619C3D21700C73E59 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
 		CC78A56819C3D22800C73E59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -161,6 +160,7 @@
 		CCA397D019B529B000754BEB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		CCA397D919B6987A00754BEB /* geodesic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geodesic.h; sourceTree = "<group>"; };
 		CCA397E119B6A00B00754BEB /* geodesic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geodesic.c; sourceTree = "<group>"; };
+		CCE2C87B19DA432600B1AC15 /* OpenTok.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OpenTok.framework; sourceTree = "<group>"; };
 		CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon29x29.png; path = edda/icons/AppIcon29x29.png; sourceTree = "<group>"; };
 		CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon29x29@2x.png"; path = "edda/icons/AppIcon29x29@2x.png"; sourceTree = "<group>"; };
 		CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon40x40.png; path = edda/icons/AppIcon40x40.png; sourceTree = "<group>"; };
@@ -188,11 +188,11 @@
 				CC01E04419D114E60069C168 /* ParseFacebookUtils.framework in Frameworks */,
 				CC01E03A19D110DC0069C168 /* MobileCoreServices.framework in Frameworks */,
 				CC01E03119D0FD260069C168 /* Parse.framework in Frameworks */,
+				CCE2C87C19DA432600B1AC15 /* OpenTok.framework in Frameworks */,
 				CC78A56B19C3D23200C73E59 /* libxml2.dylib in Frameworks */,
 				CC78A56919C3D22800C73E59 /* libsqlite3.dylib in Frameworks */,
 				CC78A56719C3D21700C73E59 /* libpthread.dylib in Frameworks */,
 				CC78A56519C3D20F00C73E59 /* libstdc++.6.0.9.dylib in Frameworks */,
-				CC78A56319C3D1F700C73E59 /* OpenTok.framework in Frameworks */,
 				CC78A56019C3D1D400C73E59 /* GLKit.framework in Frameworks */,
 				CC78A56119C3D1D400C73E59 /* OpenGLES.framework in Frameworks */,
 				CC78A55D19C3D1C800C73E59 /* CoreTelephony.framework in Frameworks */,
@@ -271,7 +271,7 @@
 				CC78A56819C3D22800C73E59 /* libsqlite3.dylib */,
 				CC78A56619C3D21700C73E59 /* libpthread.dylib */,
 				CC78A56419C3D20F00C73E59 /* libstdc++.6.0.9.dylib */,
-				CC78A56219C3D1F700C73E59 /* OpenTok.framework */,
+				CCE2C87B19DA432600B1AC15 /* OpenTok.framework */,
 				CC78A55E19C3D1D400C73E59 /* GLKit.framework */,
 				CC78A55F19C3D1D400C73E59 /* OpenGLES.framework */,
 				CC78A55C19C3D1C800C73E59 /* CoreTelephony.framework */,
@@ -675,6 +675,7 @@
 					"$(inherited)",
 					"/Volumes/billy/stuff/xcode/OpenTok-iOS-2.2.1",
 					"/Volumes/billy/stuff/xcode/parse-library-1.4.0",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "edda/Edda-Prefix.pch";
@@ -713,6 +714,7 @@
 					"$(inherited)",
 					"/Volumes/billy/stuff/xcode/OpenTok-iOS-2.2.1",
 					"/Volumes/billy/stuff/xcode/parse-library-1.4.0",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "edda/Edda-Prefix.pch";
@@ -729,6 +731,7 @@
 					"$(PROJECT_DIR)/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = Edda;
 				PROVISIONING_PROFILE = "4d7a5b0b-a9be-4e56-9d20-171b3fd0388d";

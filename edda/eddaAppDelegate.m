@@ -31,16 +31,14 @@
 	self.pApplicationID = configuration[@"Parse"][@"ApplicationID"];
 	self.pClientKey = configuration[@"Parse"][@"ClientKey"];
 	
-	self.bFullyLoggedIn = NO;
-	
 	self.callReceiverTitle = @"";
 	self.callReceiverID = @"";
 	
 	[Parse setApplicationId:self.pApplicationID clientKey:self.pClientKey];
 	[PFUser enableAutomaticUser];
+	self.bFullyLoggedIn = NO;
 	[ParseHelper initData];
 	[ParseHelper anonymousLogin];
-	[ParseHelper saveCurrentUserToParse];
 	
 	return YES;
 }

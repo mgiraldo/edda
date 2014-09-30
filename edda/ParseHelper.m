@@ -87,20 +87,10 @@
 
 +(void) showUserTitlePrompt
 {
-    UIAlertView *userNameAlert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"Enter your name:" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+    UIAlertView *userNameAlert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"Enter a nickname:" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
     userNameAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
     userNameAlert.tag = kUIAlertViewTagUserName;
     [userNameAlert show];
-}
-
-+(void) createUsername {
-	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-	appDelegate.userTitle = @"";
-	appDelegate.bFullyLoggedIn = YES;
-
-	//fire appdelegate timer
-	[appDelegate fireListeningTimer];
-	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
 }
 
 +(void) anonymousLogin
@@ -108,25 +98,25 @@
     loggedInUser = [PFUser currentUser];
     if (loggedInUser)
     {
-        [self createUsername];
+        [self showUserTitlePrompt];
         return;
     }
     
-//    [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error)
-//     {
-//         if (error)
-//         {
-//             NSLog(@"Anonymous login failed.%@", [error localizedDescription]);
-//             NSString * msg = [NSString stringWithFormat:@"Failed to login anonymously. Please try again.  %@", [error localizedDescription]];
-//             [self showAlert:msg];
-//         }
-//         else
-//         {            
-//             loggedInUser = [PFUser user];
-//             loggedInUser = user;
-//             [self createUsername];
-//         }
-//     }];
+    [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error)
+     {
+         if (error)
+         {
+             NSLog(@"Anonymous login failed.%@", [error localizedDescription]);
+             NSString * msg = [NSString stringWithFormat:@"Failed to login anonymously. Please try again.  %@", [error localizedDescription]];
+             [self showAlert:msg];
+         }
+         else
+         {            
+             loggedInUser = [PFUser user];
+             loggedInUser = user;
+             [self showUserTitlePrompt];
+         }
+     }];
 }
 
 +(void) initData
@@ -142,9 +132,11 @@
         //lets differe saving title till we have the location.
         //saveuserwithlocationtoparse will handle it.
         eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-//        appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
+		NSLog(@"nick: %@", [alertView textFieldAtIndex:0].text);
+        appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
         appDelegate.bFullyLoggedIn = YES;
-        
+		[self saveCurrentUserToParse];
+		
         //fire appdelegate timer
         [appDelegate fireListeningTimer];
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
@@ -268,8 +260,8 @@
 			 NSLog(@"%i objects for id: %@", objects.count, loggedInUser.objectId);
 			 eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
 			 [activeUser setObject:loggedInUser.objectId forKey:@"userID"];
-			 [activeUser setObject:[PFGeoPoint geoPoint] forKey:@"userLocation"];
-			 [activeUser setObject:[NSNumber numberWithInt:0] forKey:@"userAltitude"];
+			 [activeUser setObject:[PFGeoPoint geoPointWithLocation:appDelegate.currentLocation] forKey:@"userLocation"];
+			 [activeUser setObject:[NSNumber numberWithDouble:appDelegate.currentLocation.altitude] forKey:@"userAltitude"];
 			 [activeUser setObject:appDelegate.userTitle forKey:@"userTitle"];
 			 [activeUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
 			  {

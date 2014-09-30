@@ -15,7 +15,7 @@
 #import "utils.h"
 
 @interface eddaMainViewController ()
-<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate>
+<OTSessionDelegate, OTSubscriberDelegate, OTPublisherDelegate>
 
 @property (strong, nonatomic) NSMutableSet *disconnectListeners;
 
@@ -73,14 +73,14 @@ sViewAngle viewAngle;
 float _arrowSize = 15.0f;
 float _arrowMargin = 5.0f;
 
+#pragma mark - View lifecycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	
 	appDelegate = [[UIApplication sharedApplication] delegate];
 
-	[self registerNotifs];
-	
 	// debug view
 	[self.debugSwitch setOn:_debugActive];
 	
@@ -173,15 +173,52 @@ float _arrowMargin = 5.0f;
 								   selector:@selector(updateInterface:)
 								   userInfo:nil
 									repeats:YES];
-	int randomPlace = (rand() % (_places.count-2)) + 1;
-	[self.placesPicker selectRow:randomPlace inComponent:0 animated:NO];
-	_toLat = [_placeCoordinates[randomPlace][0] doubleValue];
-	_toLon = [_placeCoordinates[randomPlace][1] doubleValue];
-	_toAlt = [_placeCoordinates[randomPlace][2] doubleValue];
-	self.cityLabel.text = _places[randomPlace];
+
+//	int randomPlace = (rand() % (_places.count-2)) + 1;
+//	[self.placesPicker selectRow:randomPlace inComponent:0 animated:NO];
+//	_toLat = [_placeCoordinates[randomPlace][0] doubleValue];
+//	_toLon = [_placeCoordinates[randomPlace][1] doubleValue];
+//	_toAlt = [_placeCoordinates[randomPlace][2] doubleValue];
+//	self.cityLabel.text = _places[randomPlace];
 
 	[self updateViewAngle];
 }
+
+- (void)viewDidUnload
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super viewDidUnload];
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+	[self registerNotifs];
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
+	[self refreshVideoFeeds];
+	[super viewDidAppear:animated];
+}
+
+- (void) viewDidLayoutSubviews {
+	[self setupArrows];
+	[self hideArrows];
+	[self.view layoutSubviews];
+}
+
+- (void)didReceiveMemoryWarning
+{
+	[super didReceiveMemoryWarning];
+	// Dispose of any resources that can be recreated.
+}
+
+- (BOOL)prefersStatusBarHidden {
+	return YES;
+}
+
+#pragma mark - Startup
 
 - (void) registerNotifs
 {
@@ -194,17 +231,10 @@ float _arrowMargin = 5.0f;
 - (void) didCallArrive
 {
 	//pass blank because call has arrived, no need for receiverID.
+	[self createSession];
 	m_receiverID = @"";
 	NSLog(@"RIIIIINGGGG!!!");
 	[self.otherView zoomIn];
-}
-
-- (BOOL)prefersStatusBarHidden {
-	return YES;
-}
-
-- (void) viewWillAppear:(BOOL)animated
-{
 }
 
 -(void) showReceiverBusyMsg
@@ -214,43 +244,6 @@ float _arrowMargin = 5.0f;
 
 - (void) didLogin
 {
-}
-
-- (void) viewDidAppear:(BOOL)animated
-{
-	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
-	[self refreshVideoFeeds];
-	[super viewDidAppear:animated];
-}
-
-- (void)connectionStuffUnused {
-	if (appDelegate.callReceiverID && ![appDelegate.callReceiverID isEqualToString:@""])
-	{
-		m_mode = streamingModeOutgoing; //generate session
-		NSLog(@"callReceiverID: %@", appDelegate.callReceiverID);
-		[self initOutGoingCall];
-		//connect, publish/subscriber -> will be taken care by
-		//sessionSaved observer handler.
-	}
-	else
-	{
-		m_mode = streamingModeIncoming; //connect, publish, subscribe
-		m_connectionAttempts = 1;
-		[self connectWithPublisherToken];
-	}
-
-}
-
-- (void) viewDidLayoutSubviews {
-	[self setupArrows];
-	[self hideArrows];
-	[self.view layoutSubviews];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)updateInterface:(NSTimer *)timer {
@@ -289,12 +282,12 @@ float _arrowMargin = 5.0f;
 		self.S_arrowView.hidden = NO;
 	}
 
-	float normalizedHeadingTransparency = ofMap(headingTransparency, 0.0, 30.0, 0.0, 1.0, true);
+//	float normalizedHeadingTransparency = ofMap(headingTransparency, 0.0, 30.0, 0.0, 1.0, true);
 
 //	NSLog(@"head: %.0f chead: %.0f cheadadj: %.0f cpitch: %.0f pitchdeg: %.0f cpitchadj: %.0f pitchraw: %.0f",
 //		  self.currentHeading.trueHeading, correctHeading, headingAdjusted, correctPitch, pitchDeg, pitchAdjusted, pitchRaw);
 	
-	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
+//	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
 	
 	BOOL rightHead = YES;
 	BOOL rightPitch = YES;
@@ -489,6 +482,7 @@ float _arrowMargin = 5.0f;
 		m_mode = streamingModeIncoming; //connect, publish, subscribe
 		m_connectionAttempts = 1;
 		[self connectWithPublisherToken];
+//		[self connectWithSubscriberToken];
 	}
 }
 
@@ -786,6 +780,7 @@ float _arrowMargin = 5.0f;
 
 - (void) sessionSaved
 {
+	[self createSession];
 	[self connectWithSubscriberToken];
 }
 
@@ -804,9 +799,9 @@ float _arrowMargin = 5.0f;
 - (void)doConnect : (NSString *) token :(NSString *) sessionID
 {
 	NSLog(@"token: %@ sessionid: %@", token, sessionID);
-	_session = [[OTSession alloc] initWithApiKey:appDelegate.otAPIKey
-									   sessionId:sessionID
-										delegate:self];
+//	_session = [[OTSession alloc] initWithApiKey:appDelegate.otAPIKey
+//									   sessionId:sessionID
+//										delegate:self];
 	
 //	[_session addObserver:self forKeyPath:@"connectionCount"
 //				  options:NSKeyValueObservingOptionNew
@@ -856,9 +851,7 @@ float _arrowMargin = 5.0f;
  */
 - (void)doPublish
 {
-    _publisher =
-    [[OTPublisher alloc] initWithDelegate:self
-                                     name:[[UIDevice currentDevice] name]];
+	_publisher = [[OTPublisher alloc] initWithDelegate:self name:UIDevice.currentDevice.name];
 	
     OTError *error = nil;
     [_session publish:_publisher error:&error];
@@ -916,6 +909,12 @@ float _arrowMargin = 5.0f;
 
 # pragma mark - OTSession delegate callbacks
 
+- (void)createSession {
+	_session = [[OTSession alloc] initWithApiKey:appDelegate.otAPIKey
+									   sessionId:appDelegate.sessionID
+										delegate:self];
+}
+
 - (void)ensureSessionDisconnectedBeforeBlock:(void (^)(void))resumeBlock {
 	
 	// If the session exists, and it is connected or connecting, then save this block as a listener and start disconnecting
@@ -950,8 +949,7 @@ float _arrowMargin = 5.0f;
 }
 
 
-- (void)session:(OTSession*)mySession
-  streamCreated:(OTStream *)stream
+- (void)session:(OTSession*)mySession streamCreated:(OTStream *)stream
 {
     NSLog(@"session streamCreated (%@)", stream.streamId);
     
@@ -963,8 +961,17 @@ float _arrowMargin = 5.0f;
     }
 }
 
-- (void)session:(OTSession*)session
-streamDestroyed:(OTStream *)stream
+- (void)session:(OTSession*)mySession didReceiveStream:(OTStream*)stream
+{
+	NSLog(@"session: didReceiveStream:");
+}
+
+- (void)session:(OTSession*)session didDropStream:(OTStream*)stream
+{
+	NSLog(@"session didDropStream (%@)", stream.streamId);
+}
+
+- (void)session:(OTSession*)session streamDestroyed:(OTStream *)stream
 {
     NSLog(@"session streamDestroyed (%@)", stream.streamId);
     
@@ -974,14 +981,12 @@ streamDestroyed:(OTStream *)stream
     }
 }
 
-- (void)  session:(OTSession *)session
-connectionCreated:(OTConnection *)connection
+- (void)  session:(OTSession *)session connectionCreated:(OTConnection *)connection
 {
     NSLog(@"session connectionCreated (%@)", connection.connectionId);
 }
 
-- (void)    session:(OTSession *)session
-connectionDestroyed:(OTConnection *)connection
+- (void)    session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
 {
     NSLog(@"session connectionDestroyed (%@)", connection.connectionId);
     if ([_subscriber.stream.connection.connectionId
@@ -991,15 +996,16 @@ connectionDestroyed:(OTConnection *)connection
     }
 }
 
-- (void) session:(OTSession*)session
-didFailWithError:(OTError*)error
+- (void) session:(OTSession*)session didFailWithError:(OTError*)error
 {
     NSLog(@"didFailWithError: (%@)", error);
 }
 
 # pragma mark - OTSubscriber delegate callbacks
+- (void)subscriberVideoDataReceived:(OTSubscriber *)subscriber {
+}
 
-- (void)subscriberDidConnectToStream:(OTSubscriberKit*)subscriber
+- (void)subscriberDidConnectToStream:(OTSubscriber*)subscriber
 {
     NSLog(@"subscriberDidConnectToStream (%@)",
           subscriber.stream.connection.connectionId);
@@ -1008,18 +1014,29 @@ didFailWithError:(OTError*)error
 	[self.otherView insertSubview:_subscriber.view atIndex:0];
 }
 
-- (void)subscriber:(OTSubscriberKit*)subscriber
-  didFailWithError:(OTError*)error
+- (void)subscriber:(OTSubscriber*)subscriber didFailWithError:(OTError*)error
 {
     NSLog(@"subscriber %@ didFailWithError %@",
           subscriber.stream.streamId,
           error);
+    [self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
+}
+
+- (IBAction)doneStreaming:(id)sender {
+    [self disConnectAndGoBack];
+}
+
+- (void) disConnectAndGoBack {
+	[self endVideoChat];
+	[self cleanupPublisher];
+	[self cleanupSubscriber];
+    [ParseHelper deleteActiveSession];
+    [ParseHelper setPollingTimer:YES];
 }
 
 # pragma mark - OTPublisher delegate callbacks
 
-- (void)publisher:(OTPublisherKit *)publisher
-    streamCreated:(OTStream *)stream
+- (void)publisher:(OTPublisher *)publisher streamCreated:(OTStream *)stream
 {
     // Step 3b: (if YES == subscribeToSelf): Our own publisher is now visible to
     // all participants in the OpenTok session. We will attempt to subscribe to
@@ -1031,8 +1048,7 @@ didFailWithError:(OTError*)error
     }
 }
 
-- (void)publisher:(OTPublisherKit*)publisher
-  streamDestroyed:(OTStream *)stream
+- (void)publisher:(OTPublisher*)publisher streamDestroyed:(OTStream *)stream
 {
     if ([_subscriber.stream.streamId isEqualToString:stream.streamId])
     {
@@ -1042,12 +1058,23 @@ didFailWithError:(OTError*)error
     [self cleanupPublisher];
 }
 
-- (void)publisher:(OTPublisherKit*)publisher
- didFailWithError:(OTError*) error
+- (void)publisher:(OTPublisher*)publisher didFailWithError:(OTError*) error
 {
     NSLog(@"publisher didFailWithError %@", error);
     [self cleanupPublisher];
 }
+
+- (void)publisherDidStartStreaming:(OTPublisher *)publisher
+{
+	NSLog(@"publisherDidStartStreaming: %@", publisher);
+}
+
+-(void)publisherDidStopStreaming:(OTPublisher*)publisher
+{
+	NSLog(@"publisherDidStopStreaming:%@", publisher);
+}
+
+#pragma mark - Alert
 
 - (void)showAlert:(NSString *)string
 {
