@@ -152,35 +152,11 @@ float _arrowMargin = 5.0f;
 
 	// now get the location
 
-	// iOS 8 not authorized by default
-	if([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-		[locationManager requestWhenInUseAuthorization];
-	}
-	
-	[locationManager startUpdatingLocation];
-	[locationManager startUpdatingHeading];
-
 	// init Proj.4 params
 	if (!(pj_geod = pj_init_plus("+proj=latlong +datum=WGS84 +units=m")) )
         NSLog(@"Could not initialise MERCATOR");
 	if (!(pj_geoc = pj_init_plus("+proj=geocent +datum=WGS84")) )
         NSLog(@"Could not initialise CARTESIAN");
-	
-	// interface refresh timer
-	[NSTimer scheduledTimerWithTimeInterval:0.1
-									 target:self
-								   selector:@selector(updateInterface:)
-								   userInfo:nil
-									repeats:YES];
-
-//	int randomPlace = (rand() % (_places.count-2)) + 1;
-//	[self.placesPicker selectRow:randomPlace inComponent:0 animated:NO];
-//	_toLat = [_placeCoordinates[randomPlace][0] doubleValue];
-//	_toLon = [_placeCoordinates[randomPlace][1] doubleValue];
-//	_toAlt = [_placeCoordinates[randomPlace][2] doubleValue];
-//	self.cityLabel.text = _places[randomPlace];
-
-	[self updateViewAngle];
 }
 
 - (void)viewDidUnload
@@ -229,11 +205,32 @@ float _arrowMargin = 5.0f;
 
 #pragma mark - Startup
 
+- (void) userHasLoggedIn
+{
+	// iOS 8 not authorized by default
+	if([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+		[locationManager requestWhenInUseAuthorization];
+	}
+	
+	[locationManager startUpdatingLocation];
+	[locationManager startUpdatingHeading];
+
+	// interface refresh timer
+	[NSTimer scheduledTimerWithTimeInterval:0.1
+									 target:self
+								   selector:@selector(updateInterface:)
+								   userInfo:nil
+									repeats:YES];
+	
+	[self updateViewAngle];
+}
+
 - (void) registerNotifs
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionSaved) name:kSessionSavedNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallArrive) name:kIncomingCallNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin) name:kLoggedInNotification object:nil];
 }
 
 //if and when a call arrives
@@ -253,6 +250,8 @@ float _arrowMargin = 5.0f;
 
 - (void) didLogin
 {
+	NSLog(@"logged in!");
+	[self userHasLoggedIn];
 }
 
 - (void)updateInterface:(NSTimer *)timer {
@@ -604,7 +603,8 @@ float _arrowMargin = 5.0f;
 	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
 		appDelegate.currentLocation = self.currentLocation;
-		[ParseHelper saveUserWithLocationToParse:[ParseHelper loggedInUser] :[PFGeoPoint geoPointWithLocation:self.currentLocation] :[NSNumber numberWithDouble:self.currentLocation.altitude]];
+		PFUser * thisUser = [ParseHelper loggedInUser] ;
+		[ParseHelper saveUserWithLocationToParse:thisUser :[PFGeoPoint geoPointWithLocation:self.currentLocation] :[NSNumber numberWithDouble:self.currentLocation.altitude]];
 		[self updateViewAngle];
 	}
 }

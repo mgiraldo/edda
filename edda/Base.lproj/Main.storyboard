@@ -285,7 +285,7 @@
             </objects>
             <point key="canvasLocation" x="22" y="948"/>
         </scene>
-        <!--LiveSessions-->
+        <!--People-->
         <scene sceneID="pd7-6H-1CM">
             <objects>
                 <viewController id="OUq-rZ-Utc" customClass="LSViewController" sceneMemberID="viewController">
@@ -306,7 +306,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="LiveSessions" id="fEw-Ug-5DS">
+                    <navigationItem key="navigationItem" title="People" id="fEw-Ug-5DS">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="TWB-9Z-FMe">
                             <connections>
                                 <action selector="touchCancel:" destination="OUq-rZ-Utc" id="k5Z-Ty-R3c"/>

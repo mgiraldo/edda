@@ -75,6 +75,7 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureDeviceInput *rearVideoInput;
 @property (nonatomic) AVCaptureVideoPreviewLayer *rearPreviewLayer;
 
+- (void) userHasLoggedIn;
 - (IBAction)onStartTapped:(id)sender;
 - (IBAction)onDebugSwitchTapped:(id)sender;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;

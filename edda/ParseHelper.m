@@ -135,11 +135,9 @@
 		NSLog(@"nick: %@", [alertView textFieldAtIndex:0].text);
         appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
         appDelegate.bFullyLoggedIn = YES;
-		[self saveCurrentUserToParse];
 		
         //fire appdelegate timer
-        [appDelegate fireListeningTimer];
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
+		[self saveCurrentUserToParse];
     }
     else if (kUIAlertViewTagIncomingCall == alertView.tag)
     {
@@ -240,8 +238,9 @@
 + (void) saveCurrentUserToParse
 {
 	__block PFObject *activeUser;
+
 	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-	[query whereKey:@"userID" equalTo:loggedInUser.objectId];
+	[query whereKey:@"userID" equalTo:[NSString stringWithFormat:@"%@",loggedInUser.objectId]];
 	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
 	 {
 		 NSLog(@"current: %@",loggedInUser.objectId);
@@ -278,7 +277,8 @@
 					  
 					  NSLog(@"objectID: %@ userID: %@", activeUserObjectID, loggedInUser.objectId);
 				  }
-				  [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUserLocSavedNotification object:nil]];
+				  [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
+				  [appDelegate fireListeningTimer];
 			  }];
 		 }
 		 else
@@ -293,8 +293,8 @@
 {
     __block PFObject *activeUser;
 	
-    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-    [query whereKey:@"userID" equalTo:user.objectId];
+	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+	[query whereKey:@"userID" equalTo:[NSString stringWithFormat:@"%@",user.objectId]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
     {
         if (!error)
@@ -303,7 +303,7 @@
             // otherwise create it.
             if (objects.count == 0)
             {
-				return; //activeUser = [PFObject objectWithClassName:@"ActiveUsers"];
+				activeUser = [PFObject objectWithClassName:@"ActiveUsers"];
             }
             else
             {
@@ -382,6 +382,8 @@
     PFQuery *query = [PFQuery queryWithClassName:@"ActiveSessions"];
     
     NSString* currentUserID = [self loggedInUser].objectId;
+	if (currentUserID==nil)
+		return;
     [query whereKey:@"receiverID" equalTo:currentUserID];  
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)

@@ -35,7 +35,6 @@
 	self.callReceiverID = @"";
 	
 	[Parse setApplicationId:self.pApplicationID clientKey:self.pClientKey];
-	[PFUser enableAutomaticUser];
 	self.bFullyLoggedIn = NO;
 	[ParseHelper initData];
 	[ParseHelper anonymousLogin];

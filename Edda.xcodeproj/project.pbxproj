@@ -12,6 +12,8 @@
 		CC01E04319D114E60069C168 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC01E03C19D114DA0069C168 /* Bolts.framework */; };
 		CC01E04419D114E60069C168 /* ParseFacebookUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC01E03D19D114DA0069C168 /* ParseFacebookUtils.framework */; };
 		CC01E04A19D1333D0069C168 /* ParseHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CC01E04919D1333D0069C168 /* ParseHelper.m */; };
+		CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289619DB9FD500B358F2 /* AppIcon180x180.png */; };
+		CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */; };
 		CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */; };
 		CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */; };
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
@@ -94,6 +96,8 @@
 		CC01E03D19D114DA0069C168 /* ParseFacebookUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ParseFacebookUtils.framework; path = "../../../stuff/xcode/parse-library-1.4.0/ParseFacebookUtils.framework"; sourceTree = "<group>"; };
 		CC01E04819D1333D0069C168 /* ParseHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseHelper.h; sourceTree = "<group>"; };
 		CC01E04919D1333D0069C168 /* ParseHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseHelper.m; sourceTree = "<group>"; };
+		CC09289619DB9FD500B358F2 /* AppIcon180x180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon180x180.png; path = edda/icons/AppIcon180x180.png; sourceTree = "<group>"; };
+		CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon180x180@2x.png"; path = "edda/icons/AppIcon180x180@2x.png"; sourceTree = "<group>"; };
 		CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaOtherView.h; sourceTree = "<group>"; };
 		CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaOtherView.m; sourceTree = "<group>"; };
 		CC3F1C1219BE8D4D00F6AD43 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
@@ -391,6 +395,8 @@
 		CCFFAF6F19CF9788008555A1 /* icons */ = {
 			isa = PBXGroup;
 			children = (
+				CC09289619DB9FD500B358F2 /* AppIcon180x180.png */,
+				CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */,
 				CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */,
 				CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */,
 				CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */,
@@ -496,6 +502,8 @@
 				CC77D53C19B02740009BA59F /* arrowLong.png in Resources */,
 				CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */,
 				CCFFAF6A19CF9782008555A1 /* AppIcon72x72@2x.png in Resources */,
+				CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */,
+				CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */,
 				CC77D4FB19B003E8009BA59F /* InfoPlist.strings in Resources */,
 				CCFFAF6119CF9782008555A1 /* AppIcon40x40.png in Resources */,
 				CCFFAF6319CF9782008555A1 /* AppIcon50x50.png in Resources */,
