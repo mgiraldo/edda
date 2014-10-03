@@ -45,11 +45,11 @@ BOOL _debugActive = NO;
 BOOL _videoActive = YES;
 BOOL _rearVideoInited = NO;
 BOOL _haveArrows = NO;
+BOOL _isChatting = NO;
+BOOL _isAligned = NO;
 
-int _activeCamera = 1; // rear default
-
-float _headingThreshold = 10.0f;
-float _pitchThreshold = 5.0f;
+float _headingThreshold = 20.0f;
+float _pitchThreshold = 10.0f;
 
 NSArray *_places;
 NSArray *_placeCoordinates;
@@ -85,7 +85,7 @@ float _arrowMargin = 5.0f;
 	
 	// other view
 	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
-	[self.otherView setActiveState:NO];
+	self.otherView.hidden = YES;
 	self.otherView.delegate = self;
 	[self.view addSubview:self.otherView];
 	
@@ -246,6 +246,13 @@ float _arrowMargin = 5.0f;
 -(void) showReceiverBusyMsg
 {
 	NSLog(@"Receiver is busy on another call. Please try later.");
+	self.statusLabel.text = @"Receiver is busy on another call. Please try later.";
+	[self performSelector:@selector(goBack) withObject:nil afterDelay:5.0];
+}
+
+-(void)goBack
+{
+	self.statusLabel.text = @"";
 }
 
 - (void) didLogin
@@ -255,6 +262,9 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)updateInterface:(NSTimer *)timer {
+	self.endButton.hidden = !_isChatting;
+	self.startButton.hidden = _isChatting;
+
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
 	if (_toLat==0 && _toLon==0 && _toAlt==0) return;
 	
@@ -280,15 +290,22 @@ float _arrowMargin = 5.0f;
 	// arrows on/off
 	[self hideArrows];
 
+	BOOL rightHead = YES;
+	BOOL rightPitch = YES;
+	
 	if ((correctHeading > 180 && correctHeading < 360 - _headingThreshold) || (correctHeading < 0 && headingAdjusted < 180)) {
 		self.E_arrowView.hidden = NO;
+		rightHead = NO;
 	} else if ((correctHeading <= 180 && correctHeading > _headingThreshold) || (correctHeading < 0 && headingAdjusted >= 180)) {
 		self.W_arrowView.hidden = NO;
+		rightHead = NO;
 	}
 	if (correctPitch > _pitchThreshold) {
 		self.N_arrowView.hidden = NO;
+		rightPitch = NO;
 	} else if (correctPitch < -_pitchThreshold) {
 		self.S_arrowView.hidden = NO;
+		rightPitch = NO;
 	}
 
 //	float normalizedHeadingTransparency = ofMap(headingTransparency, 0.0, 30.0, 0.0, 1.0, true);
@@ -298,9 +315,6 @@ float _arrowMargin = 5.0f;
 	
 //	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
 	
-	BOOL rightHead = YES;
-	BOOL rightPitch = YES;
-	
 	float newX, newY;
 	float radius = 600 * ofMap(correctPitch, -90, 90, 0, 1, true);
 	float radians = -DEG_TO_RAD*correctHeading;
@@ -309,9 +323,22 @@ float _arrowMargin = 5.0f;
 
 	newY = ofMap(correctPitch, -90, 90, 600, -600, true) + self.view.frame.size.height*.5f;
 
-	[self.otherView setTappable:(rightHead && rightPitch)];
+	BOOL oldAligned = _isAligned;
+	
+	_isAligned = (rightHead && rightPitch);
+
+	if (_isChatting && oldAligned != _isAligned) {
+		[ParseHelper saveUserAlignmentToParse:[ParseHelper loggedInUser] :_isAligned];
+	}
+
+	[self.otherView setTappable:_isAligned];
 
 	[self pointObjects:correctHeading pitch:correctPitch];
+	
+	if (self.receiverObject != nil) {
+		BOOL otherActive = [[self.receiverObject valueForKey:@"isAligned"] boolValue];
+		[self.otherView setActiveState:otherActive];
+	}
 }
 
 - (void)pointObjects:(float)heading pitch:(float)pitch {
@@ -474,11 +501,14 @@ float _arrowMargin = 5.0f;
 - (void)refreshVideoFeeds {
 	[self stopRearCapture];
 	if (_videoActive) {
+		self.otherView.hidden = NO;
 		[self startRearCapture];
 	}
 }
 
 - (void)startVideoChat {
+	_isChatting = YES;
+	
 	if (![appDelegate.callReceiverID isEqualToString:@""])
 	{
 		NSLog(@"outgoing mode");
@@ -498,24 +528,33 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)endVideoChat {
-	OTError* error = nil;
-	[_session disconnect:&error];
-	if (error) {
-		NSLog(@"disconnect failed with error: (%@)", error);
-	}
-	[self cleanupPublisher];
-	[self cleanupSubscriber];
+	[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:0.0];
+}
+
+#pragma mark - UI/Interaction
+
+- (void)clearReceiver {
+	m_receiverID = @"";
+	appDelegate.callReceiverID = m_receiverID;
+	appDelegate.callReceiverTitle = @"";
+	appDelegate.callReceiverLocation = nil;
+	appDelegate.callReceiverAltitude = 0;
+	
 	_toLat=0, _toLon=0, _toAlt=0;
+	
+	self.cityLabel.text = @"";
+	self.receiverObject = nil;
+	
+	[self stopActiveTimer];
 	[self hideArrows];
 }
 
-#pragma mark - UI Interaction
+- (IBAction)endButtonTapped:(id)sender {
+	[self endVideoChat];
+}
 
 - (void)onOtherTapped:(UITapGestureRecognizer *)recognizer {
 	NSLog(@"TAPPED!");
-}
-
-- (IBAction)onStartTapped:(id)sender {
 }
 
 - (IBAction)onDebugSwitchTapped:(id)sender {
@@ -566,7 +605,6 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
-//	_activeCamera = 0;
 	_videoActive = NO;
 	[self refreshVideoFeeds];
 
@@ -574,16 +612,12 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view {
-//	_activeCamera = 0;
-//	_videoActive = NO;
-//	[self refreshVideoFeeds];
 	[self endVideoChat];
+	_videoActive = YES;
+	[self refreshVideoFeeds];
 }
 
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
-	_activeCamera = 1;
-	_videoActive = YES;
-	[self refreshVideoFeeds];
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -722,14 +756,50 @@ float _arrowMargin = 5.0f;
 
 #pragma mark - LS View
 
-- (IBAction)unwindToMainViewController:(UIStoryboardSegue *)unwindSegue
+- (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
 {
-	NSLog(@"came back with place: %@ location: %@ altitude: %@", appDelegate.callReceiverTitle, appDelegate.callReceiverLocation, appDelegate.callReceiverAltitude);
+	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", appDelegate.callReceiverTitle, appDelegate.callReceiverLocation, appDelegate.callReceiverAltitude);
+	
+	_isChatting = YES;
+	
 	_toLat = appDelegate.callReceiverLocation.coordinate.latitude;
 	_toLon = appDelegate.callReceiverLocation.coordinate.longitude;
 	_toAlt = [appDelegate.callReceiverAltitude doubleValue];
-	self.cityLabel.text = appDelegate.callReceiverTitle;
+	self.cityLabel.text =[NSString stringWithFormat:@"find %@", appDelegate.callReceiverTitle];
 	[self updateViewAngle];
+
+	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+	[query whereKey:@"userID" equalTo:appDelegate.callReceiverID];
+	NSLog(@"looking for: [%@]", appDelegate.callReceiverID);
+	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+		if (!error) {
+			// Do something with the found objects
+			if (objects.count == 1) {
+				self.receiverObject = objects.firstObject;
+				[self fireActiveTimer];
+			} else {
+				NSLog(@"error! found %d users", objects.count);
+			}
+		} else {
+			// Log details of the failure
+			NSLog(@"Error: %@ %@", error, [error userInfo]);
+		}
+	}];
+}
+
+- (IBAction)unwindToMainViewController:(UIStoryboardSegue *)unwindSegue
+{
+	NSLog(@"canceled");
+	m_receiverID = @"";
+	appDelegate.callReceiverID = m_receiverID;
+	appDelegate.callReceiverTitle = @"";
+	appDelegate.callReceiverLocation = nil;
+	appDelegate.callReceiverAltitude = 0;
+	_toLat = 0;
+	_toLon = 0;
+	_toAlt = 0;
+	self.cityLabel.text = appDelegate.callReceiverTitle;
+	[self hideArrows];
 }
 
 #pragma mark - Flipside View
@@ -771,6 +841,31 @@ float _arrowMargin = 5.0f;
 }
 
 #pragma mark - Parse stuff
+
+- (void) fireActiveTimer
+{
+	if (self.activeTimer && [self.activeTimer isValid])
+		return;
+	
+	self.activeTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
+													 target:self
+												   selector:@selector(onTimer:)
+												   userInfo:nil
+													repeats:YES];
+}
+
+- (void) stopActiveTimer {
+	if (self.activeTimer && [self.activeTimer isValid])
+		[self.activeTimer invalidate];
+}
+
+- (void) onTimer:(NSTimer *)timer {
+	if (self.receiverObject != nil) {
+		[self.receiverObject refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+			//
+		}];
+	}
+}
 
 - (void) initOutGoingCall
 {
@@ -939,9 +1034,9 @@ float _arrowMargin = 5.0f;
 {
     NSLog(@"sessionDidConnect (%@)", session.sessionId);
     
-    // Step 2: We have successfully connected, now instantiate a publisher and
-    // begin pushing A/V streams into OpenTok.
-    [self doPublish];
+	self.statusLabel.text = @"Connected, waiting for stream...";
+
+	[self doPublish];
 }
 
 - (void)sessionDidDisconnect:(OTSession*)session
@@ -950,6 +1045,10 @@ float _arrowMargin = 5.0f;
     [NSString stringWithFormat:@"Session disconnected: (%@)",
      session.sessionId];
     NSLog(@"sessionDidDisconnect (%@)", alertMessage);
+
+	self.statusLabel.text = @"Session disconnected...";
+
+	[self performSelector:@selector(goBack) withObject:nil afterDelay:5.0];
 }
 
 
@@ -970,9 +1069,29 @@ float _arrowMargin = 5.0f;
 	NSLog(@"session: didReceiveStream:");
 }
 
+- (void)updateSubscriber
+{
+	for (NSString* streamId in _session.streams) {
+		OTStream* stream = [_session.streams valueForKey:streamId];
+		if (stream.connection.connectionId != _session.connection.connectionId) {
+			_subscriber = [[OTSubscriber alloc] initWithStream:stream delegate:self];
+			break;
+		}
+	}
+}
+
 - (void)session:(OTSession*)session didDropStream:(OTStream*)stream
 {
 	NSLog(@"session didDropStream (%@)", stream.streamId);
+	if (!subscribeToSelf
+		&& _subscriber
+		&& [_subscriber.stream.streamId isEqualToString: stream.streamId]) {
+		_subscriber = nil;
+		[self updateSubscriber];
+		self.statusLabel.text = @"Stream dropped, disconnecting...";
+		[self.view bringSubviewToFront:self.statusLabel];
+		[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
+	}
 }
 
 - (void)session:(OTSession*)session streamDestroyed:(OTStream *)stream
@@ -1002,7 +1121,30 @@ float _arrowMargin = 5.0f;
 
 - (void) session:(OTSession*)session didFailWithError:(OTError*)error
 {
-    NSLog(@"didFailWithError: (%@)", error);
+	NSLog(@"session: didFailWithError:");
+	NSLog(@"- description: %@", error.localizedDescription);
+	NSString * errorMsg;
+	if (m_connectionAttempts < 10)
+	{
+		m_connectionAttempts++;
+		errorMsg = [NSString stringWithFormat:@"Session failed to connect - Reconnecting attempt %d",m_connectionAttempts];
+		self.statusLabel.text = errorMsg;
+		if (m_mode == streamingModeOutgoing)
+		{
+			[self performSelector:@selector(connectWithSubscriberToken) withObject:nil afterDelay:15.0];
+		}
+		else
+		{
+			[self performSelector:@selector(connectWithPublisherToken) withObject:nil afterDelay:15.0];
+		}
+	}
+	else
+	{
+		m_connectionAttempts = 1;
+		errorMsg = [NSString stringWithFormat:@"Session failed to connect - disconnecting now"];
+		self.statusLabel.text = errorMsg;
+		[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:10.0];
+	}
 }
 
 # pragma mark - OTSubscriber delegate callbacks
@@ -1013,7 +1155,9 @@ float _arrowMargin = 5.0f;
 {
     NSLog(@"subscriberDidConnectToStream (%@)",
           subscriber.stream.connection.connectionId);
-    assert(_subscriber == subscriber);
+	self.statusLabel.text = @"Connected and streaming...";
+
+	assert(_subscriber == subscriber);
     [_subscriber.view setFrame:self.otherView.frame];
 	[self.otherView insertSubview:_subscriber.view atIndex:0];
 }
@@ -1023,7 +1167,9 @@ float _arrowMargin = 5.0f;
     NSLog(@"subscriber %@ didFailWithError %@",
           subscriber.stream.streamId,
           error);
-    [self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
+	self.statusLabel.text = @"Error receiving video feed, disconnecting...";
+
+	[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
 }
 
 - (IBAction)doneStreaming:(id)sender {
@@ -1031,7 +1177,16 @@ float _arrowMargin = 5.0f;
 }
 
 - (void) disConnectAndGoBack {
-	[self endVideoChat];
+	_isChatting = NO;
+	
+	OTError* error = nil;
+
+	[_session disconnect:&error];
+	if (error) {
+		NSLog(@"disconnect failed with error: (%@)", error);
+	}
+	
+	[self clearReceiver];
 	[self cleanupPublisher];
 	[self cleanupSubscriber];
     [ParseHelper deleteActiveSession];
@@ -1065,17 +1220,21 @@ float _arrowMargin = 5.0f;
 - (void)publisher:(OTPublisher*)publisher didFailWithError:(OTError*) error
 {
     NSLog(@"publisher didFailWithError %@", error);
-    [self cleanupPublisher];
+	self.statusLabel.text = @"Failed to share your camera feed, disconnecting...";
+
+	[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
 }
 
 - (void)publisherDidStartStreaming:(OTPublisher *)publisher
 {
 	NSLog(@"publisherDidStartStreaming: %@", publisher);
+	self.statusLabel.text = @"Started your camera feed...";
 }
 
 -(void)publisherDidStopStreaming:(OTPublisher*)publisher
 {
 	NSLog(@"publisherDidStopStreaming:%@", publisher);
+	self.statusLabel.text = @"Stopping your camera feed...";
 }
 
 #pragma mark - Alert

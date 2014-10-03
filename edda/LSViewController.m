@@ -40,6 +40,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin) name:kLoggedInNotification object:nil];
 }
 
+- (BOOL)prefersStatusBarHidden {
+	return YES;
+}
+
 -(void) showReceiverBusyMsg
 {
 	NSLog(@"Receiver is busy on another call. Please try later.");
@@ -128,12 +132,23 @@
 - (void) didCallArrive
 {
     //pass blank because call has arrived, no need for receiverID.
-    m_receiverID = @"";
+	[self clearReceiver];
     [self goToStreamingVC];
 }
 
 - (void) goToStreamingVC {
-	[self performSegueWithIdentifier:@"unwindToMainID" sender:self];
+	[self performSegueWithIdentifier:@"unwindToVideoChatID" sender:self];
+}
+
+- (void)clearReceiver {
+	m_receiverID = @"";
+	m_receiverTitle = @"";
+	m_receiverLocation = nil;
+	m_receiverAltitude = 0;
+	appDelegate.callReceiverID = m_receiverID;
+	appDelegate.callReceiverTitle = m_receiverTitle;
+	appDelegate.callReceiverLocation = m_receiverLocation;
+	appDelegate.callReceiverAltitude = m_receiverAltitude;
 }
 
 //this method polls for new users that gets added / removed from surrounding region.
@@ -216,20 +231,10 @@
     [self fireUsersQuery:YES];
 }
 
-- (IBAction)touchCancel:(id)sender {
-	m_receiverID = @"";
-	appDelegate.callReceiverID = m_receiverID;
-	[self dismissViewControllerAnimated:YES completion:^{
-		//
-	}];
-}
-
-
 #pragma mark - Geocoding
 - (void)geocodeLocation:(CLLocation*)location forIndex:(int)index
 {
-	if (!geocoder)
-		geocoder = [[CLGeocoder alloc] init];
+	CLGeocoder *geocoder = [[CLGeocoder alloc] init];
 	
 	[geocoder reverseGeocodeLocation:location completionHandler:
 	 ^(NSArray* placemarks, NSError* error){

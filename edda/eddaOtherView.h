@@ -16,8 +16,6 @@
 @property (nonatomic) AVCaptureVideoPreviewLayer *videoLayer;
 @property (nonatomic, assign) id <eddaOtherViewDelegate> delegate;
 
-- (void)setVideo:(AVCaptureVideoPreviewLayer * )video;
-- (void)removeVideo;
 - (void)setTappable:(BOOL)tappable;
 - (void)setActiveState:(BOOL)active;
 - (void)updatePosition:(CGPoint)position;

@@ -12,7 +12,8 @@
 
 BOOL _zoomed = NO;
 BOOL _touchDown = NO;
-BOOL _tappable = NO;
+BOOL _isTappable = NO;
+BOOL _isActive = NO;
 
 float _borderWidth = 5;
 float _zoomDuration = .25;
@@ -33,23 +34,18 @@ float _otherSize = 50.0f;
 }
 
 - (void)refreshView {
-	if (_tappable) {
-		self.layer.backgroundColor = [UIColor blackColor].CGColor;
+	if (_isTappable) {
+//		self.layer.backgroundColor = [UIColor greenColor].CGColor;
 		self.layer.opacity = 1.0;
 	} else {
-		self.layer.backgroundColor = [UIColor darkGrayColor].CGColor;
+//		self.layer.backgroundColor = [UIColor blackColor].CGColor;
 		self.layer.opacity = 0.5;
 	}
-}
-
-- (void)setVideo:(AVCaptureVideoPreviewLayer * )video {
-	self.videoLayer = video;
-	[self.layer addSublayer:self.videoLayer];
-}
-
-- (void)removeVideo {
-	[self.videoLayer removeFromSuperlayer];
-	self.videoLayer = nil;
+	if (_isActive) {
+		self.layer.borderColor = [UIColor greenColor].CGColor;
+	} else {
+		self.layer.borderColor = [UIColor grayColor].CGColor;
+	}
 }
 
 #pragma mark - View state
@@ -69,16 +65,13 @@ float _otherSize = 50.0f;
 }
 
 - (void)setTappable:(BOOL)tappable {
-	_tappable = tappable;
+	_isTappable = tappable;
 	[self refreshView];
 }
 
 - (void)setActiveState:(BOOL)active {
-	if (active) {
-		self.layer.borderColor = [UIColor blueColor].CGColor;
-	} else {
-		self.layer.borderColor = [UIColor grayColor].CGColor;
-	}
+	_isActive = active;
+	[self refreshView];
 }
 
 - (void)zoomIn {
@@ -104,7 +97,7 @@ float _otherSize = 50.0f;
 						  delay:0
 						options:UIViewAnimationOptionAllowAnimatedContent
 					 animations:^{
-						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherSize)*.5, -_otherSize, _otherSize, _otherSize);
+						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherSize)*.5, -_otherSize*5, _otherSize, _otherSize);
 						 self.layer.cornerRadius = _otherSize * .5;
 						 self.frame = frame;
 						 self.videoLayer.frame = frame;

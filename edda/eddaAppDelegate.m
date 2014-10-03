@@ -108,7 +108,7 @@
 
 -(void)onTick:(NSTimer *)timer
 {
-	NSLog(@"OnTick");
+//	NSLog(@"OnTick");
 	[ParseHelper pollParseForActiveSessions];
 }
 

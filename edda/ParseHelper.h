@@ -29,6 +29,7 @@ static NSMutableArray * objectsUnderDeletionQueue;
 }
 +(void) setPollingTimer : (bool) bArg;
 +(void) initData;
++ (void) saveUserAlignmentToParse:(PFUser*)user :(BOOL)alignment;
 +(PFUser*) loggedInUser;
 +(NSString*) activeUserObjectID;
 +(void) anonymousLogin;

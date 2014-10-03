@@ -49,7 +49,6 @@ typedef struct sViewAngle sViewAngle;
 @property (weak, nonatomic) IBOutlet UIImageView *pointerView;
 @property (nonatomic) eddaOtherView *otherView;
 
-@property (weak, nonatomic) IBOutlet UIImageView *previewImage;
 @property (weak, nonatomic) IBOutlet UIView *debugView;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIView *indicatorView;
@@ -57,6 +56,9 @@ typedef struct sViewAngle sViewAngle;
 @property (weak, nonatomic) IBOutlet UIPickerView *placesPicker;
 @property (weak, nonatomic) IBOutlet UISwitch *debugSwitch;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (weak, nonatomic) IBOutlet UIButton *endButton;
+
+@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *cityLabel;
 @property (weak, nonatomic) IBOutlet UILabel *altitudeLabel;
@@ -75,8 +77,11 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureDeviceInput *rearVideoInput;
 @property (nonatomic) AVCaptureVideoPreviewLayer *rearPreviewLayer;
 
-- (void) userHasLoggedIn;
-- (IBAction)onStartTapped:(id)sender;
+@property (nonatomic) NSTimer * activeTimer;
+@property (nonatomic) PFObject * receiverObject;
+
+- (void)userHasLoggedIn;
+- (void)startVideoChat;
 - (IBAction)onDebugSwitchTapped:(id)sender;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view;

@@ -21,9 +21,7 @@
     __weak IBOutlet UITableView *m_userTableView;
     bool bAudioOnly;
     eddaAppDelegate * appDelegate;
-	CLGeocoder *geocoder;
 }
 - (IBAction)touchRefresh:(id)sender;
-- (IBAction)touchCancel:(id)sender;
 
 @end

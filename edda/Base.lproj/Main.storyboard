@@ -25,23 +25,32 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="lbm-a5-zVF">
-                                <rect key="frame" x="30" y="111" width="260" height="346"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="sfP-WX-KSq">
+                                <rect key="frame" x="101" y="400" width="118" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            </imageView>
+                                <color key="backgroundColor" red="0.91733743686868685" green="0.0" blue="0.0099540343407744664" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="End Call">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="endButtonTapped:" destination="rQl-PL-IFJ" eventType="touchUpInside" id="3nv-Iz-WSB"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="cCn-TC-ql3">
                                 <rect key="frame" x="101" y="400" width="118" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="0.3470015013325089" green="0.72693734217171713" blue="0.14725831941622169" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Start Call">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <segue destination="CkR-h6-QIM" kind="modal" identifier="showList" modalTransitionStyle="coverVertical" id="csh-Eb-kyI"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="jqg-sy-dxO">
+                            <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="jqg-sy-dxO" userLabel="InfoButton">
                                 <rect key="frame" x="149" y="52" width="22" height="22"/>
                                 <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
                                 <state key="normal">
@@ -55,7 +64,14 @@
                                     <segue destination="kIf-nA-PKG" kind="modal" identifier="showAlternate" modalTransitionStyle="flipHorizontal" id="ZEO-Qe-X3j"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" id="JSX-a3-pet">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="y5u-Jn-lFT" userLabel="StatusLabel">
+                                <rect key="frame" x="12" y="440" width="295" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view hidden="YES" contentMode="scaleToFill" id="JSX-a3-pet" userLabel="DebugView">
                                 <rect key="frame" x="0.0" y="-855" width="320" height="570"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
@@ -187,7 +203,7 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <view hidden="YES" contentMode="scaleToFill" id="Kn0-AN-8WT">
+                            <view hidden="YES" contentMode="scaleToFill" id="Kn0-AN-8WT" userLabel="DebugSwitchView">
                                 <rect key="frame" x="178" y="42" width="142" height="42"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
@@ -221,13 +237,14 @@
                         <outlet property="debugSwitch" destination="zrr-gC-snH" id="IKk-vR-DMd"/>
                         <outlet property="debugView" destination="JSX-a3-pet" id="5PT-UI-Qua"/>
                         <outlet property="elevationLabel" destination="Vne-ur-8Nh" id="QdH-DF-oYb"/>
+                        <outlet property="endButton" destination="sfP-WX-KSq" id="AJH-Fy-nMY"/>
                         <outlet property="headingLabel" destination="iHA-bB-3vE" id="Y2f-QC-FAb"/>
                         <outlet property="indicatorView" destination="Blu-nf-fu7" id="ACe-7U-6zZ"/>
                         <outlet property="latitudeLabel" destination="qCs-CS-zhs" id="B1I-PM-Que"/>
                         <outlet property="longitudeLabel" destination="SKV-AK-iDe" id="skG-ZQ-CEj"/>
                         <outlet property="placesPicker" destination="hAG-e6-E7a" id="kRt-tk-gbB"/>
-                        <outlet property="previewImage" destination="lbm-a5-zVF" id="N0i-hP-jXf"/>
                         <outlet property="startButton" destination="cCn-TC-ql3" id="dOm-dA-JFg"/>
+                        <outlet property="statusLabel" destination="y5u-Jn-lFT" id="Pru-cM-Ptr"/>
                         <outlet property="toAltitudeTextField" destination="JST-rr-1NI" id="HbR-zA-AlG"/>
                         <outlet property="toLatitudeTextField" destination="kcZ-iR-i44" id="erd-RT-k5F"/>
                         <outlet property="toLongitudeTextField" destination="jKV-Y4-Vfc" id="stz-zO-fJh"/>
@@ -249,7 +266,7 @@
                             <navigationBar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" id="hED-2o-FLw">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                 <items>
-                                    <navigationItem title="Title" id="caU-JJ-JLf">
+                                    <navigationItem title="Edda" id="caU-JJ-JLf">
                                         <barButtonItem key="leftBarButtonItem" systemItem="done" id="WuG-Ps-ZbD">
                                             <connections>
                                                 <action selector="done:" destination="kIf-nA-PKG" id="j28-pm-V55"/>
@@ -258,6 +275,17 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="w4c-pk-0z5">
+                                <rect key="frame" x="136" y="143" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="far away so close?" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yQW-H1-TqX">
+                                <rect key="frame" x="74" y="114" width="172" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.25" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -294,9 +322,21 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="SNk-Ny-KQF">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="callerCellID" id="tXe-F9-6Ak">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tXe-F9-6Ak" id="dSe-fS-gN1">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="ovX-ff-FKJ" kind="unwind" identifier="unwindToVideoChatID" unwindAction="unwindToVideoChat:" id="NZ1-5Z-9Ps"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="OUq-rZ-Utc" id="m9A-ZG-BKz"/>
                                     <outlet property="delegate" destination="OUq-rZ-Utc" id="SBi-gG-A2p"/>
@@ -309,8 +349,7 @@
                     <navigationItem key="navigationItem" title="People" id="fEw-Ug-5DS">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="TWB-9Z-FMe">
                             <connections>
-                                <action selector="touchCancel:" destination="OUq-rZ-Utc" id="k5Z-Ty-R3c"/>
-                                <segue destination="ovX-ff-FKJ" kind="unwind" identifier="unwindToMainID" unwindAction="unwindToMainViewController:" id="8DJ-Ai-pxV"/>
+                                <segue destination="ovX-ff-FKJ" kind="unwind" unwindAction="unwindToMainViewController:" id="Cox-r4-B8C"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Refresh" id="wy0-lK-anK">
@@ -327,7 +366,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7dT-ie-95q" sceneMemberID="firstResponder"/>
                 <exit id="ovX-ff-FKJ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="473" y="932"/>
+            <point key="canvasLocation" x="436" y="909"/>
         </scene>
     </scenes>
     <resources>

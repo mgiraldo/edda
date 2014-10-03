@@ -261,6 +261,7 @@
 			 [activeUser setObject:loggedInUser.objectId forKey:@"userID"];
 			 [activeUser setObject:[PFGeoPoint geoPointWithLocation:appDelegate.currentLocation] forKey:@"userLocation"];
 			 [activeUser setObject:[NSNumber numberWithDouble:appDelegate.currentLocation.altitude] forKey:@"userAltitude"];
+			 [activeUser setObject:@NO forKey:@"isAligned"];
 			 [activeUser setObject:appDelegate.userTitle forKey:@"userTitle"];
 			 [activeUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
 			  {
@@ -287,6 +288,29 @@
 			 [self showAlert:msg];
 		 }
 	 }];
+}
+
++ (void) saveUserAlignmentToParse:(PFUser*)user :(BOOL)alignment
+{
+	if (user == nil) return;
+	
+	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+	[query whereKey:@"userID" equalTo:user.objectId];
+	NSLog(@"alignment for: [%@]", user.objectId);
+	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+		if (!error) {
+			// Do something with the found objects
+			if (objects.count == 1) {
+				[objects.firstObject setValue:[NSNumber numberWithBool:alignment] forKey:@"isAligned"];
+				[objects.firstObject saveInBackground];
+			} else {
+				NSLog(@"error! found %d users", objects.count);
+			}
+		} else {
+			// Log details of the failure
+			NSLog(@"Error: %@ %@", error, [error userInfo]);
+		}
+	}];
 }
 
 + (void) saveUserWithLocationToParse:(PFUser*)user :(PFGeoPoint *)geopoint :(NSNumber *)altitude
