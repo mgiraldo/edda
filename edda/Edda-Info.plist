@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.pingpongestudio.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>com.pingpongestudio.edda</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -24,6 +24,10 @@
 	<string>1.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Your location helps the app determine where to point your device.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location helps the app determine where to point your device.</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -46,9 +50,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Your location helps the app determine where to point your device.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your location helps the app determine where to point your device.</string>
 </dict>
 </plist>

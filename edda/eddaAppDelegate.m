@@ -27,6 +27,23 @@
 	self.otAPIKey = configuration[@"Opentok"][@"APIKey"];
 	self.otProjectSecret = configuration[@"Opentok"][@"ProjectSecret"];
 
+	// Parse notifications
+	// Register for Push Notitications, if running iOS 8
+	if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+		UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
+														UIUserNotificationTypeBadge |
+														UIUserNotificationTypeSound);
+		UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes
+																				 categories:nil];
+		[application registerUserNotificationSettings:settings];
+		[application registerForRemoteNotifications];
+	} else {
+		// Register for Push Notifications before iOS 8
+		[application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
+														 UIRemoteNotificationTypeAlert |
+														 UIRemoteNotificationTypeSound)];
+	}
+	
 	// Parse initialization
 	self.pApplicationID = configuration[@"Parse"][@"ApplicationID"];
 	self.pClientKey = configuration[@"Parse"][@"ClientKey"];
@@ -88,6 +105,24 @@
 {
 	// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+#pragma mark - Push notifications
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+	NSLog(@"registered for notifs");
+	// Store the deviceToken in the current Installation and save it to Parse.
+	PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+	[currentInstallation setDeviceTokenFromData:deviceToken];
+	currentInstallation.channels = @[ @"global" ];
+	[currentInstallation saveInBackground];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	[PFPush handlePush:userInfo];
+}
+
+#pragma mark - Call timer
 
 //this method will be called once logged in. It will poll parse ActiveSessions object
 //for incoming calls.
