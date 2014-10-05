@@ -660,23 +660,6 @@ float _arrowMargin = 5.0f;
 	else return NO; // All is good. Compass is precise enough.
 }
 
-#pragma mark - Geocoding
-
-- (void)geocodeLocation:(CLLocation*)location
-{
-	CLGeocoder *geocoder = [[CLGeocoder alloc] init];
-	
-	[geocoder reverseGeocodeLocation:location completionHandler:
-	 ^(NSArray* placemarks, NSError* error){
-		 if ([placemarks count] > 0)
-		 {
-			 NSLog(@"found: %@", [[placemarks objectAtIndex:0] locality]);
-			 NSString *title = [NSString stringWithFormat:@"%@",[[placemarks objectAtIndex:0] locality]];
-			 appDelegate.userTitle = title;
-		 }
-	 }];
-}
-
 #pragma mark - GIS stuff
 
 - (void)updateViewAngle {
@@ -777,6 +760,20 @@ float _arrowMargin = 5.0f;
 			if (objects.count == 1) {
 				self.receiverObject = objects.firstObject;
 				[self fireActiveTimer];
+
+				// Find user for this activeuser
+				PFQuery *userQuery = [PFUser query];
+				[userQuery whereKey:@"objectId" equalTo:[objects.firstObject valueForKey:@"userID"]];
+				
+				// Find devices associated with these users
+				PFQuery *pushQuery = [PFInstallation query];
+				[pushQuery whereKey:@"user" matchesQuery:userQuery];
+				
+				// Send push notification to query
+				PFPush *push = [[PFPush alloc] init];
+				[push setQuery:pushQuery]; // Set our Installation query
+				[push setMessage:[NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle]];
+				[push sendPushInBackground];
 			} else {
 				NSLog(@"error! found %d users", objects.count);
 			}

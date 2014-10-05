@@ -26,6 +26,19 @@
 	// OpenTok initialization
 	self.otAPIKey = configuration[@"Opentok"][@"APIKey"];
 	self.otProjectSecret = configuration[@"Opentok"][@"ProjectSecret"];
+	
+	// Parse initialization
+	self.pApplicationID = configuration[@"Parse"][@"ApplicationID"];
+	self.pClientKey = configuration[@"Parse"][@"ClientKey"];
+	
+	self.callReceiverTitle = @"";
+	self.callReceiverID = @"";
+	
+	[Parse setApplicationId:self.pApplicationID clientKey:self.pClientKey];
+	[PFUser enableAutomaticUser];
+	self.bFullyLoggedIn = NO;
+	[ParseHelper initData];
+	[ParseHelper anonymousLogin];
 
 	// Parse notifications
 	// Register for Push Notitications, if running iOS 8
@@ -43,18 +56,6 @@
 														 UIRemoteNotificationTypeAlert |
 														 UIRemoteNotificationTypeSound)];
 	}
-	
-	// Parse initialization
-	self.pApplicationID = configuration[@"Parse"][@"ApplicationID"];
-	self.pClientKey = configuration[@"Parse"][@"ClientKey"];
-	
-	self.callReceiverTitle = @"";
-	self.callReceiverID = @"";
-	
-	[Parse setApplicationId:self.pApplicationID clientKey:self.pClientKey];
-	self.bFullyLoggedIn = NO;
-	[ParseHelper initData];
-	[ParseHelper anonymousLogin];
 	
 	return YES;
 }
@@ -114,7 +115,10 @@
 	// Store the deviceToken in the current Installation and save it to Parse.
 	PFInstallation *currentInstallation = [PFInstallation currentInstallation];
 	[currentInstallation setDeviceTokenFromData:deviceToken];
-	currentInstallation.channels = @[ @"global" ];
+	if ([PFUser currentUser])
+	{
+		currentInstallation[@"user"] = [PFUser currentUser];
+	}
 	[currentInstallation saveInBackground];
 }
 

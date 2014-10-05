@@ -113,7 +113,7 @@
          else
          {            
              loggedInUser = [PFUser user];
-             loggedInUser = user;
+//             loggedInUser = user;
              [self showUserTitlePrompt];
          }
      }];
@@ -136,7 +136,12 @@
         appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
         appDelegate.bFullyLoggedIn = YES;
 		
-        //fire appdelegate timer
+		// Store the deviceToken in the current Installation and save it to Parse.
+		PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+		[currentInstallation setObject:loggedInUser forKey:@"user"];
+		[currentInstallation saveInBackground];
+
+		//fire appdelegate timer
 		[self saveCurrentUserToParse];
     }
     else if (kUIAlertViewTagIncomingCall == alertView.tag)
@@ -258,7 +263,7 @@
 			 }
 			 NSLog(@"%i objects for id: %@", objects.count, loggedInUser.objectId);
 			 eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-			 [activeUser setObject:loggedInUser.objectId forKey:@"userID"];
+			 [activeUser setObject:[NSString stringWithFormat:@"%@",loggedInUser.objectId] forKey:@"userID"];
 			 [activeUser setObject:[PFGeoPoint geoPointWithLocation:appDelegate.currentLocation] forKey:@"userLocation"];
 			 [activeUser setObject:[NSNumber numberWithDouble:appDelegate.currentLocation.altitude] forKey:@"userAltitude"];
 			 [activeUser setObject:@NO forKey:@"isAligned"];
