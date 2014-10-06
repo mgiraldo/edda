@@ -14,9 +14,12 @@
 - (void)flipsideViewControllerDidFinish:(eddaFlipsideViewController *)controller;
 @end
 
-@interface eddaFlipsideViewController : UIViewController
+@interface eddaFlipsideViewController : UIViewController <UITextFieldDelegate>
+
+@property (nonatomic, assign) id currentResponder;
 
 @property (weak, nonatomic) id <eddaFlipsideViewControllerDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UITextField *nicknameLabel;
 
 - (IBAction)done:(id)sender;
 

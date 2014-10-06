@@ -157,9 +157,8 @@
 //argCoord - location around which to execute the search.
 -(void) fireUsersQuery : (bool)bRefreshUI
 {
-    NSLog(@"fireNearUsersQuery");
-    
     PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+	// TODO: add user distance limit to > 100m
     [query setLimit:1000];
 	
     //deletee all existing rows,first from front end, then from data source. 
@@ -176,12 +175,12 @@
                 //if for this user, skip it.
                 NSString *userID = [object valueForKey:@"userID"];
                 NSString *currentuser = [ParseHelper loggedInUser].objectId;
-                NSLog(@"userid: %@",userID);
-                NSLog(@"current: %@",currentuser);
-                
+//                NSLog(@"userid: %@",userID);
+//                NSLog(@"current: %@",currentuser);
+				
                 if ([userID isEqualToString:currentuser])
                 {
-                    NSLog(@"skipping - current user");
+//                    NSLog(@"skipping - current user");
                     continue;
                 }
                 
@@ -196,9 +195,6 @@
 				[dict setObject:@"Locating…" forKey:@"locality"];
 				[dict setObject:userAltitude forKey:@"userAltitude"];
 				
-                // TODO: if reverse-geocoder is added, userLocation can be converted to
-                // meaningful placemark info and user's address can be shown in table view.
-                // [dict setObject:userTitle forKey:@"userLocation"];
                 [m_userArray addObject:dict];
 				
 				CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
@@ -240,7 +236,7 @@
 	 ^(NSArray* placemarks, NSError* error){
 		 if ([placemarks count] > 0)
 		 {
-			 NSLog(@"found: %@", [[placemarks objectAtIndex:0] locality]);
+//			 NSLog(@"found: %@", [[placemarks objectAtIndex:0] locality]);
 			 NSString *locality = [NSString stringWithFormat:@"%@",[[placemarks objectAtIndex:0] locality]];
 			 [[m_userArray objectAtIndex:index] setObject:locality forKey:@"locality"];
 			 [m_userTableView reloadData];

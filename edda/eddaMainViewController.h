@@ -78,6 +78,8 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureVideoPreviewLayer *rearPreviewLayer;
 
 @property (nonatomic) NSTimer * activeTimer;
+@property (nonatomic) NSTimer * subscriberTimer;
+@property (nonatomic) NSTimer * publisherTimer;
 @property (nonatomic) PFObject * receiverObject;
 
 - (void)userHasLoggedIn;

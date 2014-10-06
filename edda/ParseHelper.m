@@ -301,7 +301,7 @@
 	
 	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
 	[query whereKey:@"userID" equalTo:user.objectId];
-	NSLog(@"alignment for: [%@]", user.objectId);
+//	NSLog(@"alignment for: [%@]", user.objectId);
 	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
 		if (!error) {
 			// Do something with the found objects
@@ -434,6 +434,7 @@
                  appDelegate.subscriberToken = activeSession[@"subscriberToken"];
                  appDelegate.publisherToken = activeSession[@"publisherToken"];
                  appDelegate.callerTitle = activeSession[@"callerTitle"];
+				 appDelegate.callerID = activeSession[@"callerID"];
 
 				 //done with backend object, remove it.
                  [self setPollingTimer:NO];

@@ -88,7 +88,7 @@ float _arrowMargin = 5.0f;
 	self.otherView.hidden = YES;
 	self.otherView.delegate = self;
 	[self.view addSubview:self.otherView];
-	
+
 	// the indicator
 	self.indicatorView.layer.cornerRadius = self.indicatorView.bounds.size.width * .5f;
 	self.indicatorView.layer.backgroundColor = [UIColor yellowColor].CGColor;
@@ -236,11 +236,16 @@ float _arrowMargin = 5.0f;
 //if and when a call arrives
 - (void) didCallArrive
 {
+	_isChatting = YES;
 	//pass blank because call has arrived, no need for receiverID.
 	[self createSession];
+
 	m_receiverID = @"";
 	NSLog(@"RIIIIINGGGG!!!");
-	[self.otherView zoomIn];
+	self.endButton.titleLabel.text = @"Cancel Call";
+	// find user location
+	[self findCallerData];
+	[self startVideoChat];
 }
 
 -(void) showReceiverBusyMsg
@@ -264,6 +269,12 @@ float _arrowMargin = 5.0f;
 - (void)updateInterface:(NSTimer *)timer {
 	self.endButton.hidden = !_isChatting;
 	self.startButton.hidden = _isChatting;
+
+	if (_videoActive && _isChatting) {
+		self.endButton.titleLabel.text = @"Cancel Call";
+	} else {
+		self.endButton.titleLabel.text = @"End Call";
+	}
 
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
 	if (_toLat==0 && _toLon==0 && _toAlt==0) return;
@@ -512,7 +523,6 @@ float _arrowMargin = 5.0f;
 	if (![appDelegate.callReceiverID isEqualToString:@""])
 	{
 		NSLog(@"outgoing mode");
-		m_mode = streamingModeOutgoing; //generate session
 		[self initOutGoingCall];
 		//connect, publish/subscriber -> will be taken care by
 		//sessionSaved observer handler.
@@ -520,11 +530,11 @@ float _arrowMargin = 5.0f;
 	else
 	{
 		NSLog(@"incoming mode");
-		m_mode = streamingModeIncoming; //connect, publish, subscribe
-		m_connectionAttempts = 1;
-		[self connectWithPublisherToken];
-//		[self connectWithSubscriberToken];
+		[self initIncomingCall];
 	}
+
+	[self firePublisherTimer];
+	[self fireSubscriberTimer];
 }
 
 - (void)endVideoChat {
@@ -532,6 +542,15 @@ float _arrowMargin = 5.0f;
 }
 
 #pragma mark - UI/Interaction
+
+- (void)pointToUser:(NSString *)nickname withID:(NSString *)userID andLocation:(CLLocation *)location andAltitude:(double)altitude {
+	self.otherView.hidden = NO;
+	_toLat = location.coordinate.latitude;
+	_toLon = location.coordinate.longitude;
+	_toAlt = altitude;
+	self.cityLabel.text =[NSString stringWithFormat:@"find %@", nickname];
+	[self updateViewAngle];
+}
 
 - (void)clearReceiver {
 	m_receiverID = @"";
@@ -607,17 +626,17 @@ float _arrowMargin = 5.0f;
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
 	_videoActive = NO;
 	[self refreshVideoFeeds];
-
-	[self startVideoChat];
+	[self.view bringSubviewToFront:self.statusLabel];
 }
 
 - (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view {
-	[self endVideoChat];
 	_videoActive = YES;
+	[self endVideoChat];
 	[self refreshVideoFeeds];
 }
 
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
+	self.otherView.hidden = YES;
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -742,15 +761,13 @@ float _arrowMargin = 5.0f;
 - (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
 {
 	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", appDelegate.callReceiverTitle, appDelegate.callReceiverLocation, appDelegate.callReceiverAltitude);
-	
 	_isChatting = YES;
-	
-	_toLat = appDelegate.callReceiverLocation.coordinate.latitude;
-	_toLon = appDelegate.callReceiverLocation.coordinate.longitude;
-	_toAlt = [appDelegate.callReceiverAltitude doubleValue];
-	self.cityLabel.text =[NSString stringWithFormat:@"find %@", appDelegate.callReceiverTitle];
-	[self updateViewAngle];
 
+	[self pointToUser:appDelegate.callReceiverTitle withID:appDelegate.callReceiverID andLocation:appDelegate.callReceiverLocation andAltitude:appDelegate.callReceiverAltitude.doubleValue];
+
+	[self startVideoChat];
+
+	// push notify the reciever
 	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
 	[query whereKey:@"userID" equalTo:appDelegate.callReceiverID];
 	NSLog(@"looking for: [%@]", appDelegate.callReceiverID);
@@ -760,7 +777,7 @@ float _arrowMargin = 5.0f;
 			if (objects.count == 1) {
 				self.receiverObject = objects.firstObject;
 				[self fireActiveTimer];
-
+				
 				// Find user for this activeuser
 				PFQuery *userQuery = [PFUser query];
 				[userQuery whereKey:@"objectId" equalTo:[objects.firstObject valueForKey:@"userID"]];
@@ -770,9 +787,13 @@ float _arrowMargin = 5.0f;
 				[pushQuery whereKey:@"user" matchesQuery:userQuery];
 				
 				// Send push notification to query
+				NSDictionary *data = @{
+									   @"alert": [NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle],
+									   @"cid": [NSString stringWithFormat:@"%@", ParseHelper.loggedInUser.objectId] // callerID
+									   };
 				PFPush *push = [[PFPush alloc] init];
 				[push setQuery:pushQuery]; // Set our Installation query
-				[push setMessage:[NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle]];
+				[push setData:data];
 				[push sendPushInBackground];
 			} else {
 				NSLog(@"error! found %d users", objects.count);
@@ -837,7 +858,54 @@ float _arrowMargin = 5.0f;
     return _places[row];
 }
 
-#pragma mark - Parse stuff
+#pragma mark - Timers
+
+- (void)fireSubscriberTimer {
+	if (self.subscriberTimer && [self.subscriberTimer isValid])
+		return;
+	
+	self.subscriberTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
+															target:self
+														  selector:@selector(onSubscriberTimer:)
+														  userInfo:nil
+														   repeats:YES];
+}
+
+- (void) stopSubscriberTimer {
+	if (self.subscriberTimer && [self.subscriberTimer isValid])
+		[self.subscriberTimer invalidate];
+}
+
+- (void) onSubscriberTimer:(NSTimer *)timer {
+	if (self.otherView.zoomed && _subscriber) {
+		[_subscriber.view setFrame:self.otherView.frame];
+		[self.otherView insertSubview:_subscriber.view atIndex:0];
+		[self stopSubscriberTimer];
+	}
+}
+
+- (void)firePublisherTimer {
+	if (self.publisherTimer && [self.publisherTimer isValid])
+		return;
+	
+	self.publisherTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
+															target:self
+														  selector:@selector(onPublisherTimer:)
+														  userInfo:nil
+														   repeats:YES];
+}
+
+- (void) stopPublisherTimer {
+	if (self.publisherTimer && [self.publisherTimer isValid])
+		[self.publisherTimer invalidate];
+}
+
+- (void) onPublisherTimer:(NSTimer *)timer {
+	if (self.otherView.zoomed) {
+		[self doPublish];
+		[self stopPublisherTimer];
+	}
+}
 
 - (void) fireActiveTimer
 {
@@ -846,9 +914,9 @@ float _arrowMargin = 5.0f;
 	
 	self.activeTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
 													 target:self
-												   selector:@selector(onTimer:)
+												   selector:@selector(onActiveTimer:)
 												   userInfo:nil
-													repeats:YES];
+													   repeats:YES];
 }
 
 - (void) stopActiveTimer {
@@ -856,7 +924,8 @@ float _arrowMargin = 5.0f;
 		[self.activeTimer invalidate];
 }
 
-- (void) onTimer:(NSTimer *)timer {
+- (void) onActiveTimer:(NSTimer *)timer {
+	NSLog(@"mode: %d receiverObject: %@", m_mode, self.receiverObject);
 	if (self.receiverObject != nil) {
 		[self.receiverObject refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
 			//
@@ -864,8 +933,49 @@ float _arrowMargin = 5.0f;
 	}
 }
 
+#pragma mark - Parse stuff
+
+-(void) findCallerData
+{
+	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+	[query whereKey:@"userID" equalTo:appDelegate.callerID];
+	
+	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+	 {
+		 if (!error)
+		 {
+			 if (objects.count > 0)
+			 {
+				 self.receiverObject = objects.firstObject;
+				 [self fireActiveTimer];
+				 //if for this user, skip it.
+				 NSString *userID = [self.receiverObject valueForKey:@"userID"];
+				 NSString *userTitle = [self.receiverObject valueForKey:@"userTitle"];
+				 PFGeoPoint *coordinate = [self.receiverObject valueForKey:@"userLocation"];
+				 NSNumber *userAltitude = [self.receiverObject valueForKey:@"userAltitude"];
+				 
+				 CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+
+				 [self pointToUser:userTitle withID:userID andLocation:location andAltitude:userAltitude.doubleValue];
+			 }
+		 }
+		 else
+		 {
+			 NSLog(@"error: %@",[error description]);
+		 }
+	 }];
+}
+
+- (void) initIncomingCall
+{
+	m_mode = streamingModeIncoming; //connect, publish, subscribe
+	m_connectionAttempts = 1;
+	[self connectWithPublisherToken];
+}
+
 - (void) initOutGoingCall
 {
+	m_mode = streamingModeOutgoing; //generate session
 	NSMutableDictionary * inputDict = [NSMutableDictionary dictionary];
 	[inputDict setObject:[ParseHelper loggedInUser].objectId forKey:@"callerID"];
 	[inputDict setObject:appDelegate.userTitle forKey:@"callerTitle"];
@@ -895,13 +1005,6 @@ float _arrowMargin = 5.0f;
 - (void)doConnect : (NSString *) token :(NSString *) sessionID
 {
 	NSLog(@"token: %@ sessionid: %@", token, sessionID);
-//	_session = [[OTSession alloc] initWithApiKey:appDelegate.otAPIKey
-//									   sessionId:sessionID
-//										delegate:self];
-	
-//	[_session addObserver:self forKeyPath:@"connectionCount"
-//				  options:NSKeyValueObservingOptionNew
-//				  context:nil];
 	
 	OTError *error = nil;
 	[_session connectWithToken:token error:&error];
@@ -926,27 +1029,14 @@ float _arrowMargin = 5.0f;
 #pragma mark - OpenTok methods
 
 /**
- * Asynchronously begins the session connect process. Some time later, we will
- * expect a delegate method to call us back with the results of this action.
- */
-//- (void)doConnect
-//{
-//    OTError *error = nil;
-//    
-//    [_session connectWithToken:kToken error:&error];
-//    if (error)
-//    {
-//        [self showAlert:[error localizedDescription]];
-//    }
-//}
-
-/**
  * Sets up an instance of OTPublisher to use with this session. OTPubilsher
  * binds to the device camera and microphone, and will provide A/V streams
  * to the OpenTok session.
  */
 - (void)doPublish
 {
+	NSLog(@"publishing...");
+	
 	_publisher = [[OTPublisher alloc] initWithDelegate:self name:UIDevice.currentDevice.name];
 	
     OTError *error = nil;
@@ -955,12 +1045,12 @@ float _arrowMargin = 5.0f;
     {
         [self showAlert:[error localizedDescription]];
     }
-    
+
 	CGRect viewBounds = self.view.bounds;
 	CGFloat topBarOffset = self.topLayoutGuide.length;
-
+	
 	[self.otherView insertSubview:_publisher.view atIndex:1];
-    [_publisher.view setFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
+	[_publisher.view setFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
 }
 
 /**
@@ -970,6 +1060,7 @@ float _arrowMargin = 5.0f;
 - (void)cleanupPublisher {
     [_publisher.view removeFromSuperview];
     _publisher = nil;
+	[self stopPublisherTimer];
     // this is a good place to notify the end-user that publishing has stopped.
 }
 
@@ -1001,6 +1092,7 @@ float _arrowMargin = 5.0f;
 {
     [_subscriber.view removeFromSuperview];
     _subscriber = nil;
+	[self stopSubscriberTimer];
 }
 
 # pragma mark - OTSession delegate callbacks
@@ -1032,8 +1124,6 @@ float _arrowMargin = 5.0f;
     NSLog(@"sessionDidConnect (%@)", session.sessionId);
     
 	self.statusLabel.text = @"Connected, waiting for stream...";
-
-	[self doPublish];
 }
 
 - (void)sessionDidDisconnect:(OTSession*)session
@@ -1155,8 +1245,6 @@ float _arrowMargin = 5.0f;
 	self.statusLabel.text = @"Connected and streaming...";
 
 	assert(_subscriber == subscriber);
-    [_subscriber.view setFrame:self.otherView.frame];
-	[self.otherView insertSubview:_subscriber.view atIndex:0];
 }
 
 - (void)subscriber:(OTSubscriber*)subscriber didFailWithError:(OTError*)error
@@ -1170,6 +1258,7 @@ float _arrowMargin = 5.0f;
 }
 
 - (IBAction)doneStreaming:(id)sender {
+	[self.otherView zoomOut];
     [self disConnectAndGoBack];
 }
 

@@ -7,14 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
 
 @protocol eddaOtherViewDelegate;
 
 @interface eddaOtherView : UIView
 
-@property (nonatomic) AVCaptureVideoPreviewLayer *videoLayer;
 @property (nonatomic, assign) id <eddaOtherViewDelegate> delegate;
+@property (nonatomic, assign) BOOL zoomed;
 
 - (void)setTappable:(BOOL)tappable;
 - (void)setActiveState:(BOOL)active;

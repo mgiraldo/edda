@@ -23,6 +23,7 @@
 
 @property (copy, nonatomic) NSString* userTitle;
 @property (copy, nonatomic) NSString* callerTitle;
+@property (copy, nonatomic) NSString* callerID;
 @property (copy, nonatomic) NSString* sessionID;
 @property (copy, nonatomic) NSString* publisherToken;
 @property (copy, nonatomic) NSString* subscriberToken;

@@ -10,7 +10,6 @@
 
 @implementation eddaOtherView
 
-BOOL _zoomed = NO;
 BOOL _touchDown = NO;
 BOOL _isTappable = NO;
 BOOL _isActive = NO;
@@ -35,11 +34,11 @@ float _otherSize = 50.0f;
 
 - (void)refreshView {
 	if (_isTappable) {
-//		self.layer.backgroundColor = [UIColor greenColor].CGColor;
-		self.layer.opacity = 1.0;
+		self.layer.backgroundColor = [UIColor blackColor].CGColor;
+//		self.layer.opacity = 1.0;
 	} else {
-//		self.layer.backgroundColor = [UIColor blackColor].CGColor;
-		self.layer.opacity = 0.5;
+		self.layer.backgroundColor = [UIColor darkGrayColor].CGColor;
+//		self.layer.opacity = 0.5;
 	}
 	if (_isActive) {
 		self.layer.borderColor = [UIColor greenColor].CGColor;
@@ -75,6 +74,7 @@ float _otherSize = 50.0f;
 }
 
 - (void)zoomIn {
+	if (_zoomed) return;
 	[self.delegate eddaOtherViewStartedZoomIn:self];
 	_zoomed = YES;
 	[UIView animateWithDuration:_zoomDuration
@@ -82,7 +82,6 @@ float _otherSize = 50.0f;
 						 CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height);
 						 self.layer.cornerRadius = 0;
 						 self.frame = frame;
-						 self.videoLayer.frame = frame;
 					 }
 					 completion:^(BOOL finished){
 						 // whatever you need to do when animations are complete
@@ -91,16 +90,16 @@ float _otherSize = 50.0f;
 }
 
 - (void)zoomOut {
+	if (!_zoomed) return;
 	[self.delegate eddaOtherViewStartedZoomOut:self];
 	_zoomed = NO;
 	[UIView animateWithDuration:_zoomDuration
 						  delay:0
 						options:UIViewAnimationOptionAllowAnimatedContent
 					 animations:^{
-						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherSize)*.5, -_otherSize*5, _otherSize, _otherSize);
+						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherSize)*.5, (self.window.bounds.size.height-_otherSize)*.5, _otherSize, _otherSize);
 						 self.layer.cornerRadius = _otherSize * .5;
 						 self.frame = frame;
-						 self.videoLayer.frame = frame;
 					 }
 					 completion:^(BOOL finished){
 						 // whatever you need to do when animations are complete
