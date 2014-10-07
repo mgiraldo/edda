@@ -46,31 +46,15 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) UIImageView *E_arrowView;
 @property (nonatomic) UIImageView *W_arrowView;
 
-@property (weak, nonatomic) IBOutlet UIImageView *pointerView;
 @property (nonatomic) eddaOtherView *otherView;
 
-@property (weak, nonatomic) IBOutlet UIView *debugView;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
-@property (weak, nonatomic) IBOutlet UIView *indicatorView;
-@property (weak, nonatomic) IBOutlet UIImageView *azimuthImage;
-@property (weak, nonatomic) IBOutlet UIPickerView *placesPicker;
-@property (weak, nonatomic) IBOutlet UISwitch *debugSwitch;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
 @property (weak, nonatomic) IBOutlet UIButton *endButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *cityLabel;
-@property (weak, nonatomic) IBOutlet UILabel *altitudeLabel;
-@property (weak, nonatomic) IBOutlet UILabel *latitudeLabel;
-@property (weak, nonatomic) IBOutlet UILabel *longitudeLabel;
-@property (weak, nonatomic) IBOutlet UILabel *headingLabel;
-@property (weak, nonatomic) IBOutlet UILabel *elevationLabel;
-@property (weak, nonatomic) IBOutlet UILabel *azimuthLabel;
-
-@property (weak, nonatomic) IBOutlet UITextField *toLatitudeTextField;
-@property (weak, nonatomic) IBOutlet UITextField *toLongitudeTextField;
-@property (weak, nonatomic) IBOutlet UITextField *toAltitudeTextField;
 
 @property (nonatomic) AVCaptureDevice *rearVideoCaptureDevice;
 @property (nonatomic) AVCaptureSession *rearSession;
@@ -78,13 +62,13 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureVideoPreviewLayer *rearPreviewLayer;
 
 @property (nonatomic) NSTimer * activeTimer;
+@property (nonatomic) NSTimer * alignedTimer;
 @property (nonatomic) NSTimer * subscriberTimer;
 @property (nonatomic) NSTimer * publisherTimer;
 @property (nonatomic) PFObject * receiverObject;
 
 - (void)userHasLoggedIn;
 - (void)startVideoChat;
-- (IBAction)onDebugSwitchTapped:(id)sender;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view;
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view;

@@ -14,12 +14,15 @@
 
 @property (nonatomic, assign) id <eddaOtherViewDelegate> delegate;
 @property (nonatomic, assign) BOOL zoomed;
+@property (nonatomic) UILabel *alertLabel;
 
 - (void)setTappable:(BOOL)tappable;
 - (void)setActiveState:(BOOL)active;
 - (void)updatePosition:(CGPoint)position;
 - (void)zoomIn;
 - (void)zoomOut;
+- (void)showAlert:(NSString *)message;
+- (void)hideAlert;
 
 @end
 

@@ -28,6 +28,19 @@ float _otherSize = 50.0f;
 		self.layer.backgroundColor = [UIColor blackColor].CGColor;
 		self.layer.borderWidth = _borderWidth;
 		self.layer.borderColor = [UIColor yellowColor].CGColor;
+		
+		//create the frame that will contain our label
+		CGRect labelFrame = CGRectMake(0.0f, 0.0f, 200.0f, 50.0f);
+		//create the label
+		self.alertLabel = [[UILabel alloc] initWithFrame:labelFrame];
+		self.alertLabel.lineBreakMode = NSLineBreakByWordWrapping;
+		self.alertLabel.numberOfLines = 2;
+		self.alertLabel.text = @"Simple Label";
+		self.alertLabel.font = [UIFont boldSystemFontOfSize:16.0f];
+		self.alertLabel.textColor = [UIColor whiteColor];
+		self.alertLabel.textAlignment =  NSTextAlignmentCenter;
+		self.alertLabel.hidden = YES;
+		[self addSubview:self.alertLabel];
     }
     return self;
 }
@@ -48,6 +61,21 @@ float _otherSize = 50.0f;
 }
 
 #pragma mark - View state
+
+- (void)showAlert:(NSString *)message {
+	if (!_zoomed) return;
+	self.alertLabel.text = message;
+	CGRect labelFrame = self.alertLabel.frame;
+	labelFrame.origin.x = self.window.bounds.size.width*.5-self.alertLabel.frame.size.width*.5;
+	labelFrame.origin.y = self.window.bounds.size.height*.5-self.alertLabel.frame.size.height*.5;
+	self.alertLabel.frame = labelFrame;
+	self.alertLabel.hidden = NO;
+}
+
+- (void)hideAlert {
+	self.alertLabel.text = @"";
+	self.alertLabel.hidden = YES;
+}
 
 - (void)updatePosition:(CGPoint)position {
 	if (!_zoomed) {
@@ -91,6 +119,7 @@ float _otherSize = 50.0f;
 
 - (void)zoomOut {
 	if (!_zoomed) return;
+	[self hideAlert];
 	[self.delegate eddaOtherViewStartedZoomOut:self];
 	_zoomed = NO;
 	[UIView animateWithDuration:_zoomDuration
@@ -119,24 +148,24 @@ float _otherSize = 50.0f;
 {
 //	NSLog(@"touchend");
     // Triggered when touch is released
-    if (_touchDown) {
-        if (_zoomed) {
-			[self zoomOut];
-		} else {
-			[self zoomIn];
-		}
-    }
+//    if (_touchDown) {
+//        if (_zoomed) {
+//			[self zoomOut];
+//		} else {
+//			[self zoomIn];
+//		}
+//    }
 	_touchDown = NO;
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
 //	NSLog(@"touchcancel");
-	if (_zoomed) {
-		[self zoomOut];
-	} else {
-		[self zoomIn];
-	}
+//	if (_zoomed) {
+//		[self zoomOut];
+//	} else {
+//		[self zoomIn];
+//	}
 	_touchDown = NO;
 }
 

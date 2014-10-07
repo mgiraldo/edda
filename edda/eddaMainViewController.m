@@ -29,6 +29,7 @@
 	int m_connectionAttempts;
 	NSString * m_receiverID;
 	eddaAppDelegate *appDelegate;
+	NSDate *alignedTimerStart;
 }
 
 // Change to NO to subscribe to streams other than your own.
@@ -41,12 +42,13 @@ float _previewHeight = 90;
 CLLocationManager *locationManager;
 CMMotionManager *motionManager;
 
-BOOL _debugActive = NO;
 BOOL _videoActive = YES;
 BOOL _rearVideoInited = NO;
 BOOL _haveArrows = NO;
 BOOL _isChatting = NO;
 BOOL _isAligned = NO;
+
+float _timeToWaitForAlignment = 10.0f;
 
 float _headingThreshold = 20.0f;
 float _pitchThreshold = 10.0f;
@@ -80,52 +82,12 @@ float _arrowMargin = 5.0f;
 	
 	appDelegate = [[UIApplication sharedApplication] delegate];
 
-	// debug view
-	[self.debugSwitch setOn:_debugActive];
-	
 	// other view
 	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
 	self.otherView.hidden = YES;
 	self.otherView.delegate = self;
 	[self.view addSubview:self.otherView];
 
-	// the indicator
-	self.indicatorView.layer.cornerRadius = self.indicatorView.bounds.size.width * .5f;
-	self.indicatorView.layer.backgroundColor = [UIColor yellowColor].CGColor;
-	self.indicatorView.layer.opacity = 0.0;
-	self.indicatorView.layer.borderWidth = 0.0;
-	self.indicatorView.layer.borderColor = [UIColor greenColor].CGColor;
-
-	// picker stuff
-	_places = @[@"Select", @"Beijing", @"Bogotá", @"Buenos Aires", @"Jakarta", @"Johannesburg", @"Kampala", @"London", @"Los Angeles", @"Madrid", @"Mecca", @"Moscow", @"New York", @"NYC Antipode", @"Paris", @"Perth", @"São Paulo", @"Tokio"];
-	_placeCoordinates = @[ @[@0.0f, @0.0f, @0.0f] // "None"
-						   , @[@39.904030f, @116.407526f, @52.0f] // "Beijing"
-						   , @[@4.598056f, @-74.075833f, @2600.0f] // "Bogotá"
-						   , @[@-34.603723f, @-58.381593f, @26.0f] // "Buenos Aires"
-						   , @[@-6.208763f, @106.845599f, @5.0f] // "Jakarta"
-						   , @[@-26.204103f, @28.047305f, @1755.0f] // "Johannesburg"
-						   , @[@0.313611f, @32.581111f, @1222.0f] // "Kampala"
-						   , @[@51.507351f, @-0.127758f, @7.0f] // "London"
-						   , @[@34.052234f, @-118.243685f, @89.0f] // "Los Angeles"
-						   , @[@40.416775f, @-3.703790f, @650.0f] // "Madrid"
-						   , @[@21.4167f, @39.8167f, @334.0f] // "Mecca"
-						   , @[@55.755826f, @37.617300f, @126.0f] // "Moscow"
-						   , @[@40.712784f, @-74.005941f, @10.0f] // "New York"
-						   , @[@-40.718315f, @106.043472f, @0.0f] // "NYC Antipode"
-						   , @[@48.856614f, @2.352222f, @45.0f] // "Paris"
-						   , @[@-31.953004f, @115.857469f, @54.0f] // "Perth"
-						   , @[@-23.550520f, @-46.633309f, @733.0f] // "São Paulo"
-						   , @[@35.689487f, @139.691706f, @19.0f] // "Tokio"
-						];
-	
-	self.placesPicker.dataSource = self;
-    self.placesPicker.delegate = self;
-	
-	// input
-	self.toLatitudeTextField.delegate = self;
-	self.toLongitudeTextField.delegate = self;
-	self.toAltitudeTextField.delegate = self;
-	
 	UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(resignOnTap:)];
     [singleTap setNumberOfTapsRequired:1];
     [singleTap setNumberOfTouchesRequired:1];
@@ -172,7 +134,6 @@ float _arrowMargin = 5.0f;
 
 - (void) viewDidAppear:(BOOL)animated
 {
-	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
 	[self refreshVideoFeeds];
 	[super viewDidAppear:animated];
 }
@@ -231,6 +192,13 @@ float _arrowMargin = 5.0f;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallArrive) name:kIncomingCallNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin) name:kLoggedInNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallCancel) name:kCallCancelledNotification object:nil];
+}
+
+//if and when a call arrives
+- (void) didCallCancel
+{
+	[self endVideoChat];
 }
 
 //if and when a call arrives
@@ -283,9 +251,6 @@ float _arrowMargin = 5.0f;
 	float pitchDeg = RAD_TO_DEG * self.currentMotion.attitude.pitch;
 	float pitchRaw = pitchDeg - 90;
 	float correctPitch = viewAngle.elevation - pitchRaw;
-	float pitchAdjusted = abs(correctPitch);
-	float elevationTransparency = ofMap(pitchAdjusted, 0, 180, 1.0, 0.0, true);
-	self.indicatorView.layer.opacity = elevationTransparency;
 	
 	// for the heading indicator
 	float correctHeading = self.currentHeading.trueHeading - viewAngle.azimuth;
@@ -296,7 +261,6 @@ float _arrowMargin = 5.0f;
 	} else {
 		headingTransparency = ofMap(headingAdjusted, 180, 360, 0.0, 30.0, true);
 	}
-	self.indicatorView.layer.borderWidth = headingTransparency;
 	
 	// arrows on/off
 	[self hideArrows];
@@ -319,13 +283,6 @@ float _arrowMargin = 5.0f;
 		rightPitch = NO;
 	}
 
-//	float normalizedHeadingTransparency = ofMap(headingTransparency, 0.0, 30.0, 0.0, 1.0, true);
-
-//	NSLog(@"head: %.0f chead: %.0f cheadadj: %.0f cpitch: %.0f pitchdeg: %.0f cpitchadj: %.0f pitchraw: %.0f",
-//		  self.currentHeading.trueHeading, correctHeading, headingAdjusted, correctPitch, pitchDeg, pitchAdjusted, pitchRaw);
-	
-//	float layerTransparency = elevationTransparency * .5 + normalizedHeadingTransparency * .5;
-	
 	float newX, newY;
 	float radius = 600 * ofMap(correctPitch, -90, 90, 0, 1, true);
 	float radians = -DEG_TO_RAD*correctHeading;
@@ -341,14 +298,26 @@ float _arrowMargin = 5.0f;
 	if (_isChatting && oldAligned != _isAligned) {
 		[ParseHelper saveUserAlignmentToParse:_isAligned];
 	}
+	
+	if (_isAligned && !self.otherView.zoomed) {
+		[self.otherView zoomIn];
+	}
 
 	[self.otherView setTappable:_isAligned];
 
 	[self pointObjects:correctHeading pitch:correctPitch];
 	
+	BOOL otherActive = NO;
+	
 	if (self.receiverObject != nil) {
-		BOOL otherActive = [[self.receiverObject valueForKey:@"isAligned"] boolValue];
+		otherActive = [[self.receiverObject valueForKey:@"isAligned"] boolValue];
 		[self.otherView setActiveState:otherActive];
+	}
+	
+	if (!_isAligned) {
+		[self fireAlignedTimer];
+	} else {
+		[self stopAlignedTimer];
 	}
 }
 
@@ -435,44 +404,6 @@ float _arrowMargin = 5.0f;
 	self.SW_arrowView.hidden = YES;
 }
 
-- (void)updateArrows {
-	CGFloat duration = 0.01;
-	float h = 0.0;
-	
-	if (self.currentHeading != nil) {
-		h = self.currentHeading.trueHeading;
-	}
-	
-	// azimuth arrow
-	CABasicAnimation *animationB = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-	animationB.fromValue = [[self.azimuthImage.layer presentationLayer] valueForKeyPath:@"transform.rotation.z"];
-	animationB.toValue = [NSNumber numberWithFloat:-DEG_TO_RAD*(h-viewAngle.azimuth)];;
-	animationB.duration = duration;
-	animationB.fillMode = kCAFillModeForwards;
-	animationB.repeatCount = 0;
-	animationB.removedOnCompletion = NO;
-	animationB.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-	[self.azimuthImage.layer addAnimation:animationB forKey:@"transform.rotation.z"];
-}
-
-- (void)showDebug {
-	[UIView beginAnimations:@"hideDebug" context:NULL];
-	[UIView setAnimationDelegate:self];
-	[UIView setAnimationDuration:0.25];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
-	self.debugView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.debugView.frame.size.height);
-	[UIView commitAnimations];
-}
-
-- (void)hideDebug {
-	[UIView beginAnimations:@"showDebug" context:NULL];
-	[UIView setAnimationDelegate:self];
-	[UIView setAnimationDuration:0.25];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-	self.debugView.frame = CGRectMake(0, -self.debugView.frame.size.height, self.view.bounds.size.width, self.debugView.frame.size.height);
-	[UIView commitAnimations];
-}
-
 #pragma mark - video stuff
 - (void)initRearCamera {
 	if (!_rearVideoInited) {
@@ -512,8 +443,12 @@ float _arrowMargin = 5.0f;
 - (void)refreshVideoFeeds {
 	[self stopRearCapture];
 	if (_videoActive) {
-		self.otherView.hidden = NO;
 		[self startRearCapture];
+		if (_isChatting) {
+			self.otherView.hidden = NO;
+		} else {
+			self.otherView.hidden = YES;
+		}
 	}
 }
 
@@ -576,18 +511,6 @@ float _arrowMargin = 5.0f;
 	NSLog(@"TAPPED!");
 }
 
-- (IBAction)onDebugSwitchTapped:(id)sender {
-	_debugActive = self.debugSwitch.on;
-	
-	if (_debugActive) {
-		[self showDebug];
-	} else {
-		[self hideDebug];
-	}
-
-	[self updateViewAngle];
-}
-
 - (void)resignOnTap:(id)sender {
     [self.currentResponder resignFirstResponder];
 	[self updateViewAngle];
@@ -605,15 +528,7 @@ float _arrowMargin = 5.0f;
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     if ([textField.text isEqualToString:@""])
         return;
-	if (textField == _toLatitudeTextField) {
-		_toLat = textField.text.doubleValue;
-	} else if (textField == _toLongitudeTextField) {
-		_toLon = textField.text.doubleValue;
-	} else if (textField == _toAltitudeTextField) {
-		_toAlt = textField.text.doubleValue;
-	}
 	self.currentResponder = nil;
-	[self.placesPicker selectRow:0 inComponent:0 animated:YES];
 	[self updateViewAngle];
 }
 
@@ -664,11 +579,6 @@ float _arrowMargin = 5.0f;
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
 //	NSLog(@"didUpdateHeading: %@", newHeading);
     self.currentHeading = newHeading;
-	
-    if (self.currentHeading != nil) {
-        [self headingLabel].text = [NSString stringWithFormat:@"%.1f", self.currentHeading.trueHeading];
-		[self updateArrows];
-	}
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
@@ -687,20 +597,7 @@ float _arrowMargin = 5.0f;
 	_fromLon = self.currentLocation.coordinate.longitude;
 	_fromAlt = self.currentLocation.altitude;
 
-	[self latitudeLabel].text = [NSString stringWithFormat:@"%.4f", _fromLat];
-	[self longitudeLabel].text = [NSString stringWithFormat:@"%.4f", _fromLon];
-	[self altitudeLabel].text = [NSString stringWithFormat:@"%.2f", _fromAlt];
-	
-	self.toLatitudeTextField.text = [NSString stringWithFormat:@"%f", _toLat];
-	self.toLongitudeTextField.text = [NSString stringWithFormat:@"%f", _toLon];
-	self.toAltitudeTextField.text = [NSString stringWithFormat:@"%f", _toAlt];
-	
 	viewAngle = [self findViewAngleFromLat:_fromLat fromLon:_fromLon fromAlt:_fromAlt toLat:_toLat toLon:_toLon toAlt:_toAlt];
-	
-	self.azimuthLabel.text = [NSString stringWithFormat:@"%.2f", viewAngle.azimuth];
-	self.elevationLabel.text = [NSString stringWithFormat:@"%.2f", viewAngle.elevation];
-
-	[self updateArrows];
 }
 
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt {
@@ -779,21 +676,20 @@ float _arrowMargin = 5.0f;
 				
 				// Find user for this activeuser
 				PFQuery *userQuery = [PFUser query];
-				[userQuery whereKey:@"objectId" equalTo:[objects.firstObject valueForKey:@"userID"]];
+				[userQuery whereKey:@"objectId" equalTo:[self.receiverObject valueForKey:@"userID"]];
 				
 				// Find devices associated with these users
 				PFQuery *pushQuery = [PFInstallation query];
 				[pushQuery whereKey:@"user" matchesQuery:userQuery];
 				
 				// Send push notification to query
-				NSDictionary *data = @{
-									   @"alert": [NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle],
-									   @"cid": [NSString stringWithFormat:@"%@", ParseHelper.loggedInUser.objectId] // callerID
-									   };
 				PFPush *push = [[PFPush alloc] init];
+				NSTimeInterval interval = 60*2; // 2 minutes
+				[push expireAfterTimeInterval:interval];
 				[push setQuery:pushQuery]; // Set our Installation query
-				[push setData:data];
+				[push setMessage:[NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle]];
 				[push sendPushInBackground];
+				NSLog(@"sent push: %@", push);
 			} else {
 				NSLog(@"error! found %d users", objects.count);
 			}
@@ -817,6 +713,8 @@ float _arrowMargin = 5.0f;
 	_toAlt = 0;
 	self.cityLabel.text = appDelegate.callReceiverTitle;
 	[self hideArrows];
+	_isChatting = NO;
+	self.otherView.hidden = YES;
 }
 
 #pragma mark - Flipside View
@@ -858,6 +756,41 @@ float _arrowMargin = 5.0f;
 }
 
 #pragma mark - Timers
+
+- (void) fireAlignedTimer
+{
+	if (self.alignedTimer && [self.alignedTimer isValid])
+		return;
+	
+	alignedTimerStart = [[NSDate alloc] init];
+	
+	self.alignedTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+													 target:self
+												   selector:@selector(onAlignedTimer:)
+												   userInfo:nil
+													   repeats:YES];
+}
+
+- (void) stopAlignedTimer {
+	if (self.alignedTimer && [self.alignedTimer isValid])
+		[self.alignedTimer invalidate];
+	[self.otherView hideAlert];
+	alignedTimerStart = nil;
+}
+
+- (void) onAlignedTimer:(NSTimer *)timer {
+	NSDate *now = [[NSDate alloc] init];
+	NSTimeInterval timeElapsed = [now timeIntervalSinceDate:alignedTimerStart];
+	int timeRemaining = _timeToWaitForAlignment - timeElapsed;
+	if (!_isAligned) {
+		[self.otherView showAlert:[NSString stringWithFormat:@"Conversation will close if not aligned in %i!", timeRemaining]];
+		if (timeRemaining<0) {
+			[self.otherView zoomOut];
+		}
+	} else {
+		[self stopAlignedTimer];
+	}
+}
 
 - (void)fireSubscriberTimer {
 	if (self.subscriberTimer && [self.subscriberTimer isValid])
@@ -1003,7 +936,7 @@ float _arrowMargin = 5.0f;
 
 - (void)doConnect : (NSString *) token :(NSString *) sessionID
 {
-	NSLog(@"token: %@ sessionid: %@", token, sessionID);
+//	NSLog(@"token: %@ sessionid: %@", token, sessionID);
 	
 	OTError *error = nil;
 	[_session connectWithToken:token error:&error];
@@ -1198,11 +1131,11 @@ float _arrowMargin = 5.0f;
 - (void)    session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
 {
     NSLog(@"session connectionDestroyed (%@)", connection.connectionId);
-    if ([_subscriber.stream.connection.connectionId
-         isEqualToString:connection.connectionId])
-    {
-        [self cleanupSubscriber];
-    }
+//    if ([_subscriber.stream.connection.connectionId
+//         isEqualToString:connection.connectionId])
+//    {
+        [self endVideoChat];
+//    }
 }
 
 - (void) session:(OTSession*)session didFailWithError:(OTError*)error
@@ -1271,6 +1204,9 @@ float _arrowMargin = 5.0f;
 		NSLog(@"disconnect failed with error: (%@)", error);
 	}
 	
+	self.endButton.hidden = YES;
+	self.startButton.hidden = NO;
+	self.statusLabel.text = @"";
 	[self clearReceiver];
 	[self cleanupPublisher];
 	[self cleanupSubscriber];

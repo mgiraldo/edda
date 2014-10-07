@@ -66,9 +66,9 @@
      {
          if (!error)
          {
-             NSLog(@"sessionID: %@, publisherToken: %@ , subscriberToken: %@", activeSession[@"sessionID"],activeSession[@"publisherToken"],
-                   activeSession[@"subscriberToken"]);
-             
+//             NSLog(@"sessionID: %@, publisherToken: %@ , subscriberToken: %@", activeSession[@"sessionID"],activeSession[@"publisherToken"],
+//                   activeSession[@"subscriberToken"]);
+			 
              eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
              appDelegate.sessionID = activeSession[@"sessionID"];
              appDelegate.subscriberToken = activeSession[@"subscriberToken"];
@@ -174,7 +174,8 @@
         }
         else
         {
-            //user did not accept call, restart timer          
+			[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallCancelledNotification object:nil]];
+            //user did not accept call, restart timer
             //start polling for new call.
             [self setPollingTimer:YES];
         }

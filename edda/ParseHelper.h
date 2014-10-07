@@ -8,6 +8,7 @@
 
 #define kLoggedInNotification @"LoggedInNotification"
 #define kIncomingCallNotification @"IncomingCallNotification"
+#define kCallCancelledNotification @"CallCancelledNotification"
 #define kSessionSavedNotification @"SessionSavedNotification"
 #define kReceiverBusyNotification @"ReceiverBusyNotification"
 #define kMessageSentNotification @"MessageSentNotification"
