@@ -87,10 +87,28 @@
 
 +(void) showUserTitlePrompt
 {
-    UIAlertView *userNameAlert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"Enter a nickname:" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
-    userNameAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
-    userNameAlert.tag = kUIAlertViewTagUserName;
-    [userNameAlert show];
+	// Get the stored data before the view loads
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	NSString *nickname = [defaults objectForKey:@"nickname"];
+	
+	NSLog(@"saved nick: %@", nickname);
+	
+	if (nickname == nil) {
+		UIAlertView *userNameAlert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"Enter a nickname:" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+		userNameAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+		userNameAlert.tag = kUIAlertViewTagUserName;
+		[userNameAlert show];
+	} else {
+		eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+		appDelegate.userTitle = nickname;
+		appDelegate.bFullyLoggedIn = YES;
+		
+		// Store the deviceToken in the current Installation and save it to Parse.
+		[appDelegate saveInstallation];
+		
+		//fire appdelegate timer
+		[self saveCurrentUserToParse];
+	}
 }
 
 +(void) anonymousLogin
@@ -98,7 +116,7 @@
     loggedInUser = [PFUser currentUser];
     if (loggedInUser)
     {
-        [self showUserTitlePrompt];
+		[self showUserTitlePrompt];
         return;
     }
     
@@ -136,10 +154,13 @@
         appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
         appDelegate.bFullyLoggedIn = YES;
 		
+		// Store the data
+		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+		[defaults setObject:appDelegate.userTitle forKey:@"nickname"];
+		[defaults synchronize];
+		
 		// Store the deviceToken in the current Installation and save it to Parse.
-		PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-		[currentInstallation setObject:loggedInUser forKey:@"user"];
-		[currentInstallation saveInBackground];
+		[appDelegate saveInstallation];
 
 		//fire appdelegate timer
 		[self saveCurrentUserToParse];
@@ -295,12 +316,10 @@
 	 }];
 }
 
-+ (void) saveUserAlignmentToParse:(PFUser*)user :(BOOL)alignment
++ (void) saveUserAlignmentToParse:(BOOL)alignment
 {
-	if (user == nil) return;
-	
 	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-	[query whereKey:@"userID" equalTo:user.objectId];
+	[query whereKey:@"userID" equalTo:loggedInUser.objectId];
 //	NSLog(@"alignment for: [%@]", user.objectId);
 	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
 		if (!error) {
@@ -318,12 +337,12 @@
 	}];
 }
 
-+ (void) saveUserWithLocationToParse:(PFUser*)user :(PFGeoPoint *)geopoint :(NSNumber *)altitude
++ (void) saveUserWithLocationToParse:(PFGeoPoint *)geopoint :(NSNumber *)altitude
 {
     __block PFObject *activeUser;
 	
 	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-	[query whereKey:@"userID" equalTo:[NSString stringWithFormat:@"%@",user.objectId]];
+	[query whereKey:@"userID" equalTo:[NSString stringWithFormat:@"%@",loggedInUser.objectId]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
     {
         if (!error)
@@ -340,7 +359,7 @@
                 activeUser = (PFObject *)[objects objectAtIndex:0];
             }
             eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-            [activeUser setObject:user.objectId forKey:@"userID"];
+            [activeUser setObject:loggedInUser.objectId forKey:@"userID"];
             [activeUser setObject:geopoint forKey:@"userLocation"];
 			[activeUser setObject:altitude forKey:@"userAltitude"];
             [activeUser setObject:appDelegate.userTitle forKey:@"userTitle"];

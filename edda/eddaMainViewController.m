@@ -339,7 +339,7 @@ float _arrowMargin = 5.0f;
 	_isAligned = (rightHead && rightPitch);
 
 	if (_isChatting && oldAligned != _isAligned) {
-		[ParseHelper saveUserAlignmentToParse:[ParseHelper loggedInUser] :_isAligned];
+		[ParseHelper saveUserAlignmentToParse:_isAligned];
 	}
 
 	[self.otherView setTappable:_isAligned];
@@ -656,8 +656,7 @@ float _arrowMargin = 5.0f;
 	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
 		appDelegate.currentLocation = self.currentLocation;
-		PFUser * thisUser = [ParseHelper loggedInUser] ;
-		[ParseHelper saveUserWithLocationToParse:thisUser :[PFGeoPoint geoPointWithLocation:self.currentLocation] :[NSNumber numberWithDouble:self.currentLocation.altitude]];
+		[ParseHelper saveUserWithLocationToParse:[PFGeoPoint geoPointWithLocation:self.currentLocation] :[NSNumber numberWithDouble:self.currentLocation.altitude]];
 		[self updateViewAngle];
 	}
 }
@@ -925,7 +924,7 @@ float _arrowMargin = 5.0f;
 }
 
 - (void) onActiveTimer:(NSTimer *)timer {
-	NSLog(@"mode: %d receiverObject: %@", m_mode, self.receiverObject);
+//	NSLog(@"mode: %d receiverObject: %@", m_mode, self.receiverObject);
 	if (self.receiverObject != nil) {
 		[self.receiverObject refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
 			//

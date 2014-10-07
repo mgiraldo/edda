@@ -20,7 +20,7 @@
 	NSDictionary *configuration = [[NSDictionary alloc] initWithContentsOfFile:plistPath];
 	
 	NSString *testflightId = configuration[@"TestFlight"][@"ApplicationId"];
-
+	
 	[TestFlight takeOff:testflightId];
 
 	// OpenTok initialization
@@ -111,19 +111,29 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-	NSLog(@"registered for notifs");
-	// Store the deviceToken in the current Installation and save it to Parse.
-	PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-	[currentInstallation setDeviceTokenFromData:deviceToken];
-	if ([PFUser currentUser])
-	{
-		currentInstallation[@"user"] = [PFUser currentUser];
-	}
-	[currentInstallation saveInBackground];
+	NSLog(@"registered for notifs: %@", deviceToken);
+	self.token = deviceToken;
+	[self saveInstallation];
 }
+
+-(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+	NSLog(@"FAILED to register for notifs: %@", error);
+}
+
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	[PFPush handlePush:userInfo];
+}
+
+-(void)saveInstallation{
+	if ([PFUser currentUser]) {
+		PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+		[currentInstallation setDeviceTokenFromData:self.token];
+		[currentInstallation setObject:[PFUser currentUser] forKey:@"user"];
+		[currentInstallation saveInBackground];
+		
+		NSLog(@"INSTALLATION REGISTERED");
+	}
 }
 
 #pragma mark - Call timer

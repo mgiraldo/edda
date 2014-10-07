@@ -25,6 +25,7 @@
 	[self.view addGestureRecognizer:singleTap];
 
 	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	self.nickname = appDelegate.userTitle;
 	self.nicknameLabel.text = appDelegate.userTitle;
 	self.nicknameLabel.delegate = self;
 }
@@ -67,6 +68,9 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
     [self animateTextField:textField up:YES];
+	
+	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	self.nickname = appDelegate.userTitle;
 
 	self.currentResponder = textField;
 }
@@ -79,11 +83,18 @@
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     [self animateTextField: textField up:NO];
 
-	if ([textField.text isEqualToString:@""])
+	if ([textField.text isEqualToString:@""]) {
+		textField.text = self.nickname;
 		return;
+	}
 	if (textField == _nicknameLabel) {
 		eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
 		appDelegate.userTitle = textField.text;
+
+		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+		[defaults setObject:appDelegate.userTitle forKey:@"nickname"];
+		[defaults synchronize];
+		
 		[ParseHelper saveCurrentUserToParse];
 	}
 	self.currentResponder = nil;

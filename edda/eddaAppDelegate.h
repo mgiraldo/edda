@@ -37,6 +37,9 @@
 @property (assign, nonatomic) bool bFullyLoggedIn;  //to say user also entered his title
 @property (nonatomic) NSTimer * appTimer;
 
+@property (strong) NSData* token;
+
+-(void)saveInstallation;
 -(void)fireListeningTimer;
 
 @end
