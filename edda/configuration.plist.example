@@ -21,5 +21,16 @@
 			<key>ClientKey</key>
 			<string>your_client_key</string>
 		</dict>
+		<key>Quickblox</key>
+		<dict>
+			<key>ApplicationID</key>
+			<integer>your_app_id</integer>
+			<key>AuthKey</key>
+			<string>your_auth_key</string>
+			<key>AuthSecret</key>
+			<string>your_auth_secret</string>
+			<key>AccountKey</key>
+			<string>your_account_key</string>
+		</dict>
 	</dict>
 </plist>

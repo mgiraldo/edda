@@ -95,7 +95,7 @@
 		[defaults setObject:appDelegate.userTitle forKey:@"nickname"];
 		[defaults synchronize];
 		
-		[ParseHelper saveCurrentUserToParse];
+//		[ParseHelper saveCurrentUserToParse];
 	}
 	self.currentResponder = nil;
 }

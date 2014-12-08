@@ -113,12 +113,12 @@
 	NSString * receiverTitle = [dict objectForKey:@"userTitle"];
 	NSNumber * receiverAltitude = [dict objectForKey:@"userAltitude"];
 
-	PFGeoPoint *coordinate = [dict valueForKey:@"userLocation"];
-	CLLocation *location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+//	PFGeoPoint *coordinate = [dict valueForKey:@"userLocation"];
+//	CLLocation *location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
 
 	m_receiverID = [receiverID copy];
 	m_receiverTitle = [receiverTitle copy];
-	m_receiverLocation = [location copy];
+//	m_receiverLocation = [location copy];
 	m_receiverAltitude = [receiverAltitude copy];
 
 	appDelegate.callReceiverID = m_receiverID;
@@ -141,7 +141,7 @@
 }
 
 - (void)clearReceiver {
-	m_receiverID = @"";
+	m_receiverID = nil;
 	m_receiverTitle = @"";
 	m_receiverLocation = nil;
 	m_receiverAltitude = 0;
@@ -157,62 +157,62 @@
 //argCoord - location around which to execute the search.
 -(void) fireUsersQuery : (bool)bRefreshUI
 {
-    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-	// TODO: add user distance limit to > 100m
-    [query setLimit:1000];
-	
-    //deletee all existing rows,first from front end, then from data source. 
-    [m_userArray removeAllObjects];
-    [m_userTableView reloadData];    
-    
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-    {
-        if (!error)
-        {
-			int index = 0;
-            for (PFObject *object in objects)
-            {
-                //if for this user, skip it.
-                NSString *userID = [object valueForKey:@"userID"];
-                NSString *currentuser = [ParseHelper loggedInUser].objectId;
-//                NSLog(@"userid: %@",userID);
-//                NSLog(@"current: %@",currentuser);
-				
-                if ([userID isEqualToString:currentuser])
-                {
-//                    NSLog(@"skipping - current user");
-                    continue;
-                }
-                
-                NSString *userTitle = [object valueForKey:@"userTitle"];
-				PFGeoPoint *coordinate = [object valueForKey:@"userLocation"];
-				NSNumber *userAltitude = [object valueForKey:@"userAltitude"];
-				
-                NSMutableDictionary * dict = [NSMutableDictionary dictionary];
-                [dict setObject:userID forKey:@"userID"];
-                [dict setObject:userTitle forKey:@"userTitle"];
-				[dict setObject:coordinate forKey:@"userLocation"];
-				[dict setObject:@"Locating…" forKey:@"locality"];
-				[dict setObject:userAltitude forKey:@"userAltitude"];
-				
-                [m_userArray addObject:dict];
-				
-				CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
-				[self geocodeLocation:location forIndex:index];
-				index++;
-			}
-            
-            //when done, refresh the table view
-            if (bRefreshUI)
-            {
-                [m_userTableView reloadData];
-            }
-        }
-        else
-        {
-            NSLog(@"error: %@",[error description]);
-        }
-    }];
+//    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+//	// TODO: add user distance limit to > 100m
+//    [query setLimit:1000];
+//	
+//    //deletee all existing rows,first from front end, then from data source. 
+//    [m_userArray removeAllObjects];
+//    [m_userTableView reloadData];    
+//    
+//    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+//    {
+//        if (!error)
+//        {
+//			int index = 0;
+//            for (PFObject *object in objects)
+//            {
+//                //if for this user, skip it.
+//                NSString *userID = [object valueForKey:@"userID"];
+//                NSString *currentuser = [QBHelper loggedInUser].objectId;
+////                NSLog(@"userid: %@",userID);
+////                NSLog(@"current: %@",currentuser);
+//				
+//                if ([userID isEqualToString:currentuser])
+//                {
+////                    NSLog(@"skipping - current user");
+//                    continue;
+//                }
+//                
+//                NSString *userTitle = [object valueForKey:@"userTitle"];
+//				PFGeoPoint *coordinate = [object valueForKey:@"userLocation"];
+//				NSNumber *userAltitude = [object valueForKey:@"userAltitude"];
+//				
+//                NSMutableDictionary * dict = [NSMutableDictionary dictionary];
+//                [dict setObject:userID forKey:@"userID"];
+//                [dict setObject:userTitle forKey:@"userTitle"];
+//				[dict setObject:coordinate forKey:@"userLocation"];
+//				[dict setObject:@"Locating…" forKey:@"locality"];
+//				[dict setObject:userAltitude forKey:@"userAltitude"];
+//				
+//                [m_userArray addObject:dict];
+//				
+//				CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+//				[self geocodeLocation:location forIndex:index];
+//				index++;
+//			}
+//            
+//            //when done, refresh the table view
+//            if (bRefreshUI)
+//            {
+//                [m_userTableView reloadData];
+//            }
+//        }
+//        else
+//        {
+//            NSLog(@"error: %@",[error description]);
+//        }
+//    }];
 }
 
 - (void)viewDidUnload {

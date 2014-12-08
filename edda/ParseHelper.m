@@ -18,12 +18,15 @@
 +(void)saveSessionToParse:(NSDictionary *)inputDict
 {    
     NSString * receiverID = [inputDict objectForKey:@"receiverID"];
-
-    //check if the recipient is either the caller or receiver in one of the activesessions.
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:
-                              @"receiverID = '%@' OR callerID = %@", receiverID, receiverID];
-    PFQuery *query = [PFQuery queryWithClassName:@"ActiveSessions" predicate:predicate];
-    
+	
+	PFQuery *recID = [PFQuery queryWithClassName:@"ActiveSessions"];
+	[recID whereKey:@"receiverID" equalTo:receiverID];
+ 
+	PFQuery *callID = [PFQuery queryWithClassName:@"ActiveSessions"];
+	[callID whereKey:@"callerID" equalTo:receiverID];
+	
+	PFQuery *query = [PFQuery orQueryWithSubqueries:@[recID,callID]];
+	
     [query getFirstObjectInBackgroundWithBlock:^
     (PFObject *object, NSError *error)
     {
@@ -104,7 +107,7 @@
 		appDelegate.bFullyLoggedIn = YES;
 		
 		// Store the deviceToken in the current Installation and save it to Parse.
-		[appDelegate saveInstallation];
+//		[appDelegate saveInstallation];
 		
 		//fire appdelegate timer
 		[self saveCurrentUserToParse];
@@ -160,7 +163,7 @@
 		[defaults synchronize];
 		
 		// Store the deviceToken in the current Installation and save it to Parse.
-		[appDelegate saveInstallation];
+//		[appDelegate saveInstallation];
 
 		//fire appdelegate timer
 		[self saveCurrentUserToParse];
@@ -306,7 +309,7 @@
 					  NSLog(@"objectID: %@ userID: %@", activeUserObjectID, loggedInUser.objectId);
 				  }
 				  [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
-				  [appDelegate fireListeningTimer];
+//				  [appDelegate fireListeningTimer];
 			  }];
 		 }
 		 else

@@ -8,8 +8,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <AVFoundation/AVFoundation.h>
-#import <Parse/Parse.h>
-#import <Opentok/Opentok.h>
 #import "eddaAppDelegate.h"
 #import "eddaFlipsideViewController.h"
 #import "eddaOtherView.h"
@@ -17,7 +15,7 @@
 
 @class eddaMainViewController;
 
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, CLLocationManagerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 
 enum streamingMode
 {
@@ -65,7 +63,11 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) NSTimer * alignedTimer;
 @property (nonatomic) NSTimer * subscriberTimer;
 @property (nonatomic) NSTimer * publisherTimer;
-@property (nonatomic) PFObject * receiverObject;
+@property (nonatomic) QBCOCustomObject * receiverObject;
+
+@property (nonatomic) QBVideoChat *videoChat;
+@property (nonatomic) UIView *opponentVideoView;
+@property (nonatomic) UIView *myVideoView;
 
 - (void)userHasLoggedIn;
 - (void)startVideoChat;

@@ -28,6 +28,10 @@
 	<string>Your location helps the app determine where to point your device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location helps the app determine where to point your device.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>

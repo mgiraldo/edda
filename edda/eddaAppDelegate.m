@@ -8,7 +8,6 @@
 
 #import "eddaAppDelegate.h"
 #import "eddaMainViewController.h"
-#import <Parse/Parse.h>
 
 @implementation eddaAppDelegate
 
@@ -27,20 +26,24 @@
 	self.otAPIKey = configuration[@"Opentok"][@"APIKey"];
 	self.otProjectSecret = configuration[@"Opentok"][@"ProjectSecret"];
 	
-	// Parse initialization
-	self.pApplicationID = configuration[@"Parse"][@"ApplicationID"];
-	self.pClientKey = configuration[@"Parse"][@"ClientKey"];
+	// Quickblox
+	[QBApplication sharedApplication].applicationId = [configuration[@"Quickblox"][@"ApplicationID"] integerValue];
+	[QBConnection registerServiceKey:configuration[@"Quickblox"][@"AuthKey"]];
+	[QBConnection registerServiceSecret:configuration[@"Quickblox"][@"AuthSecret"]];
+	[QBSettings setAccountKey:configuration[@"Quickblox"][@"AccountKey"]];
 	
-	self.callReceiverTitle = @"";
-	self.callReceiverID = @"";
-	
-	[Parse setApplicationId:self.pApplicationID clientKey:self.pClientKey];
-	[PFUser enableAutomaticUser];
-	self.bFullyLoggedIn = NO;
-	[ParseHelper initData];
-	[ParseHelper anonymousLogin];
+	NSMutableDictionary *videoChatConfiguration = [[QBSettings videoChatConfiguration] mutableCopy];
+	[videoChatConfiguration setObject:@20 forKey:kQBVideoChatCallTimeout];
+	[videoChatConfiguration setObject:AVCaptureSessionPresetLow forKey:kQBVideoChatFrameQualityPreset];
+	[videoChatConfiguration setObject:@2 forKey:kQBVideoChatVideoFramesPerSecond];
+	[videoChatConfiguration setObject:@3 forKey:kQBVideoChatP2PTimeout];
+	[videoChatConfiguration setObject:@10 forKey:kQBVideoChatBadConnectionTimeout];
+	[QBSettings setVideoChatConfiguration:videoChatConfiguration];
 
-	// Parse notifications
+	self.bFullyLoggedIn = NO;
+	[QBHelper initData];
+	[QBHelper anonymousLogin];
+	
 	// Register for Push Notitications, if running iOS 8
 	if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
 		UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
@@ -66,7 +69,7 @@
 		BOOL oldPushHandlerOnly = ![self respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)];
 		BOOL noPushPayload = ![launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
 		if (preBackgroundPush || oldPushHandlerOnly || noPushPayload) {
-		  [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+//		  [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
 		}
 	}
 
@@ -95,8 +98,8 @@
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
 				   ^{
         // Do the work associated with the task, preferably in chunks.
-        [ParseHelper deleteActiveSession];
-        [ParseHelper deleteActiveUser];
+        [QBHelper deleteActiveSession];
+        [QBHelper deleteActiveUser];
         [application endBackgroundTask:backgroundTask];
         backgroundTask = UIBackgroundTaskInvalid;
 				   });
@@ -106,8 +109,8 @@
 {
 	// Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 	self.bFullyLoggedIn = NO;
-	[ParseHelper initData];
-	[ParseHelper anonymousLogin];
+	[QBHelper initData];
+	[QBHelper anonymousLogin];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
@@ -138,8 +141,8 @@
 	if (application.applicationState == UIApplicationStateInactive) {
 		// The application was just brought from the background to the foreground,
 		// so we consider the app as having been "opened by a push notification."
-		[PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
-		[PFPush handlePush:userInfo];
+//		[PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
+//		[PFPush handlePush:userInfo];
 	}
 }
 
@@ -148,8 +151,8 @@
 	if (application.applicationState == UIApplicationStateInactive) {
 		// The application was just brought from the background to the foreground,
 		// so we consider the app as having been "opened by a push notification."
-		[PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
-		[PFPush handlePush:userInfo];
+//		[PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
+//		[PFPush handlePush:userInfo];
 	}
 	if (completionHandler) {
 		completionHandler(UIBackgroundFetchResultNewData);
@@ -157,19 +160,19 @@
 }
 
 -(void)saveInstallation{
-	if ([PFUser currentUser]) {
-		PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-		[currentInstallation setDeviceTokenFromData:self.token];
-		[currentInstallation setObject:[PFUser currentUser] forKey:@"user"];
-		[currentInstallation saveInBackground];
-		
-		NSLog(@"INSTALLATION REGISTERED");
-	}
+//	if ([PFUser currentUser]) {
+//		PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+//		[currentInstallation setDeviceTokenFromData:self.token];
+//		[currentInstallation setObject:[PFUser currentUser] forKey:@"user"];
+//		[currentInstallation saveInBackground];
+//		
+//		NSLog(@"INSTALLATION REGISTERED");
+//	}
 }
 
 #pragma mark - Call timer
 
-//this method will be called once logged in. It will poll parse ActiveSessions object
+//this method will be called once logged in. It will poll QB ActiveSessions object
 //for incoming calls.
 -(void) fireListeningTimer
 {
@@ -181,7 +184,7 @@
 												   selector:@selector(onTick:)
 												   userInfo:nil
 													repeats:YES];
-	[ParseHelper setPollingTimer:YES];
+	[QBHelper setPollingTimer:YES];
 	NSLog(@"fired timer");
 }
 
@@ -189,7 +192,7 @@
 -(void)onTick:(NSTimer *)timer
 {
 //	NSLog(@"OnTick");
-	[ParseHelper pollParseForActiveSessions];
+	[QBHelper pollQBForActiveSessions];
 }
 
 @end

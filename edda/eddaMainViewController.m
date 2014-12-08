@@ -15,25 +15,18 @@
 #import "utils.h"
 
 @interface eddaMainViewController ()
-<OTSessionDelegate, OTSubscriberDelegate, OTPublisherDelegate>
 
 @property (strong, nonatomic) NSMutableSet *disconnectListeners;
 
 @end
 
 @implementation eddaMainViewController {
-	OTSession* _session;
-	OTPublisher* _publisher;
-	OTSubscriber* _subscriber;
 	int m_mode;
 	int m_connectionAttempts;
-	NSString * m_receiverID;
+	NSNumber * m_receiverID;
 	eddaAppDelegate *appDelegate;
 	NSDate *alignedTimerStart;
 }
-
-// Change to NO to subscribe to streams other than your own.
-static bool subscribeToSelf = NO;
 
 // self preview size
 float _previewWidth = 60;
@@ -205,10 +198,8 @@ float _arrowMargin = 5.0f;
 - (void) didCallArrive
 {
 	_isChatting = YES;
-	//pass blank because call has arrived, no need for receiverID.
-	[self createSession];
 
-	m_receiverID = @"";
+	m_receiverID = nil;
 	NSLog(@"RIIIIINGGGG!!!");
 	self.endButton.titleLabel.text = @"Cancel Call";
 	// find user location
@@ -231,6 +222,7 @@ float _arrowMargin = 5.0f;
 - (void) didLogin
 {
 	NSLog(@"logged in!");
+	[self initQBSession];
 	[self userHasLoggedIn];
 }
 
@@ -296,7 +288,7 @@ float _arrowMargin = 5.0f;
 	_isAligned = (rightHead && rightPitch);
 
 	if (_isChatting && oldAligned != _isAligned) {
-		[ParseHelper saveUserAlignmentToParse:_isAligned];
+		[QBHelper saveUserAlignmentToQB:_isAligned];
 	}
 	
 	if (_isAligned && !self.otherView.zoomed) {
@@ -404,7 +396,7 @@ float _arrowMargin = 5.0f;
 	self.SW_arrowView.hidden = YES;
 }
 
-#pragma mark - video stuff
+#pragma mark - Video stuff
 - (void)initRearCamera {
 	if (!_rearVideoInited) {
 		_rearVideoInited = YES;
@@ -455,52 +447,29 @@ float _arrowMargin = 5.0f;
 - (void)startVideoChat {
 	_isChatting = YES;
 	
-	if (![appDelegate.callReceiverID isEqualToString:@""])
+	if (appDelegate.callReceiverID != nil)
 	{
-		NSLog(@"outgoing mode");
-		[self initOutGoingCall];
-		//connect, publish/subscriber -> will be taken care by
-		//sessionSaved observer handler.
+		[QBChat instance].delegate = self;
+		[self.videoChat callUser:appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
 	}
-	else
-	{
-		NSLog(@"incoming mode");
-		[self initIncomingCall];
-	}
-
-	[self firePublisherTimer];
-	[self fireSubscriberTimer];
 }
 
 - (void)endVideoChat {
 	[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:0.0];
 }
 
+- (void) sessionSaved {
+}
+
 #pragma mark - UI/Interaction
 
-- (void)pointToUser:(NSString *)nickname withID:(NSString *)userID andLocation:(CLLocation *)location andAltitude:(double)altitude {
+- (void)pointToUser:(NSString *)nickname withID:(NSNumber *)userID andLocation:(CLLocation *)location andAltitude:(double)altitude {
 	self.otherView.hidden = NO;
 	_toLat = location.coordinate.latitude;
 	_toLon = location.coordinate.longitude;
 	_toAlt = altitude;
 	self.cityLabel.text =[NSString stringWithFormat:@"find %@", nickname];
 	[self updateViewAngle];
-}
-
-- (void)clearReceiver {
-	m_receiverID = @"";
-	appDelegate.callReceiverID = m_receiverID;
-	appDelegate.callReceiverTitle = @"";
-	appDelegate.callReceiverLocation = nil;
-	appDelegate.callReceiverAltitude = 0;
-	
-	_toLat=0, _toLon=0, _toAlt=0;
-	
-	self.cityLabel.text = @"";
-	self.receiverObject = nil;
-	
-	[self stopActiveTimer];
-	[self hideArrows];
 }
 
 - (IBAction)endButtonTapped:(id)sender {
@@ -540,6 +509,9 @@ float _arrowMargin = 5.0f;
 
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
 	_videoActive = NO;
+	if (_isChatting) {
+		[self connect];
+	}
 	[self refreshVideoFeeds];
 	[self.view bringSubviewToFront:self.statusLabel];
 }
@@ -571,7 +543,10 @@ float _arrowMargin = 5.0f;
 	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
 		appDelegate.currentLocation = self.currentLocation;
-		[ParseHelper saveUserWithLocationToParse:[PFGeoPoint geoPointWithLocation:self.currentLocation] :[NSNumber numberWithDouble:self.currentLocation.altitude]];
+		QBLPlace *place = [QBLPlace place];
+		place.latitude = self.currentLocation.coordinate.latitude;
+		place.longitude = self.currentLocation.coordinate.longitude;
+		[QBHelper saveUserWithLocationToQB:place altitude:[NSNumber numberWithDouble:self.currentLocation.altitude]];
 		[self updateViewAngle];
 	}
 }
@@ -664,46 +639,46 @@ float _arrowMargin = 5.0f;
 	[self startVideoChat];
 
 	// push notify the reciever
-	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-	[query whereKey:@"userID" equalTo:appDelegate.callReceiverID];
-	NSLog(@"looking for: [%@]", appDelegate.callReceiverID);
-	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-		if (!error) {
-			// Do something with the found objects
-			if (objects.count == 1) {
-				self.receiverObject = objects.firstObject;
-				[self fireActiveTimer];
-				
-				// Find user for this activeuser
-				PFQuery *userQuery = [PFUser query];
-				[userQuery whereKey:@"objectId" equalTo:[self.receiverObject valueForKey:@"userID"]];
-				
-				// Find devices associated with these users
-				PFQuery *pushQuery = [PFInstallation query];
-				[pushQuery whereKey:@"user" matchesQuery:userQuery];
-				
-				// Send push notification to query
-				PFPush *push = [[PFPush alloc] init];
-				NSTimeInterval interval = 60*2; // 2 minutes
-				[push expireAfterTimeInterval:interval];
-				[push setQuery:pushQuery]; // Set our Installation query
-				[push setMessage:[NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle]];
-				[push sendPushInBackground];
-				NSLog(@"sent push: %@", push);
-			} else {
-				NSLog(@"error! found %d users", objects.count);
-			}
-		} else {
-			// Log details of the failure
-			NSLog(@"Error: %@ %@", error, [error userInfo]);
-		}
-	}];
+//	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+//	[query whereKey:@"userID" equalTo:appDelegate.callReceiverID];
+//	NSLog(@"looking for: [%@]", appDelegate.callReceiverID);
+//	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+//		if (!error) {
+//			// Do something with the found objects
+//			if (objects.count == 1) {
+//				self.receiverObject = objects.firstObject;
+//				[self fireActiveTimer];
+//				
+//				// Find user for this activeuser
+//				PFQuery *userQuery = [PFUser query];
+//				[userQuery whereKey:@"objectId" equalTo:[self.receiverObject valueForKey:@"userID"]];
+//				
+//				// Find devices associated with these users
+//				PFQuery *pushQuery = [PFInstallation query];
+//				[pushQuery whereKey:@"user" matchesQuery:userQuery];
+//				
+//				// Send push notification to query
+//				PFPush *push = [[PFPush alloc] init];
+//				NSTimeInterval interval = 60*2; // 2 minutes
+//				[push expireAfterTimeInterval:interval];
+//				[push setQuery:pushQuery]; // Set our Installation query
+//				[push setMessage:[NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle]];
+//				[push sendPushInBackground];
+//				NSLog(@"sent push: %@", push);
+//			} else {
+//				NSLog(@"error! found %d users", objects.count);
+//			}
+//		} else {
+//			// Log details of the failure
+//			NSLog(@"Error: %@ %@", error, [error userInfo]);
+//		}
+//	}];
 }
 
 - (IBAction)unwindToMainViewController:(UIStoryboardSegue *)unwindSegue
 {
 	NSLog(@"canceled");
-	m_receiverID = @"";
+	m_receiverID = nil;
 	appDelegate.callReceiverID = m_receiverID;
 	appDelegate.callReceiverTitle = @"";
 	appDelegate.callReceiverLocation = nil;
@@ -724,35 +699,38 @@ float _arrowMargin = 5.0f;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - Picker methods
+#pragma mark -
+#pragma mark QBChatDelegate
 
-// Catpure the picker view selection
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
-{
-	if (row == 0) return;
-	_toLat = [_placeCoordinates[row][0] doubleValue];
-	_toLon = [_placeCoordinates[row][1] doubleValue];
-	_toAlt = [_placeCoordinates[row][2] doubleValue];
-	self.cityLabel.text = _places[row];
-	[self updateViewAngle];
+-(void) initQBSession {
+	// set Chat delegate
+	[QBChat instance].delegate = self;
 }
 
-// The number of columns of data
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
-{
-    return 1;
+// Chat delegate
+-(void) chatDidLogin{
+	// You have successfully signed in to QuickBlox Chat
+	NSLog(@"chat logged in!");
 }
 
-// The number of rows of data
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
-{
-    return _places.count;
+-(void) chatDidNotLogin{
+	// You have successfully signed in to QuickBlox Chat
+	NSLog(@"ERROR! chat NOT logged in!");
 }
 
-// The data to return for the row and component (column) that's being passed in
-- (NSString*)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-    return _places[row];
+-(void) chatDidReceiveCallRequestFromUser:(NSUInteger)userID withSessionID:(NSString *)_sessionID conferenceType:(enum QBVideoChatConferenceType)conferenceType{
+	m_mode = streamingModeIncoming; //connect, publish, subscribe
+	m_connectionAttempts = 1;
+	self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:_sessionID];
+	[self.videoChat acceptCallWithOpponentID:userID conferenceType:conferenceType];
+}
+
+-(void) chatCallDidAcceptByUser:(NSUInteger)userID{
+	NSLog(@"call accepted by: %d", (int)userID);
+}
+
+- (void)chatCallDidStartWithUser:(NSUInteger)userID sessionID:(NSString *)sessionID{
+	NSLog(@"call started with user: %d session: %@", userID, sessionID);
 }
 
 #pragma mark - Timers
@@ -792,53 +770,6 @@ float _arrowMargin = 5.0f;
 	}
 }
 
-- (void)fireSubscriberTimer {
-	if (self.subscriberTimer && [self.subscriberTimer isValid])
-		return;
-	
-	self.subscriberTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
-															target:self
-														  selector:@selector(onSubscriberTimer:)
-														  userInfo:nil
-														   repeats:YES];
-}
-
-- (void) stopSubscriberTimer {
-	if (self.subscriberTimer && [self.subscriberTimer isValid])
-		[self.subscriberTimer invalidate];
-}
-
-- (void) onSubscriberTimer:(NSTimer *)timer {
-	if (self.otherView.zoomed && _subscriber) {
-		[_subscriber.view setFrame:self.otherView.frame];
-		[self.otherView insertSubview:_subscriber.view atIndex:0];
-		[self stopSubscriberTimer];
-	}
-}
-
-- (void)firePublisherTimer {
-	if (self.publisherTimer && [self.publisherTimer isValid])
-		return;
-	
-	self.publisherTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
-															target:self
-														  selector:@selector(onPublisherTimer:)
-														  userInfo:nil
-														   repeats:YES];
-}
-
-- (void) stopPublisherTimer {
-	if (self.publisherTimer && [self.publisherTimer isValid])
-		[self.publisherTimer invalidate];
-}
-
-- (void) onPublisherTimer:(NSTimer *)timer {
-	if (self.otherView.zoomed) {
-		[self doPublish];
-		[self stopPublisherTimer];
-	}
-}
-
 - (void) fireActiveTimer
 {
 	if (self.activeTimer && [self.activeTimer isValid])
@@ -859,403 +790,109 @@ float _arrowMargin = 5.0f;
 - (void) onActiveTimer:(NSTimer *)timer {
 //	NSLog(@"mode: %d receiverObject: %@", m_mode, self.receiverObject);
 	if (self.receiverObject != nil) {
-		[self.receiverObject refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-			//
-		}];
+//		[self.receiverObject refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+//			//
+//		}];
 	}
 }
 
-#pragma mark - Parse stuff
+#pragma mark - QB stuff
 
 -(void) findCallerData
 {
-	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-	[query whereKey:@"userID" equalTo:appDelegate.callerID];
-	
-	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-	 {
-		 if (!error)
-		 {
-			 if (objects.count > 0)
-			 {
-				 self.receiverObject = objects.firstObject;
-				 [self fireActiveTimer];
-				 //if for this user, skip it.
-				 NSString *userID = [self.receiverObject valueForKey:@"userID"];
-				 NSString *userTitle = [self.receiverObject valueForKey:@"userTitle"];
-				 PFGeoPoint *coordinate = [self.receiverObject valueForKey:@"userLocation"];
-				 NSNumber *userAltitude = [self.receiverObject valueForKey:@"userAltitude"];
-				 
-				 CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
-
-				 [self pointToUser:userTitle withID:userID andLocation:location andAltitude:userAltitude.doubleValue];
-			 }
-		 }
-		 else
-		 {
-			 NSLog(@"error: %@",[error description]);
-		 }
-	 }];
+//	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
+//	[query whereKey:@"userID" equalTo:appDelegate.callerID];
+//	
+//	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+//	 {
+//		 if (!error)
+//		 {
+//			 if (objects.count > 0)
+//			 {
+//				 self.receiverObject = objects.firstObject;
+//				 [self fireActiveTimer];
+//				 //if for this user, skip it.
+//				 NSNumber *userID = [[self.receiverObject valueForKey:@"userID"] numberValue];
+//				 NSString *userTitle = [self.receiverObject valueForKey:@"userTitle"];
+//				 PFGeoPoint *coordinate = [self.receiverObject valueForKey:@"userLocation"];
+//				 NSNumber *userAltitude = [self.receiverObject valueForKey:@"userAltitude"];
+//				 
+//				 CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+//
+//				 [self pointToUser:userTitle withID:userID andLocation:location andAltitude:userAltitude.doubleValue];
+//			 }
+//		 }
+//		 else
+//		 {
+//			 NSLog(@"error: %@",[error description]);
+//		 }
+//	 }];
 }
 
-- (void) initIncomingCall
+- (void)connect
 {
-	m_mode = streamingModeIncoming; //connect, publish, subscribe
-	m_connectionAttempts = 1;
-	[self connectWithPublisherToken];
-}
-
-- (void) initOutGoingCall
-{
-	m_mode = streamingModeOutgoing; //generate session
-	NSMutableDictionary * inputDict = [NSMutableDictionary dictionary];
-	[inputDict setObject:[ParseHelper loggedInUser].objectId forKey:@"callerID"];
-	[inputDict setObject:appDelegate.userTitle forKey:@"callerTitle"];
-	[inputDict setObject:appDelegate.callReceiverID forKey:@"receiverID"];
-	m_connectionAttempts = 1;
-	[ParseHelper saveSessionToParse:inputDict];
-}
-
-- (void) sessionSaved
-{
-	[self createSession];
-	[self connectWithSubscriberToken];
-}
-
-- (void) connectWithPublisherToken
-{
-	NSLog(@"connectWithPublisherToken");
-	[self doConnect:appDelegate.publisherToken :appDelegate.sessionID];
-}
-
-- (void) connectWithSubscriberToken
-{
-	NSLog(@"connectWithSubscriberToken");
-	[self doConnect:appDelegate.subscriberToken :appDelegate.sessionID];
-}
-
-- (void)doConnect : (NSString *) token :(NSString *) sessionID
-{
-//	NSLog(@"token: %@ sessionid: %@", token, sessionID);
-	
-	OTError *error = nil;
-	[_session connectWithToken:token error:&error];
-
-	if (error)
-	{
-		[self showAlert:[error localizedDescription]];
-	}
-}
-
-- (void)doDisconnect
-{
-	OTError *error = nil;
-	[_session disconnect:&error];
-
-	if (error)
-	{
-		[self showAlert:[error localizedDescription]];
-	}
-}
-
-#pragma mark - OpenTok methods
-
-/**
- * Sets up an instance of OTPublisher to use with this session. OTPubilsher
- * binds to the device camera and microphone, and will provide A/V streams
- * to the OpenTok session.
- */
-- (void)doPublish
-{
-	NSLog(@"publishing...");
-	
-	_publisher = [[OTPublisher alloc] initWithDelegate:self name:UIDevice.currentDevice.name];
-	
-    OTError *error = nil;
-    [_session publish:_publisher error:&error];
-    if (error)
-    {
-        [self showAlert:[error localizedDescription]];
-    }
+	NSLog(@"connecting");
+	self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
 
 	CGRect viewBounds = self.view.bounds;
 	CGFloat topBarOffset = self.topLayoutGuide.length;
 	
-	[self.otherView insertSubview:_publisher.view atIndex:1];
-	[_publisher.view setFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
+	self.opponentVideoView = [[UIView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
+	self.myVideoView = [[UIView alloc] initWithFrame:self.otherView.frame];
+
+	[self.otherView insertSubview:self.opponentVideoView atIndex:1];
+	[self.otherView insertSubview:self.myVideoView atIndex:0];
+
+	self.videoChat.viewToRenderOpponentVideoStream = self.opponentVideoView;
+	self.videoChat.viewToRenderOwnVideoStream = self.myVideoView;
 }
 
-/**
- * Cleans up the publisher and its view. At this point, the publisher should not
- * be attached to the session any more.
- */
-- (void)cleanupPublisher {
-    [_publisher.view removeFromSuperview];
-    _publisher = nil;
-	[self stopPublisherTimer];
-    // this is a good place to notify the end-user that publishing has stopped.
-}
-
-/**
- * Instantiates a subscriber for the given stream and asynchronously begins the
- * process to begin receiving A/V content for this stream. Unlike doPublish,
- * this method does not add the subscriber to the view hierarchy. Instead, we
- * add the subscriber only after it has connected and begins receiving data.
- */
-- (void)doSubscribe:(OTStream*)stream
+- (void)disconnect
 {
-    _subscriber = [[OTSubscriber alloc] initWithStream:stream delegate:self];
-    
-    OTError *error = nil;
-    [_session subscribe:_subscriber error:&error];
-    if (error)
-    {
-        [self showAlert:[error localizedDescription]];
-    }
-}
+	[self.opponentVideoView removeFromSuperview];
+	[self.myVideoView removeFromSuperview];
+	self.opponentVideoView = nil;
+	self.myVideoView = nil;
 
-/**
- * Cleans the subscriber from the view hierarchy, if any.
- * NB: You do *not* have to call unsubscribe in your controller in response to
- * a streamDestroyed event. Any subscribers (or the publisher) for a stream will
- * be automatically removed from the session during cleanup of the stream.
- */
-- (void)cleanupSubscriber
-{
-    [_subscriber.view removeFromSuperview];
-    _subscriber = nil;
-	[self stopSubscriberTimer];
-}
-
-# pragma mark - OTSession delegate callbacks
-
-- (void)createSession {
-	_session = [[OTSession alloc] initWithApiKey:appDelegate.otAPIKey
-									   sessionId:appDelegate.sessionID
-										delegate:self];
-}
-
-- (void)ensureSessionDisconnectedBeforeBlock:(void (^)(void))resumeBlock {
-	
-	// If the session exists, and it is connected or connecting, then save this block as a listener and start disconnecting
-	if (_session && (_session.sessionConnectionStatus == OTSessionConnectionStatusConnected ||
-						 _session.sessionConnectionStatus == OTSessionConnectionStatusConnecting)) {
-		
-		[self.disconnectListeners addObject:resumeBlock];
-		NSError *error;
-		[_session disconnect:&error];
-		
-		// Otherwise, we can execute the block right now
-	} else {
-		resumeBlock();
-	}
-}
-
-- (void)sessionDidConnect:(OTSession*)session
-{
-    NSLog(@"sessionDidConnect (%@)", session.sessionId);
-    
-	self.statusLabel.text = @"Connected, waiting for stream...";
-}
-
-- (void)sessionDidDisconnect:(OTSession*)session
-{
-    NSString* alertMessage =
-    [NSString stringWithFormat:@"Session disconnected: (%@)",
-     session.sessionId];
-    NSLog(@"sessionDidDisconnect (%@)", alertMessage);
-
-	self.statusLabel.text = @"Session disconnected...";
-
-	[self performSelector:@selector(goBack) withObject:nil afterDelay:5.0];
-}
-
-
-- (void)session:(OTSession*)mySession streamCreated:(OTStream *)stream
-{
-    NSLog(@"session streamCreated (%@)", stream.streamId);
-    
-    // Step 3a: (if NO == subscribeToSelf): Begin subscribing to a stream we
-    // have seen on the OpenTok session.
-    if (nil == _subscriber && !subscribeToSelf)
-    {
-        [self doSubscribe:stream];
-    }
-}
-
-- (void)session:(OTSession*)mySession didReceiveStream:(OTStream*)stream
-{
-	NSLog(@"session: didReceiveStream:");
-}
-
-- (void)updateSubscriber
-{
-	for (NSString* streamId in _session.streams) {
-		OTStream* stream = [_session.streams valueForKey:streamId];
-		if (stream.connection.connectionId != _session.connection.connectionId) {
-			_subscriber = [[OTSubscriber alloc] initWithStream:stream delegate:self];
-			break;
-		}
-	}
-}
-
-- (void)session:(OTSession*)session didDropStream:(OTStream*)stream
-{
-	NSLog(@"session didDropStream (%@)", stream.streamId);
-	if (!subscribeToSelf
-		&& _subscriber
-		&& [_subscriber.stream.streamId isEqualToString: stream.streamId]) {
-		_subscriber = nil;
-		[self updateSubscriber];
-		self.statusLabel.text = @"Stream dropped, disconnecting...";
-		[self.view bringSubviewToFront:self.statusLabel];
-		[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
-	}
-}
-
-- (void)session:(OTSession*)session streamDestroyed:(OTStream *)stream
-{
-    NSLog(@"session streamDestroyed (%@)", stream.streamId);
-    
-    if ([_subscriber.stream.streamId isEqualToString:stream.streamId])
-    {
-        [self cleanupSubscriber];
-    }
-}
-
-- (void)  session:(OTSession *)session connectionCreated:(OTConnection *)connection
-{
-    NSLog(@"session connectionCreated (%@)", connection.connectionId);
-}
-
-- (void)    session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
-{
-    NSLog(@"session connectionDestroyed (%@)", connection.connectionId);
-//    if ([_subscriber.stream.connection.connectionId
-//         isEqualToString:connection.connectionId])
-//    {
-        [self endVideoChat];
-//    }
-}
-
-- (void) session:(OTSession*)session didFailWithError:(OTError*)error
-{
-	NSLog(@"session: didFailWithError:");
-	NSLog(@"- description: %@", error.localizedDescription);
-	NSString * errorMsg;
-	if (m_connectionAttempts < 10)
-	{
-		m_connectionAttempts++;
-		errorMsg = [NSString stringWithFormat:@"Session failed to connect - Reconnecting attempt %d",m_connectionAttempts];
-		self.statusLabel.text = errorMsg;
-		if (m_mode == streamingModeOutgoing)
-		{
-			[self performSelector:@selector(connectWithSubscriberToken) withObject:nil afterDelay:15.0];
-		}
-		else
-		{
-			[self performSelector:@selector(connectWithPublisherToken) withObject:nil afterDelay:15.0];
-		}
-	}
-	else
-	{
-		m_connectionAttempts = 1;
-		errorMsg = [NSString stringWithFormat:@"Session failed to connect - disconnecting now"];
-		self.statusLabel.text = errorMsg;
-		[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:10.0];
-	}
-}
-
-# pragma mark - OTSubscriber delegate callbacks
-- (void)subscriberVideoDataReceived:(OTSubscriber *)subscriber {
-}
-
-- (void)subscriberDidConnectToStream:(OTSubscriber*)subscriber
-{
-    NSLog(@"subscriberDidConnectToStream (%@)",
-          subscriber.stream.connection.connectionId);
-	self.statusLabel.text = @"Connected and streaming...";
-
-	assert(_subscriber == subscriber);
-}
-
-- (void)subscriber:(OTSubscriber*)subscriber didFailWithError:(OTError*)error
-{
-    NSLog(@"subscriber %@ didFailWithError %@",
-          subscriber.stream.streamId,
-          error);
-	self.statusLabel.text = @"Error receiving video feed, disconnecting...";
-
-	[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
+	[[QBChat instance] unregisterVideoChatInstance:self.videoChat];
+	self.videoChat = nil;
 }
 
 - (IBAction)doneStreaming:(id)sender {
 	[self.otherView zoomOut];
-    [self disConnectAndGoBack];
+    [self disconnectAndGoBack];
 }
 
-- (void) disConnectAndGoBack {
+- (void) disconnectAndGoBack {
 	_isChatting = NO;
 	
-	OTError* error = nil;
-
-	[_session disconnect:&error];
-	if (error) {
-		NSLog(@"disconnect failed with error: (%@)", error);
-	}
+	[self.videoChat finishCall];
 	
+	[self disconnect];
+
+	[[QBChat instance] unregisterVideoChatInstance:self.videoChat];
+	self.videoChat = nil;
+
 	self.endButton.hidden = YES;
 	self.startButton.hidden = NO;
 	self.statusLabel.text = @"";
-	[self clearReceiver];
-	[self cleanupPublisher];
-	[self cleanupSubscriber];
-    [ParseHelper deleteActiveSession];
-    [ParseHelper setPollingTimer:YES];
-}
 
-# pragma mark - OTPublisher delegate callbacks
-
-- (void)publisher:(OTPublisher *)publisher streamCreated:(OTStream *)stream
-{
-    // Step 3b: (if YES == subscribeToSelf): Our own publisher is now visible to
-    // all participants in the OpenTok session. We will attempt to subscribe to
-    // our own stream. Expect to see a slight delay in the subscriber video and
-    // an echo of the audio coming from the device microphone.
-    if (nil == _subscriber && subscribeToSelf)
-    {
-        [self doSubscribe:stream];
-    }
-}
-
-- (void)publisher:(OTPublisher*)publisher streamDestroyed:(OTStream *)stream
-{
-    if ([_subscriber.stream.streamId isEqualToString:stream.streamId])
-    {
-        [self cleanupSubscriber];
-    }
-    
-    [self cleanupPublisher];
-}
-
-- (void)publisher:(OTPublisher*)publisher didFailWithError:(OTError*) error
-{
-    NSLog(@"publisher didFailWithError %@", error);
-	self.statusLabel.text = @"Failed to share your camera feed, disconnecting...";
-
-	[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:5.0];
-}
-
-- (void)publisherDidStartStreaming:(OTPublisher *)publisher
-{
-	NSLog(@"publisherDidStartStreaming: %@", publisher);
-	self.statusLabel.text = @"Started your camera feed...";
-}
-
--(void)publisherDidStopStreaming:(OTPublisher*)publisher
-{
-	NSLog(@"publisherDidStopStreaming:%@", publisher);
-	self.statusLabel.text = @"Stopping your camera feed...";
+	m_receiverID = nil;
+	appDelegate.callReceiverID = m_receiverID;
+	appDelegate.callReceiverTitle = @"";
+	appDelegate.callReceiverLocation = nil;
+	appDelegate.callReceiverAltitude = 0;
+	
+	_toLat=0, _toLon=0, _toAlt=0;
+	
+	self.cityLabel.text = @"";
+	self.receiverObject = nil;
+	
+	[self stopActiveTimer];
+	[self hideArrows];
+	
+    [QBHelper deleteActiveSession];
+    [QBHelper setPollingTimer:YES];
 }
 
 #pragma mark - Alert

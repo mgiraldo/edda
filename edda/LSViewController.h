@@ -7,14 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ParseHelper.h"
+#import "QBHelper.h"
 #import "eddaAppDelegate.h"
-//#import "LSStreamingViewController.h"
 
 @interface LSViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 {
     NSMutableArray * m_userArray; 
-	NSString * m_receiverID;
+	NSNumber * m_receiverID;
 	NSString * m_receiverTitle;
 	CLLocation * m_receiverLocation;
 	NSNumber * m_receiverAltitude;

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TestFlight.h"
-#import "ParseHelper.h"
+#import "QBHelper.h"
 
 @interface eddaAppDelegate : UIResponder <UIApplicationDelegate>
 {
@@ -28,7 +28,7 @@
 @property (copy, nonatomic) NSString* publisherToken;
 @property (copy, nonatomic) NSString* subscriberToken;
 
-@property (copy, nonatomic) NSString* callReceiverID;
+@property (copy, nonatomic) NSNumber* callReceiverID;
 @property (copy, nonatomic) NSString* callReceiverTitle;
 @property (nonatomic) CLLocation *callReceiverLocation;
 @property (nonatomic) NSNumber *callReceiverAltitude;
