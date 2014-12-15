@@ -15,7 +15,7 @@
 
 @class eddaMainViewController;
 
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 
 enum streamingMode
 {
@@ -44,6 +44,8 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) UIImageView *E_arrowView;
 @property (nonatomic) UIImageView *W_arrowView;
 
+@property (strong) UIAlertView *callAlert;
+
 @property (nonatomic) eddaOtherView *otherView;
 
 @property (weak, nonatomic) IBOutlet UIView *videoView;
@@ -63,11 +65,13 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) NSTimer * alignedTimer;
 @property (nonatomic) NSTimer * subscriberTimer;
 @property (nonatomic) NSTimer * publisherTimer;
-@property (nonatomic) QBCOCustomObject * receiverObject;
+@property (nonatomic) QBUUser * receiverObject;
 
 @property (nonatomic) QBVideoChat *videoChat;
 @property (nonatomic) UIView *opponentVideoView;
 @property (nonatomic) UIView *myVideoView;
+
+@property (nonatomic, assign) eddaAppDelegate* appDelegate;
 
 - (void)userHasLoggedIn;
 - (void)startVideoChat;

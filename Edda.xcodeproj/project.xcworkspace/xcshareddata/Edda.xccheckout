@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>3B40F4BE-18DB-4F77-868E-09826722AD7F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>edda</string>
+	<string>Edda</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>
 		<string>github.com:mgiraldo/edda.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>edda.xcodeproj</string>
+	<string>Edda.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>

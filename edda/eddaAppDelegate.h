@@ -10,7 +10,7 @@
 #import "TestFlight.h"
 #import "QBHelper.h"
 
-@interface eddaAppDelegate : UIResponder <UIApplicationDelegate>
+@interface eddaAppDelegate : UIResponder <UIApplicationDelegate, QBActionStatusDelegate>
 {
 	UIBackgroundTaskIdentifier backgroundTask;
 }
@@ -21,6 +21,7 @@
 @property (nonatomic) NSString *pApplicationID;
 @property (nonatomic) NSString *pClientKey;
 
+@property (nonatomic) QBUUser* loggedInUser;
 @property (copy, nonatomic) NSString* userTitle;
 @property (copy, nonatomic) NSString* callerTitle;
 @property (copy, nonatomic) NSString* callerID;

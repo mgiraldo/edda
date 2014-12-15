@@ -8,13 +8,15 @@
 
 #import <Accelerate/Accelerate.h>
 #import <ImageIO/ImageIO.h>
-#import "eddaAppDelegate.h"
 #import "eddaMainViewController.h"
 #import "LSViewController.h"
 #import "geodesic.h"
 #import "utils.h"
 
-@interface eddaMainViewController ()
+@interface eddaMainViewController () {
+	NSString *sessionID;
+	NSUInteger videoChatOpponentID;
+}
 
 @property (strong, nonatomic) NSMutableSet *disconnectListeners;
 
@@ -24,7 +26,6 @@
 	int m_mode;
 	int m_connectionAttempts;
 	NSNumber * m_receiverID;
-	eddaAppDelegate *appDelegate;
 	NSDate *alignedTimerStart;
 }
 
@@ -73,7 +74,7 @@ float _arrowMargin = 5.0f;
 {
     [super viewDidLoad];
 	
-	appDelegate = [[UIApplication sharedApplication] delegate];
+	self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
 
 	// other view
 	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
@@ -161,6 +162,20 @@ float _arrowMargin = 5.0f;
 
 - (void) userHasLoggedIn
 {
+	[QBChat instance].delegate = self;
+	QBUUser *currentUser = [QBUUser user];
+	currentUser.ID = self.appDelegate.loggedInUser.ID;
+	currentUser.password = [QBHelper uniqueDeviceIdentifier];
+	[[QBChat instance] loginWithUser:currentUser];
+	if (self.videoChat == nil) {
+		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
+	}
+	[NSTimer scheduledTimerWithTimeInterval:30
+									 target:[QBChat instance]
+								   selector:@selector(sendPresence)
+								   userInfo:nil
+									repeats:YES];
+	
 	// iOS 8 not authorized by default
 	if([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
 		[locationManager requestWhenInUseAuthorization];
@@ -182,7 +197,6 @@ float _arrowMargin = 5.0f;
 - (void) registerNotifs
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionSaved) name:kSessionSavedNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallArrive) name:kIncomingCallNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin) name:kLoggedInNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallCancel) name:kCallCancelledNotification object:nil];
@@ -195,16 +209,19 @@ float _arrowMargin = 5.0f;
 }
 
 //if and when a call arrives
-- (void) didCallArrive
+- (void) opponentDidCall
 {
-	_isChatting = YES;
-
-	m_receiverID = nil;
-	NSLog(@"RIIIIINGGGG!!!");
-	self.endButton.titleLabel.text = @"Cancel Call";
-	// find user location
-	[self findCallerData];
-	[self startVideoChat];
+	// show call alert
+	//
+	if (self.callAlert == nil) {
+		NSString *message = [NSString stringWithFormat:@"%@ is calling. Would you like to answer?", self.appDelegate.callerTitle];
+		self.callAlert = [[UIAlertView alloc] initWithTitle:@"Call" message:message delegate:self cancelButtonTitle:@"Decline" otherButtonTitles:@"Accept", nil];
+		[self.callAlert show];
+	}
+	
+	// hide call alert if opponent has canceled call
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideCallAlert) object:nil];
+	[self performSelector:@selector(hideCallAlert) withObject:nil afterDelay:4];
 }
 
 -(void) showReceiverBusyMsg
@@ -223,7 +240,6 @@ float _arrowMargin = 5.0f;
 {
 	NSLog(@"logged in!");
 	[self initQBSession];
-	[self userHasLoggedIn];
 }
 
 - (void)updateInterface:(NSTimer *)timer {
@@ -302,7 +318,9 @@ float _arrowMargin = 5.0f;
 	BOOL otherActive = NO;
 	
 	if (self.receiverObject != nil) {
-		otherActive = [[self.receiverObject valueForKey:@"isAligned"] boolValue];
+		NSDictionary *custom = [QBHelper QBCustomDataToObject:self.receiverObject.customData];
+		BOOL alignment = [[custom valueForKey:@"alignment"] boolValue];
+		otherActive = alignment;
 		[self.otherView setActiveState:otherActive];
 	}
 	
@@ -435,7 +453,7 @@ float _arrowMargin = 5.0f;
 - (void)refreshVideoFeeds {
 	[self stopRearCapture];
 	if (_videoActive) {
-		[self startRearCapture];
+//		[self startRearCapture];
 		if (_isChatting) {
 			self.otherView.hidden = NO;
 		} else {
@@ -447,10 +465,30 @@ float _arrowMargin = 5.0f;
 - (void)startVideoChat {
 	_isChatting = YES;
 	
-	if (appDelegate.callReceiverID != nil)
-	{
-		[QBChat instance].delegate = self;
-		[self.videoChat callUser:appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
+	if (self.appDelegate.callReceiverID != nil && m_mode != streamingModeIncoming) {
+		NSLog(@"calling: %@", self.appDelegate.callReceiverID);
+		if(self.videoChat == nil){
+			self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
+			[self connect];
+		}
+		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
+		
+		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+		
+		// push notify the reciever
+		NSString * message = [NSString stringWithFormat:@"You have a call from %@!", self.appDelegate.userTitle];
+		NSString * userid = [NSString stringWithFormat:@"%@", self.appDelegate.callReceiverID];
+		
+		QBMPushMessage * myMessage = [QBMPushMessage pushMessage];
+		myMessage.alertBody = message;
+		myMessage.additionalInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@",[NSNumber numberWithInt:(int)self.appDelegate.loggedInUser.ID]], @"callerID", self.appDelegate.userTitle, @"callerTitle", nil];
+		
+		[QBRequest sendPush:myMessage toUsers:userid successBlock:^(QBResponse *response, QBMEvent *event) {
+			[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+		} errorBlock:^(QBError *error) {
+			NSLog(@"Errors=%@", [error.reasons description]);
+			[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+		}];
 	}
 }
 
@@ -542,7 +580,7 @@ float _arrowMargin = 5.0f;
 	
 	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
-		appDelegate.currentLocation = self.currentLocation;
+		self.appDelegate.currentLocation = self.currentLocation;
 		QBLPlace *place = [QBLPlace place];
 		place.latitude = self.currentLocation.coordinate.latitude;
 		place.longitude = self.currentLocation.coordinate.longitude;
@@ -631,62 +669,28 @@ float _arrowMargin = 5.0f;
 
 - (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
 {
-	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", appDelegate.callReceiverTitle, appDelegate.callReceiverLocation, appDelegate.callReceiverAltitude);
+	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
 	_isChatting = YES;
+	
+	m_mode = streamingModeOutgoing;
 
-	[self pointToUser:appDelegate.callReceiverTitle withID:appDelegate.callReceiverID andLocation:appDelegate.callReceiverLocation andAltitude:appDelegate.callReceiverAltitude.doubleValue];
+	[self pointToUser:self.appDelegate.callReceiverTitle withID:self.appDelegate.callReceiverID andLocation:self.appDelegate.callReceiverLocation andAltitude:self.appDelegate.callReceiverAltitude.doubleValue];
 
 	[self startVideoChat];
-
-	// push notify the reciever
-//	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-//	[query whereKey:@"userID" equalTo:appDelegate.callReceiverID];
-//	NSLog(@"looking for: [%@]", appDelegate.callReceiverID);
-//	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//		if (!error) {
-//			// Do something with the found objects
-//			if (objects.count == 1) {
-//				self.receiverObject = objects.firstObject;
-//				[self fireActiveTimer];
-//				
-//				// Find user for this activeuser
-//				PFQuery *userQuery = [PFUser query];
-//				[userQuery whereKey:@"objectId" equalTo:[self.receiverObject valueForKey:@"userID"]];
-//				
-//				// Find devices associated with these users
-//				PFQuery *pushQuery = [PFInstallation query];
-//				[pushQuery whereKey:@"user" matchesQuery:userQuery];
-//				
-//				// Send push notification to query
-//				PFPush *push = [[PFPush alloc] init];
-//				NSTimeInterval interval = 60*2; // 2 minutes
-//				[push expireAfterTimeInterval:interval];
-//				[push setQuery:pushQuery]; // Set our Installation query
-//				[push setMessage:[NSString stringWithFormat:@"You have a call from %@!", appDelegate.userTitle]];
-//				[push sendPushInBackground];
-//				NSLog(@"sent push: %@", push);
-//			} else {
-//				NSLog(@"error! found %d users", objects.count);
-//			}
-//		} else {
-//			// Log details of the failure
-//			NSLog(@"Error: %@ %@", error, [error userInfo]);
-//		}
-//	}];
 }
 
 - (IBAction)unwindToMainViewController:(UIStoryboardSegue *)unwindSegue
 {
 	NSLog(@"canceled");
 	m_receiverID = nil;
-	appDelegate.callReceiverID = m_receiverID;
-	appDelegate.callReceiverTitle = @"";
-	appDelegate.callReceiverLocation = nil;
-	appDelegate.callReceiverAltitude = 0;
+	self.appDelegate.callReceiverID = m_receiverID;
+	self.appDelegate.callReceiverTitle = @"";
+	self.appDelegate.callReceiverLocation = nil;
+	self.appDelegate.callReceiverAltitude = 0;
 	_toLat = 0;
 	_toLon = 0;
 	_toAlt = 0;
-	self.cityLabel.text = appDelegate.callReceiverTitle;
+	self.cityLabel.text = self.appDelegate.callReceiverTitle;
 	[self hideArrows];
 	_isChatting = NO;
 	self.otherView.hidden = YES;
@@ -703,8 +707,57 @@ float _arrowMargin = 5.0f;
 #pragma mark QBChatDelegate
 
 -(void) initQBSession {
-	// set Chat delegate
-	[QBChat instance].delegate = self;
+	NSString *login = [NSString stringWithFormat:@"%@_%@", self.appDelegate.userTitle, [QBHelper uniqueDeviceIdentifier]];
+	NSString *password = [QBHelper uniqueDeviceIdentifier];
+	NSString *username = self.appDelegate.userTitle;
+	@weakify(self);
+	[QBRequest logInWithUserLogin:login password:password successBlock:^(QBResponse *response, QBUUser *user) {
+		@strongify(self);
+		// success
+		NSLog(@"log in success!");
+		eddaAppDelegate * mainDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+		mainDelegate.loggedInUser = user;
+		[self userHasLoggedIn];
+	} errorBlock:^(QBResponse *response) {
+		// error / try sign up
+		[QBHelper signUpUser:username];
+	}];
+}
+
+- (void)reject{
+	NSLog(@"reject");
+	// Reject call
+	//
+	if(self.videoChat == nil){
+		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:sessionID];
+	}
+	[self.videoChat rejectCallWithOpponentID:videoChatOpponentID];
+	//
+	//
+	[[QBChat instance] unregisterVideoChatInstance:self.videoChat];
+	self.videoChat = nil;
+	
+}
+
+- (void)accept{
+	NSLog(@"accept id: %@", sessionID);
+	
+	// Setup video chat
+	//
+	if(self.videoChat == nil){
+		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:sessionID];
+		[self connect];
+	}
+	
+	// Accept call
+	//
+	[self.videoChat acceptCallWithOpponentID:videoChatOpponentID conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
+	
+}
+
+- (void)hideCallAlert{
+	[self.callAlert dismissWithClickedButtonIndex:-1 animated:YES];
+	self.callAlert = nil;
 }
 
 // Chat delegate
@@ -719,18 +772,67 @@ float _arrowMargin = 5.0f;
 }
 
 -(void) chatDidReceiveCallRequestFromUser:(NSUInteger)userID withSessionID:(NSString *)_sessionID conferenceType:(enum QBVideoChatConferenceType)conferenceType{
+	NSLog(@"RIIIING! id:%lu session:%@", (unsigned long)userID, _sessionID);
+	videoChatOpponentID = userID;
+	sessionID = _sessionID;
 	m_mode = streamingModeIncoming; //connect, publish, subscribe
 	m_connectionAttempts = 1;
-	self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:_sessionID];
-	[self.videoChat acceptCallWithOpponentID:userID conferenceType:conferenceType];
+
+	[self findCallerData];
+	
+	// play call music
+	//
+//	if(ringingPlayer == nil){
+//		NSString *path =[[NSBundle mainBundle] pathForResource:@"ringing" ofType:@"wav"];
+//		NSURL *url = [NSURL fileURLWithPath:path];
+//		ringingPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
+//		ringingPlayer.delegate = self;
+//		[ringingPlayer setVolume:1.0];
+//		[ringingPlayer play];
+//	}
+}
+
+-(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
+	NSLog(@"chatCallUserDidNotAnswer %lu", (unsigned long)userID);
+	
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"User isn't answering. Please try again later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert show];
 }
 
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID{
 	NSLog(@"call accepted by: %d", (int)userID);
 }
 
-- (void)chatCallDidStartWithUser:(NSUInteger)userID sessionID:(NSString *)sessionID{
-	NSLog(@"call started with user: %d session: %@", userID, sessionID);
+-(void) chatCallDidRejectByUser:(NSUInteger)userID{
+	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
+	
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"User has rejected your call." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert show];
+}
+
+- (void)chatCallDidStartWithUser:(NSUInteger)userID sessionID:(NSString *)sID{
+	NSLog(@"call started with user: %d session: %@", (int)userID, sID);
+}
+
+-(void) chatCallDidStopByUser:(NSUInteger)userID status:(NSString *)status{
+	NSLog(@"chatCallDidStopByUser %lu purpose %@", (unsigned long)userID, status);
+	
+	if([status isEqualToString:kStopVideoChatCallStatus_OpponentDidNotAnswer]){
+		
+		self.callAlert.delegate = nil;
+		[self.callAlert dismissWithClickedButtonIndex:0 animated:YES];
+		self.callAlert = nil;
+		
+	}
+	
+	// release video chat
+	//
+	[[QBChat instance] unregisterVideoChatInstance:self.videoChat];
+	self.videoChat = nil;
+}
+
+- (void)didReceiveAudioBuffer:(AudioBuffer)buffer{
+	NSLog(@"received audio buffer");
 }
 
 #pragma mark - Timers
@@ -800,48 +902,46 @@ float _arrowMargin = 5.0f;
 
 -(void) findCallerData
 {
-//	PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-//	[query whereKey:@"userID" equalTo:appDelegate.callerID];
-//	
-//	[query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-//	 {
-//		 if (!error)
-//		 {
-//			 if (objects.count > 0)
-//			 {
-//				 self.receiverObject = objects.firstObject;
-//				 [self fireActiveTimer];
-//				 //if for this user, skip it.
-//				 NSNumber *userID = [[self.receiverObject valueForKey:@"userID"] numberValue];
-//				 NSString *userTitle = [self.receiverObject valueForKey:@"userTitle"];
-//				 PFGeoPoint *coordinate = [self.receiverObject valueForKey:@"userLocation"];
-//				 NSNumber *userAltitude = [self.receiverObject valueForKey:@"userAltitude"];
-//				 
-//				 CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
-//
-//				 [self pointToUser:userTitle withID:userID andLocation:location andAltitude:userAltitude.doubleValue];
-//			 }
-//		 }
-//		 else
-//		 {
-//			 NSLog(@"error: %@",[error description]);
-//		 }
-//	 }];
+	@weakify(self);
+	[QBRequest userWithID:videoChatOpponentID successBlock:^(QBResponse *response, QBUUser *user) {
+		@strongify(self);
+		// success
+		self.receiverObject = user;
+		[self fireActiveTimer];
+
+		NSNumber *userID = [NSNumber numberWithInteger:user.ID];
+		NSRange underscore = [user.login rangeOfString:@"_" options:NSBackwardsSearch];
+		NSString *userTitle = [user.login substringToIndex:underscore.location];
+		NSDictionary *custom = [QBHelper QBCustomDataToObject:user.customData];
+		
+		CLLocation * location = [[CLLocation alloc] initWithLatitude:[[custom valueForKey:@"latitude"] doubleValue] longitude:[[custom valueForKey:@"longitude"] doubleValue]];
+		NSNumber *userAltitude = [custom valueForKey:@"altitude"];
+		
+		self.appDelegate.callerTitle = userTitle;
+		self.appDelegate.callerID = userID.stringValue;
+		
+		[self opponentDidCall];
+		
+		[self pointToUser:userTitle withID:userID andLocation:location andAltitude:userAltitude.doubleValue];
+	} errorBlock:^(QBResponse *response) {
+		// error
+	}];
 }
 
 - (void)connect
 {
 	NSLog(@"connecting");
-	self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
-
 	CGRect viewBounds = self.view.bounds;
 	CGFloat topBarOffset = self.topLayoutGuide.length;
 	
-	self.opponentVideoView = [[UIView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
-	self.myVideoView = [[UIView alloc] initWithFrame:self.otherView.frame];
-
-	[self.otherView insertSubview:self.opponentVideoView atIndex:1];
-	[self.otherView insertSubview:self.myVideoView atIndex:0];
+	if (self.myVideoView == nil) {
+		self.myVideoView = [[UIView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
+		[self.otherView insertSubview:self.myVideoView atIndex:1];
+	}
+	if (self.opponentVideoView == nil) {
+		self.opponentVideoView = [[UIView alloc] initWithFrame:self.view.frame];
+		[self.otherView insertSubview:self.opponentVideoView atIndex:0];
+	}
 
 	self.videoChat.viewToRenderOpponentVideoStream = self.opponentVideoView;
 	self.videoChat.viewToRenderOwnVideoStream = self.myVideoView;
@@ -878,10 +978,10 @@ float _arrowMargin = 5.0f;
 	self.statusLabel.text = @"";
 
 	m_receiverID = nil;
-	appDelegate.callReceiverID = m_receiverID;
-	appDelegate.callReceiverTitle = @"";
-	appDelegate.callReceiverLocation = nil;
-	appDelegate.callReceiverAltitude = 0;
+	self.appDelegate.callReceiverID = m_receiverID;
+	self.appDelegate.callReceiverTitle = @"";
+	self.appDelegate.callReceiverLocation = nil;
+	self.appDelegate.callReceiverAltitude = 0;
 	
 	_toLat=0, _toLon=0, _toAlt=0;
 	
@@ -890,9 +990,6 @@ float _arrowMargin = 5.0f;
 	
 	[self stopActiveTimer];
 	[self hideArrows];
-	
-    [QBHelper deleteActiveSession];
-    [QBHelper setPollingTimer:YES];
 }
 
 #pragma mark - Alert
@@ -909,5 +1006,26 @@ float _arrowMargin = 5.0f;
         [alert show];
     });
 }
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+	
+	// Call alert
+	switch (buttonIndex) {
+			// Reject
+		case 0:
+			[self reject];
+			break;
+			// Accept
+		case 1:
+			[self accept];
+			break;
+			
+		default:
+			break;
+	}
+	
+	self.callAlert = nil;
+}
+
 
 @end

@@ -22,13 +22,13 @@
   
     
     m_userArray = [NSMutableArray array];
-    appDelegate = [[UIApplication sharedApplication] delegate];
+    self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
     m_userTableView.backgroundColor = [UIColor clearColor];
 }
 
 - (void) viewDidAppear:(BOOL)animated
 {
-    if (appDelegate.bFullyLoggedIn)
+    if (self.appDelegate.bFullyLoggedIn)
         [self fireUsersQuery:YES];
      [m_userTableView reloadData];
 }
@@ -37,7 +37,6 @@
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallArrive) name:kIncomingCallNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];//
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin) name:kLoggedInNotification object:nil];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -47,10 +46,6 @@
 -(void) showReceiverBusyMsg
 {
 	NSLog(@"Receiver is busy on another call. Please try later.");
-}
-
-- (void) didLogin
-{
 }
 
 - (void)didReceiveMemoryWarning
@@ -109,22 +104,22 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSMutableDictionary * dict = [m_userArray objectAtIndex:indexPath.row];
-	NSString * receiverID = [dict objectForKey:@"userID"];
+	NSNumber * receiverID = [dict objectForKey:@"userID"];
 	NSString * receiverTitle = [dict objectForKey:@"userTitle"];
 	NSNumber * receiverAltitude = [dict objectForKey:@"userAltitude"];
 
-//	PFGeoPoint *coordinate = [dict valueForKey:@"userLocation"];
-//	CLLocation *location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+	QBLGeoData *coordinate = [dict valueForKey:@"userLocation"];
+	CLLocation *location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
 
 	m_receiverID = [receiverID copy];
 	m_receiverTitle = [receiverTitle copy];
-//	m_receiverLocation = [location copy];
+	m_receiverLocation = [location copy];
 	m_receiverAltitude = [receiverAltitude copy];
 
-	appDelegate.callReceiverID = m_receiverID;
-	appDelegate.callReceiverTitle = m_receiverTitle;
-	appDelegate.callReceiverLocation = m_receiverLocation;
-	appDelegate.callReceiverAltitude = m_receiverAltitude;
+	self.appDelegate.callReceiverID = m_receiverID;
+	self.appDelegate.callReceiverTitle = m_receiverTitle;
+	self.appDelegate.callReceiverLocation = m_receiverLocation;
+	self.appDelegate.callReceiverAltitude = m_receiverAltitude;
 	[self goToStreamingVC];
 }
 
@@ -145,10 +140,10 @@
 	m_receiverTitle = @"";
 	m_receiverLocation = nil;
 	m_receiverAltitude = 0;
-	appDelegate.callReceiverID = m_receiverID;
-	appDelegate.callReceiverTitle = m_receiverTitle;
-	appDelegate.callReceiverLocation = m_receiverLocation;
-	appDelegate.callReceiverAltitude = m_receiverAltitude;
+	self.appDelegate.callReceiverID = m_receiverID;
+	self.appDelegate.callReceiverTitle = m_receiverTitle;
+	self.appDelegate.callReceiverLocation = m_receiverLocation;
+	self.appDelegate.callReceiverAltitude = m_receiverAltitude;
 }
 
 //this method polls for new users that gets added / removed from surrounding region.
@@ -157,62 +152,74 @@
 //argCoord - location around which to execute the search.
 -(void) fireUsersQuery : (bool)bRefreshUI
 {
-//    PFQuery *query = [PFQuery queryWithClassName:@"ActiveUsers"];
-//	// TODO: add user distance limit to > 100m
-//    [query setLimit:1000];
-//	
-//    //deletee all existing rows,first from front end, then from data source. 
-//    [m_userArray removeAllObjects];
-//    [m_userTableView reloadData];    
-//    
-//    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-//    {
-//        if (!error)
-//        {
-//			int index = 0;
-//            for (PFObject *object in objects)
-//            {
-//                //if for this user, skip it.
-//                NSString *userID = [object valueForKey:@"userID"];
-//                NSString *currentuser = [QBHelper loggedInUser].objectId;
-////                NSLog(@"userid: %@",userID);
-////                NSLog(@"current: %@",currentuser);
-//				
-//                if ([userID isEqualToString:currentuser])
-//                {
-////                    NSLog(@"skipping - current user");
-//                    continue;
-//                }
-//                
-//                NSString *userTitle = [object valueForKey:@"userTitle"];
-//				PFGeoPoint *coordinate = [object valueForKey:@"userLocation"];
-//				NSNumber *userAltitude = [object valueForKey:@"userAltitude"];
-//				
-//                NSMutableDictionary * dict = [NSMutableDictionary dictionary];
-//                [dict setObject:userID forKey:@"userID"];
-//                [dict setObject:userTitle forKey:@"userTitle"];
-//				[dict setObject:coordinate forKey:@"userLocation"];
-//				[dict setObject:@"Locating…" forKey:@"locality"];
-//				[dict setObject:userAltitude forKey:@"userAltitude"];
-//				
-//                [m_userArray addObject:dict];
-//				
-//				CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
-//				[self geocodeLocation:location forIndex:index];
-//				index++;
-//			}
-//            
-//            //when done, refresh the table view
-//            if (bRefreshUI)
-//            {
-//                [m_userTableView reloadData];
-//            }
-//        }
-//        else
-//        {
-//            NSLog(@"error: %@",[error description]);
-//        }
-//    }];
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
+	// TODO: add user distance limit to > 100m
+	
+    //delete all existing rows,first from front end, then from data source.
+    [m_userArray removeAllObjects];
+    [m_userTableView reloadData];    
+    
+	[QBRequest usersForPage:[QBGeneralResponsePage responsePageWithCurrentPage:0 perPage:100] successBlock:^(QBResponse *response, QBGeneralResponsePage *page, NSArray *arrayOfUsers) {
+		int index = 0;
+		for (QBUUser *object in arrayOfUsers) {
+			//if for this user, skip it.
+			NSString *userID = [NSString stringWithFormat:@"%lu",(unsigned long)object.ID];
+			NSString *currentuser = [NSString stringWithFormat:@"%lu",(unsigned long)self.appDelegate.loggedInUser.ID];
+			NSLog(@"userid: %@",userID);
+			NSLog(@"current: %@",currentuser);
+			
+			if ([userID isEqualToString:currentuser]) {
+				NSLog(@"skipping - current user");
+				continue;
+			}
+			
+			NSRange underscore = [object.login rangeOfString:@"_" options:NSBackwardsSearch];
+			
+			if (underscore.length==0 || object.customData == nil) {
+				// not found
+				NSLog(@"skipping - no underscore");
+				continue;
+			}
+			
+			NSString *userTitle = [object.login substringToIndex:underscore.location];
+			NSDictionary *custom = [QBHelper QBCustomDataToObject:object.customData];
+			
+			// create
+			QBLGeoData *coordinate = [QBLGeoData geoData];
+			
+			// place coordinates
+			coordinate.latitude = [[custom valueForKey:@"latitude"] doubleValue];
+			coordinate.longitude = [[custom valueForKey:@"longitude"] doubleValue];
+
+			NSNumber *userAltitude = [custom valueForKey:@"altitude"];
+			
+			NSMutableDictionary * dict = [NSMutableDictionary dictionary];
+			[dict setObject:userID forKey:@"userID"];
+			[dict setObject:userTitle forKey:@"userTitle"];
+			[dict setObject:coordinate forKey:@"userLocation"];
+			[dict setObject:@"Locating…" forKey:@"locality"];
+			[dict setObject:userAltitude forKey:@"userAltitude"];
+			
+			[m_userArray addObject:dict];
+			
+			CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+			[self geocodeLocation:location forIndex:index];
+			index++;
+		}
+		
+		//when done, refresh the table view
+		if (bRefreshUI)
+		{
+			[m_userTableView reloadData];
+		}
+
+		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+	} errorBlock:^(QBResponse *response) {
+		NSLog(@"Errors = %@", response.error);
+		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+	}];
+
 }
 
 - (void)viewDidUnload {
@@ -222,8 +229,8 @@
 
 - (IBAction)touchRefresh:(id)sender
 {
-    //fetch users from 50 miles around.
-    NSLog(@"%f %f", appDelegate.currentLocation.coordinate.latitude, appDelegate.currentLocation.coordinate.longitude);
+    //fetch users from > 100 meters around.
+    NSLog(@"%f %f", self.appDelegate.currentLocation.coordinate.latitude, self.appDelegate.currentLocation.coordinate.longitude);
     [self fireUsersQuery:YES];
 }
 

@@ -18,9 +18,10 @@
 	CLLocation * m_receiverLocation;
 	NSNumber * m_receiverAltitude;
     __weak IBOutlet UITableView *m_userTableView;
-    bool bAudioOnly;
-    eddaAppDelegate * appDelegate;
 }
+
+@property (nonatomic, assign) eddaAppDelegate* appDelegate;
+
 - (IBAction)touchRefresh:(id)sender;
 
 @end

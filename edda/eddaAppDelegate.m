@@ -31,6 +31,7 @@
 	[QBConnection registerServiceKey:configuration[@"Quickblox"][@"AuthKey"]];
 	[QBConnection registerServiceSecret:configuration[@"Quickblox"][@"AuthSecret"]];
 	[QBSettings setAccountKey:configuration[@"Quickblox"][@"AccountKey"]];
+	[QBSettings setLogLevel:QBLogLevelNothing];
 	
 	NSMutableDictionary *videoChatConfiguration = [[QBSettings videoChatConfiguration] mutableCopy];
 	[videoChatConfiguration setObject:@20 forKey:kQBVideoChatCallTimeout];
@@ -41,38 +42,41 @@
 	[QBSettings setVideoChatConfiguration:videoChatConfiguration];
 
 	self.bFullyLoggedIn = NO;
-	[QBHelper initData];
-	[QBHelper anonymousLogin];
-	
-	// Register for Push Notitications, if running iOS 8
-	if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-		UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
-														UIUserNotificationTypeBadge |
-														UIUserNotificationTypeSound);
-		UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes
-																				 categories:nil];
-		[application registerUserNotificationSettings:settings];
-		[application registerForRemoteNotifications];
-	} else {
-		// Register for Push Notifications before iOS 8
-		[application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
-														 UIRemoteNotificationTypeAlert |
-														 UIRemoteNotificationTypeSound)];
-	}
-
-	if (application.applicationState != UIApplicationStateBackground) {
-		// Track an app open here if we launch with a push, unless
-		// "content_available" was used to trigger a background push (introduced
-		// in iOS 7). In that case, we skip tracking here to avoid double
-		// counting the app-open.
-		BOOL preBackgroundPush = ![application respondsToSelector:@selector(backgroundRefreshStatus)];
-		BOOL oldPushHandlerOnly = ![self respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)];
-		BOOL noPushPayload = ![launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-		if (preBackgroundPush || oldPushHandlerOnly || noPushPayload) {
-//		  [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+	[QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
+		NSLog(@"QBSession created: %@", session);
+		[QBHelper anonymousLogin];
+		// Register for Push Notitications, if running iOS 8
+		if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+			UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
+															UIUserNotificationTypeBadge |
+															UIUserNotificationTypeSound);
+			UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes
+																					 categories:nil];
+			[application registerUserNotificationSettings:settings];
+			[application registerForRemoteNotifications];
+		} else {
+			// Register for Push Notifications before iOS 8
+			[application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
+															 UIRemoteNotificationTypeAlert |
+															 UIRemoteNotificationTypeSound)];
 		}
-	}
-
+		
+		if (application.applicationState != UIApplicationStateBackground) {
+			// Track an app open here if we launch with a push, unless
+			// "content_available" was used to trigger a background push (introduced
+			// in iOS 7). In that case, we skip tracking here to avoid double
+			// counting the app-open.
+			BOOL preBackgroundPush = ![application respondsToSelector:@selector(backgroundRefreshStatus)];
+			BOOL oldPushHandlerOnly = ![self respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)];
+			BOOL noPushPayload = ![launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+			if (preBackgroundPush || oldPushHandlerOnly || noPushPayload) {
+			}
+		}
+	} errorBlock:^(QBResponse *response) {
+		// handle errors
+		NSLog(@"anonymous error: %@", response.error);
+	}];
+	
 	return YES;
 }
 
@@ -98,8 +102,6 @@
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
 				   ^{
         // Do the work associated with the task, preferably in chunks.
-        [QBHelper deleteActiveSession];
-        [QBHelper deleteActiveUser];
         [application endBackgroundTask:backgroundTask];
         backgroundTask = UIBackgroundTaskInvalid;
 				   });
@@ -109,7 +111,6 @@
 {
 	// Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 	self.bFullyLoggedIn = NO;
-	[QBHelper initData];
 	[QBHelper anonymousLogin];
 }
 
@@ -129,6 +130,13 @@
 {
 	NSLog(@"registered for notifs: %@", deviceToken);
 	self.token = deviceToken;
+	[QBRequest registerSubscriptionForDeviceToken:deviceToken successBlock:^(QBResponse *response, NSArray *subscriptions) {
+		// success
+		NSLog(@"QB push register success");
+	} errorBlock:^(QBError *error) {
+		// error
+		NSLog(@"QB push register ERROR!");
+	}];
 	[self saveInstallation];
 }
 
@@ -141,8 +149,7 @@
 	if (application.applicationState == UIApplicationStateInactive) {
 		// The application was just brought from the background to the foreground,
 		// so we consider the app as having been "opened by a push notification."
-//		[PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
-//		[PFPush handlePush:userInfo];
+		[QBHelper processPushedCall:[userInfo objectForKey:QBMPushMessageAdditionalInfoKey]];
 	}
 }
 
@@ -151,8 +158,7 @@
 	if (application.applicationState == UIApplicationStateInactive) {
 		// The application was just brought from the background to the foreground,
 		// so we consider the app as having been "opened by a push notification."
-//		[PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
-//		[PFPush handlePush:userInfo];
+		[QBHelper processPushedCall:[userInfo objectForKey:QBMPushMessageAdditionalInfoKey]];
 	}
 	if (completionHandler) {
 		completionHandler(UIBackgroundFetchResultNewData);
@@ -184,7 +190,6 @@
 												   selector:@selector(onTick:)
 												   userInfo:nil
 													repeats:YES];
-	[QBHelper setPollingTimer:YES];
 	NSLog(@"fired timer");
 }
 
@@ -192,7 +197,6 @@
 -(void)onTick:(NSTimer *)timer
 {
 //	NSLog(@"OnTick");
-	[QBHelper pollQBForActiveSessions];
 }
 
 @end

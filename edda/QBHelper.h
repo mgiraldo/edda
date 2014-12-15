@@ -14,30 +14,25 @@
 #import <Foundation/Foundation.h>
 #import "eddaAppDelegate.h"
 
-static QBUUser* loggedInUser;
 static NSString* activeUserObjectID;
 static bool bPollingTimerOn = NO;
-static NSMutableArray * objectsUnderDeletionQueue;
 
 @interface QBHelper : NSObject
 {
    
 }
-+(void) setPollingTimer : (bool) bArg;
-+(void) initData;
+
 + (void) saveUserAlignmentToQB:(BOOL)alignment;
-+(QBUUser*) loggedInUser;
-+(NSString*) activeUserObjectID;
++ (NSDictionary *)QBCustomDataToObject:(NSString *)customData;
 //+ (void)saveUserToQB:(NSDictionary *)inputDict;
 +(void)saveCurrentUserToQB;
 +(void)saveSessionToQB:(NSDictionary *)inputDict;
 //+(void)saveMessageToQB:(NSDictionary *)inputDict;
 +(void) saveUserWithLocationToQB:(QBLPlace *)place altitude:(NSNumber *)altitude;
-+(void) pollQBForActiveSessions;
++(void) processPushedCall:(NSDictionary *)userInfo;
++(void)signUpUser:(NSString *)username;
 //+(void) pollQBForActiveMessages;
 +(void) showAlert : (NSString *) message;
-+(void) deleteActiveUser;
-+(void) deleteActiveSession;
 +(void) showUserTitlePrompt;
 +(NSString *) uniqueDeviceIdentifier;
 +(void) anonymousLogin;
