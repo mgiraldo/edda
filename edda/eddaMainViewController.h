@@ -35,10 +35,6 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CMDeviceMotion *currentMotion;
 
-@property (nonatomic) UIImageView *NE_arrowView;
-@property (nonatomic) UIImageView *NW_arrowView;
-@property (nonatomic) UIImageView *SE_arrowView;
-@property (nonatomic) UIImageView *SW_arrowView;
 @property (nonatomic) UIImageView *N_arrowView;
 @property (nonatomic) UIImageView *S_arrowView;
 @property (nonatomic) UIImageView *E_arrowView;
@@ -48,6 +44,7 @@ typedef struct sViewAngle sViewAngle;
 
 @property (nonatomic) eddaOtherView *otherView;
 
+@property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
 @property (weak, nonatomic) IBOutlet UIButton *endButton;
@@ -76,7 +73,8 @@ typedef struct sViewAngle sViewAngle;
 - (void)userHasLoggedIn;
 - (void)startVideoChat;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;
-- (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view;
-- (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view;
+- (void) disconnectAndGoBack;
+//- (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view;
+//- (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view;
 
 @end

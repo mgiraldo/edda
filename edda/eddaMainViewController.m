@@ -80,7 +80,7 @@ float _arrowMargin = 5.0f;
 	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
 	self.otherView.hidden = YES;
 	self.otherView.delegate = self;
-	[self.view addSubview:self.otherView];
+	[self.view insertSubview:self.otherView belowSubview:self.controlsView];
 
 	UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(resignOnTap:)];
     [singleTap setNumberOfTapsRequired:1];
@@ -196,7 +196,6 @@ float _arrowMargin = 5.0f;
 
 - (void) registerNotifs
 {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionSaved) name:kSessionSavedNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin) name:kLoggedInNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallCancel) name:kCallCancelledNotification object:nil];
@@ -205,7 +204,7 @@ float _arrowMargin = 5.0f;
 //if and when a call arrives
 - (void) didCallCancel
 {
-	[self endVideoChat];
+	[self disconnectAndGoBack];
 }
 
 //if and when a call arrives
@@ -311,7 +310,7 @@ float _arrowMargin = 5.0f;
 		[self.otherView zoomIn];
 	}
 
-	[self.otherView setTappable:_isAligned];
+//	[self.otherView setTappable:_isAligned];
 
 	[self pointObjects:correctHeading pitch:correctPitch];
 	
@@ -325,9 +324,12 @@ float _arrowMargin = 5.0f;
 	}
 	
 	if (!_isAligned) {
-		[self fireAlignedTimer];
+//		[self fireAlignedTimer];
+// TODO: apply some blur to video
+		self.statusLabel.text = @"You are not aligned!";
 	} else {
-		[self stopAlignedTimer];
+//		[self stopAlignedTimer];
+		self.statusLabel.text = @"";
 	}
 }
 
@@ -363,26 +365,6 @@ float _arrowMargin = 5.0f;
 	CGFloat topBarOffset = self.topLayoutGuide.length;
 	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
 	// help arrows
-	self.NW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.NW_arrowView.transform = CGAffineTransformMakeRotation(-M_PI_4);
-	self.NW_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
-	[self.view addSubview:self.NW_arrowView];
-	
-	self.NE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.NE_arrowView.transform = CGAffineTransformMakeRotation(M_PI_4);
-	self.NE_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, topBarOffset + _arrowSize * .5 + _arrowMargin);
-	[self.view addSubview:self.NE_arrowView];
-	
-	self.SE_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.SE_arrowView.transform = CGAffineTransformMakeRotation(M_PI - M_PI_4);
-	self.SE_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
-	[self.view addSubview:self.SE_arrowView];
-	
-	self.SW_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
-	self.SW_arrowView.transform = CGAffineTransformMakeRotation(M_PI + M_PI_4);
-	self.SW_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
-	[self.view addSubview:self.SW_arrowView];
-	
 	self.N_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
 	self.N_arrowView.center = CGPointMake(viewBounds.size.width * .5, topBarOffset + _arrowSize * .5 + _arrowMargin);
 	[self.view addSubview:self.N_arrowView];
@@ -408,10 +390,6 @@ float _arrowMargin = 5.0f;
 	self.S_arrowView.hidden = YES;
 	self.E_arrowView.hidden = YES;
 	self.W_arrowView.hidden = YES;
-	self.NE_arrowView.hidden = YES;
-	self.NW_arrowView.hidden = YES;
-	self.SE_arrowView.hidden = YES;
-	self.SW_arrowView.hidden = YES;
 }
 
 #pragma mark - Video stuff
@@ -420,11 +398,17 @@ float _arrowMargin = 5.0f;
 		_rearVideoInited = YES;
 		NSError *error = nil;
 		self.rearSession = [[AVCaptureSession alloc] init];
+		
+		if ([self.rearSession canSetSessionPreset:AVCaptureSessionPresetMedium]) {
+			[self.rearSession setSessionPreset:AVCaptureSessionPresetMedium];
+		}
+		
 		self.rearVideoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
 		self.rearVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:self.rearVideoCaptureDevice error:&error];
 		if (self.rearVideoInput) {
 			[self.rearSession addInput:self.rearVideoInput];
 			self.rearPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.rearSession];
+			self.rearPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 			self.rearPreviewLayer.frame = self.videoView.bounds; // Assume you want the preview layer to fill the view.
 		} else {
 			// Handle the failure.
@@ -453,12 +437,27 @@ float _arrowMargin = 5.0f;
 - (void)refreshVideoFeeds {
 	[self stopRearCapture];
 	if (_videoActive) {
-//		[self startRearCapture];
+		[self startRearCapture];
 		if (_isChatting) {
 			self.otherView.hidden = NO;
 		} else {
 			self.otherView.hidden = YES;
 		}
+	}
+}
+
+- (void)createVideoChatViews {
+	CGRect viewBounds = self.view.bounds;
+	CGFloat topBarOffset = self.topLayoutGuide.length;
+	
+	if (self.opponentVideoView == nil) {
+		self.opponentVideoView = [[UIView alloc] initWithFrame:self.view.frame];
+		[self.view insertSubview:self.opponentVideoView belowSubview:self.controlsView];
+	}
+	
+	if (self.myVideoView == nil) {
+		self.myVideoView = [[UIView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
+		[self.view insertSubview:self.myVideoView belowSubview:self.controlsView];
 	}
 }
 
@@ -469,7 +468,6 @@ float _arrowMargin = 5.0f;
 		NSLog(@"calling: %@", self.appDelegate.callReceiverID);
 		if(self.videoChat == nil){
 			self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
-			[self connect];
 		}
 		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
 		
@@ -492,13 +490,6 @@ float _arrowMargin = 5.0f;
 	}
 }
 
-- (void)endVideoChat {
-	[self performSelector:@selector(doneStreaming:) withObject:nil afterDelay:0.0];
-}
-
-- (void) sessionSaved {
-}
-
 #pragma mark - UI/Interaction
 
 - (void)pointToUser:(NSString *)nickname withID:(NSNumber *)userID andLocation:(CLLocation *)location andAltitude:(double)altitude {
@@ -511,7 +502,7 @@ float _arrowMargin = 5.0f;
 }
 
 - (IBAction)endButtonTapped:(id)sender {
-	[self endVideoChat];
+	[self disconnectAndGoBack];
 }
 
 - (void)onOtherTapped:(UITapGestureRecognizer *)recognizer {
@@ -542,7 +533,8 @@ float _arrowMargin = 5.0f;
 #pragma mark - eddaOtherViewDelegate
 
 - (void)eddaOtherViewStartedZoomIn:(eddaOtherView *)view {
-	//	[view setNeedsDisplay];
+	_videoActive = NO;
+	[view setNeedsDisplay];
 }
 
 - (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view {
@@ -551,13 +543,11 @@ float _arrowMargin = 5.0f;
 		[self connect];
 	}
 	[self refreshVideoFeeds];
-	[self.view bringSubviewToFront:self.statusLabel];
+//	[self.view bringSubviewToFront:self.statusLabel];
 }
 
 - (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view {
 	_videoActive = YES;
-	[self endVideoChat];
-	[self refreshVideoFeeds];
 }
 
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
@@ -726,6 +716,7 @@ float _arrowMargin = 5.0f;
 
 - (void)reject{
 	NSLog(@"reject");
+	_isChatting = NO;
 	// Reject call
 	//
 	if(self.videoChat == nil){
@@ -734,19 +725,17 @@ float _arrowMargin = 5.0f;
 	[self.videoChat rejectCallWithOpponentID:videoChatOpponentID];
 	//
 	//
-	[[QBChat instance] unregisterVideoChatInstance:self.videoChat];
-	self.videoChat = nil;
-	
+	[self disconnectAndGoBack];
 }
 
 - (void)accept{
 	NSLog(@"accept id: %@", sessionID);
+	_isChatting = YES;
 	
 	// Setup video chat
 	//
 	if(self.videoChat == nil){
 		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:sessionID];
-		[self connect];
 	}
 	
 	// Accept call
@@ -794,7 +783,7 @@ float _arrowMargin = 5.0f;
 
 -(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
 	NSLog(@"chatCallUserDidNotAnswer %lu", (unsigned long)userID);
-	
+	[self disconnectAndGoBack];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"User isn't answering. Please try again later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 }
@@ -805,7 +794,7 @@ float _arrowMargin = 5.0f;
 
 -(void) chatCallDidRejectByUser:(NSUInteger)userID{
 	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
-	
+	[self disconnectAndGoBack];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"User has rejected your call." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 }
@@ -825,10 +814,7 @@ float _arrowMargin = 5.0f;
 		
 	}
 	
-	// release video chat
-	//
-	[[QBChat instance] unregisterVideoChatInstance:self.videoChat];
-	self.videoChat = nil;
+	[self disconnectAndGoBack];
 }
 
 - (void)didReceiveAudioBuffer:(AudioBuffer)buffer{
@@ -837,66 +823,34 @@ float _arrowMargin = 5.0f;
 
 #pragma mark - Timers
 
-- (void) fireAlignedTimer
-{
-	if (self.alignedTimer && [self.alignedTimer isValid])
-		return;
-	
-	alignedTimerStart = [[NSDate alloc] init];
-	
-	self.alignedTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
-													 target:self
-												   selector:@selector(onAlignedTimer:)
-												   userInfo:nil
-													   repeats:YES];
-}
-
-- (void) stopAlignedTimer {
-	if (self.alignedTimer && [self.alignedTimer isValid])
-		[self.alignedTimer invalidate];
-	[self.otherView hideAlert];
-	alignedTimerStart = nil;
-}
-
-- (void) onAlignedTimer:(NSTimer *)timer {
-	NSDate *now = [[NSDate alloc] init];
-	NSTimeInterval timeElapsed = [now timeIntervalSinceDate:alignedTimerStart];
-	int timeRemaining = _timeToWaitForAlignment - timeElapsed;
-	if (!_isAligned) {
-		[self.otherView showAlert:[NSString stringWithFormat:@"Conversation will close if not aligned in %i!", timeRemaining]];
-		if (timeRemaining<0) {
-			[self.otherView zoomOut];
-		}
-	} else {
-		[self stopAlignedTimer];
-	}
-}
-
-- (void) fireActiveTimer
-{
-	if (self.activeTimer && [self.activeTimer isValid])
-		return;
-	
-	self.activeTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
-													 target:self
-												   selector:@selector(onActiveTimer:)
-												   userInfo:nil
-													   repeats:YES];
-}
-
-- (void) stopActiveTimer {
-	if (self.activeTimer && [self.activeTimer isValid])
-		[self.activeTimer invalidate];
-}
-
-- (void) onActiveTimer:(NSTimer *)timer {
-//	NSLog(@"mode: %d receiverObject: %@", m_mode, self.receiverObject);
-	if (self.receiverObject != nil) {
-//		[self.receiverObject refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-//			//
-//		}];
-	}
-}
+//- (void) fireAlignedTimer
+//{
+//	if (self.alignedTimer && [self.alignedTimer isValid])
+//		return;
+//	
+//	alignedTimerStart = [[NSDate alloc] init];
+//	
+//	self.alignedTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+//													 target:self
+//												   selector:@selector(onAlignedTimer:)
+//												   userInfo:nil
+//													   repeats:YES];
+//}
+//
+//- (void) stopAlignedTimer {
+//	if (self.alignedTimer && [self.alignedTimer isValid])
+//		[self.alignedTimer invalidate];
+//	[self.otherView hideAlert];
+//	alignedTimerStart = nil;
+//}
+//
+//- (void) onAlignedTimer:(NSTimer *)timer {
+//	if (!_isAligned) {
+//		self.statusLabel.text = @"You are not aligned!";
+//	} else {
+//		[self stopAlignedTimer];
+//	}
+//}
 
 #pragma mark - QB stuff
 
@@ -907,7 +861,6 @@ float _arrowMargin = 5.0f;
 		@strongify(self);
 		// success
 		self.receiverObject = user;
-		[self fireActiveTimer];
 
 		NSNumber *userID = [NSNumber numberWithInteger:user.ID];
 		NSRange underscore = [user.login rangeOfString:@"_" options:NSBackwardsSearch];
@@ -931,24 +884,15 @@ float _arrowMargin = 5.0f;
 - (void)connect
 {
 	NSLog(@"connecting");
-	CGRect viewBounds = self.view.bounds;
-	CGFloat topBarOffset = self.topLayoutGuide.length;
-	
-	if (self.myVideoView == nil) {
-		self.myVideoView = [[UIView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
-		[self.otherView insertSubview:self.myVideoView atIndex:1];
-	}
-	if (self.opponentVideoView == nil) {
-		self.opponentVideoView = [[UIView alloc] initWithFrame:self.view.frame];
-		[self.otherView insertSubview:self.opponentVideoView atIndex:0];
-	}
-
+	[self createVideoChatViews];
 	self.videoChat.viewToRenderOpponentVideoStream = self.opponentVideoView;
 	self.videoChat.viewToRenderOwnVideoStream = self.myVideoView;
 }
 
 - (void)disconnect
 {
+	[self.videoChat finishCall];
+	
 	[self.opponentVideoView removeFromSuperview];
 	[self.myVideoView removeFromSuperview];
 	self.opponentVideoView = nil;
@@ -958,20 +902,10 @@ float _arrowMargin = 5.0f;
 	self.videoChat = nil;
 }
 
-- (IBAction)doneStreaming:(id)sender {
-	[self.otherView zoomOut];
-    [self disconnectAndGoBack];
-}
-
 - (void) disconnectAndGoBack {
 	_isChatting = NO;
 	
-	[self.videoChat finishCall];
-	
 	[self disconnect];
-
-	[[QBChat instance] unregisterVideoChatInstance:self.videoChat];
-	self.videoChat = nil;
 
 	self.endButton.hidden = YES;
 	self.startButton.hidden = NO;
@@ -988,8 +922,9 @@ float _arrowMargin = 5.0f;
 	self.cityLabel.text = @"";
 	self.receiverObject = nil;
 	
-	[self stopActiveTimer];
 	[self hideArrows];
+	[self.otherView zoomOut];
+	[self refreshVideoFeeds];
 }
 
 #pragma mark - Alert
