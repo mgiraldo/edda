@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289619DB9FD500B358F2 /* AppIcon180x180.png */; };
 		CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */; };
-		CC3B2A301A47BA7D0011F4C4 /* OpponentVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3B2A2F1A47BA7D0011F4C4 /* OpponentVideoView.m */; };
 		CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */; };
 		CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */; };
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
@@ -74,8 +73,6 @@
 /* Begin PBXFileReference section */
 		CC09289619DB9FD500B358F2 /* AppIcon180x180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon180x180.png; path = edda/icons/AppIcon180x180.png; sourceTree = "<group>"; };
 		CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon180x180@2x.png"; path = "edda/icons/AppIcon180x180@2x.png"; sourceTree = "<group>"; };
-		CC3B2A2E1A47BA7D0011F4C4 /* OpponentVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpponentVideoView.h; sourceTree = "<group>"; };
-		CC3B2A2F1A47BA7D0011F4C4 /* OpponentVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpponentVideoView.m; sourceTree = "<group>"; };
 		CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaOtherView.h; sourceTree = "<group>"; };
 		CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaOtherView.m; sourceTree = "<group>"; };
 		CC3F1C1219BE8D4D00F6AD43 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
@@ -192,15 +189,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CC3B2A2D1A47BA7D0011F4C4 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				CC3B2A2E1A47BA7D0011F4C4 /* OpponentVideoView.h */,
-				CC3B2A2F1A47BA7D0011F4C4 /* OpponentVideoView.m */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		CC3F1C0B19BE8A1B00F6AD43 /* utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -264,7 +252,6 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
-				CC3B2A2D1A47BA7D0011F4C4 /* View */,
 				CCD2DDB219EE1F140029BD6C /* QBHelper.h */,
 				CCD2DDB319EE1F140029BD6C /* QBHelper.m */,
 				CC5B4F9519D8D67B001BA61D /* LSViewController.h */,
@@ -499,7 +486,6 @@
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
 				CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
-				CC3B2A301A47BA7D0011F4C4 /* OpponentVideoView.m in Sources */,
 				CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */,
 				CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */,
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
