@@ -15,7 +15,8 @@
 
 @class eddaMainViewController;
 
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
+}
 
 enum streamingMode
 {
@@ -57,6 +58,8 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) AVCaptureSession *rearSession;
 @property (nonatomic) AVCaptureDeviceInput *rearVideoInput;
 @property (nonatomic) AVCaptureVideoPreviewLayer *rearPreviewLayer;
+
+@property (nonatomic) AVCaptureSession *frontSession;
 
 @property (nonatomic) NSTimer * activeTimer;
 @property (nonatomic) NSTimer * alignedTimer;

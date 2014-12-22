@@ -166,11 +166,11 @@
 			//if for this user, skip it.
 			NSString *userID = [NSString stringWithFormat:@"%lu",(unsigned long)object.ID];
 			NSString *currentuser = [NSString stringWithFormat:@"%lu",(unsigned long)self.appDelegate.loggedInUser.ID];
-			NSLog(@"userid: %@",userID);
-			NSLog(@"current: %@",currentuser);
+//			NSLog(@"userid: %@",userID);
+//			NSLog(@"current: %@",currentuser);
 			
 			if ([userID isEqualToString:currentuser]) {
-				NSLog(@"skipping - current user");
+//				NSLog(@"skipping - current user");
 				continue;
 			}
 			
@@ -178,7 +178,7 @@
 			
 			if (underscore.length==0 || object.customData == nil) {
 				// not found
-				NSLog(@"skipping - no underscore");
+//				NSLog(@"skipping - no underscore");
 				continue;
 			}
 			

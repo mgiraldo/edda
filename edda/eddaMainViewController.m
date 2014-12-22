@@ -41,6 +41,7 @@ BOOL _rearVideoInited = NO;
 BOOL _haveArrows = NO;
 BOOL _isChatting = NO;
 BOOL _isAligned = NO;
+BOOL _isOpponentAligned = NO;
 
 float _timeToWaitForAlignment = 10.0f;
 
@@ -73,6 +74,8 @@ float _arrowMargin = 5.0f;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	
+	videoChatOpponentID = 0;
 	
 	self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
 
@@ -128,7 +131,7 @@ float _arrowMargin = 5.0f;
 
 - (void) viewDidAppear:(BOOL)animated
 {
-	[self refreshVideoFeeds];
+	[self refreshBackCameraFeed];
 	[super viewDidAppear:animated];
 }
 
@@ -245,12 +248,6 @@ float _arrowMargin = 5.0f;
 	self.endButton.hidden = !_isChatting;
 	self.startButton.hidden = _isChatting;
 
-	if (_videoActive && _isChatting) {
-		self.endButton.titleLabel.text = @"Cancel Call";
-	} else {
-		self.endButton.titleLabel.text = @"End Call";
-	}
-
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
 	if (_toLat==0 && _toLon==0 && _toAlt==0) return;
 	
@@ -314,23 +311,14 @@ float _arrowMargin = 5.0f;
 
 	[self pointObjects:correctHeading pitch:correctPitch];
 	
-	BOOL otherActive = NO;
-	
 	if (self.receiverObject != nil) {
 		NSDictionary *custom = [QBHelper QBCustomDataToObject:self.receiverObject.customData];
 		BOOL alignment = [[custom valueForKey:@"alignment"] boolValue];
-		otherActive = alignment;
-		[self.otherView setActiveState:otherActive];
+		_isOpponentAligned = alignment;
+		[self.otherView setActiveState:_isOpponentAligned];
 	}
 	
-	if (!_isAligned) {
-//		[self fireAlignedTimer];
-// TODO: apply some blur to video
-		self.statusLabel.text = @"You are not aligned!";
-	} else {
-//		[self stopAlignedTimer];
-		self.statusLabel.text = @"";
-	}
+	[self updateVideoChatViews];
 }
 
 - (void)pointObjects:(float)heading pitch:(float)pitch {
@@ -433,8 +421,23 @@ float _arrowMargin = 5.0f;
 	}
 }
 
-# pragma mark - Video chat stuff
-- (void)refreshVideoFeeds {
+- (void)updateVideoChatViews {
+	if (_isOpponentAligned) {
+		self.opponentVideoView.layer.borderColor = [UIColor greenColor].CGColor;
+		self.statusLabel.text = @"";
+	} else {
+		self.opponentVideoView.layer.borderColor = [UIColor grayColor].CGColor;
+		self.statusLabel.text = [NSString stringWithFormat:@"%@ is not aligned!", m_mode == streamingModeIncoming ? self.appDelegate.callerTitle : self.appDelegate.callReceiverTitle];
+		// TODO: apply some blur to video
+	}
+	
+	if (!_isAligned) {
+		self.statusLabel.text = @"You are not aligned!";
+		// TODO: apply some blur to video
+	}
+}
+
+- (void)refreshBackCameraFeed {
 	[self stopRearCapture];
 	if (_videoActive) {
 		[self startRearCapture];
@@ -447,17 +450,21 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)createVideoChatViews {
+	NSLog(@"createChatViews");
 	CGRect viewBounds = self.view.bounds;
-	CGFloat topBarOffset = self.topLayoutGuide.length;
+	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize + _arrowSize;
 	
 	if (self.opponentVideoView == nil) {
 		self.opponentVideoView = [[UIView alloc] initWithFrame:self.view.frame];
 		[self.view insertSubview:self.opponentVideoView belowSubview:self.controlsView];
+		self.opponentVideoView.layer.borderWidth = 5;
+		self.opponentVideoView.hidden = YES;
 	}
 	
 	if (self.myVideoView == nil) {
 		self.myVideoView = [[UIView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
 		[self.view insertSubview:self.myVideoView belowSubview:self.controlsView];
+		self.myVideoView.hidden = YES;
 	}
 }
 
@@ -469,7 +476,12 @@ float _arrowMargin = 5.0f;
 		if(self.videoChat == nil){
 			self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
 		}
+		
+		self.videoChat.isUseCustomVideoChatCaptureSession = YES;
+
 		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
+		
+		[self createVideoChatViews];
 		
 		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 		
@@ -488,6 +500,120 @@ float _arrowMargin = 5.0f;
 			[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 		}];
 	}
+}
+
+-(void) setupVideoCapture{
+	NSLog(@"setupVideoCapture");
+	self.frontSession = [[AVCaptureSession alloc] init];
+ 
+	__block NSError *error = nil;
+ 
+	// set preset
+	[self.frontSession setSessionPreset:AVCaptureSessionPresetLow];
+ 
+ 
+	// Setup the Video input
+	AVCaptureDevice *videoDevice = [self frontFacingCamera];
+
+	//
+	AVCaptureDeviceInput *captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
+	if(error){
+		QBDLogEx(@"deviceInputWithDevice Video error: %@", error);
+	}else{
+		if ([self.frontSession canAddInput:captureVideoInput]){
+			[self.frontSession addInput:captureVideoInput];
+		}else{
+			QBDLogEx(@"cantAddInput Video");
+		}
+	}
+ 
+	// Setup Video output
+	AVCaptureVideoDataOutput *videoCaptureOutput = [[AVCaptureVideoDataOutput alloc] init];
+	videoCaptureOutput.alwaysDiscardsLateVideoFrames = YES;
+	
+	// set FPS
+	int _frameRate = 5;
+	if ([videoDevice respondsToSelector:@selector(setActiveVideoMinFrameDuration:)] &&
+		[videoDevice respondsToSelector:@selector(setActiveVideoMaxFrameDuration:)]) {
+		
+		NSError *error;
+		[videoDevice lockForConfiguration:&error];
+		if (error == nil) {
+#if defined(__IPHONE_7_0)
+			[videoDevice setActiveVideoMinFrameDuration:CMTimeMake(1, _frameRate)];
+			[videoDevice setActiveVideoMaxFrameDuration:CMTimeMake(1, _frameRate)];
+#endif
+		}
+		[videoDevice unlockForConfiguration];
+		
+	} else {
+		
+		for (AVCaptureConnection *connection in videoCaptureOutput.connections)
+		{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			if ([connection respondsToSelector:@selector(setVideoMinFrameDuration:)])
+				connection.videoMinFrameDuration = CMTimeMake(1, _frameRate);
+			
+			if ([connection respondsToSelector:@selector(setVideoMaxFrameDuration:)])
+				connection.videoMaxFrameDuration = CMTimeMake(1, _frameRate);
+#pragma clang diagnostic pop
+		}
+	}
+	// end FPS
+ 
+	//
+	// Set the video output to store frame in BGRA (It is supposed to be faster)
+	NSString* key = (NSString*)kCVPixelBufferPixelFormatTypeKey;
+	NSNumber* value = [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA];
+	NSDictionary* videoSettings = [NSDictionary dictionaryWithObject:value forKey:key];
+	[videoCaptureOutput setVideoSettings:videoSettings];
+	/*And we create a capture session*/
+	if([self.frontSession canAddOutput:videoCaptureOutput]){
+		[self.frontSession addOutput:videoCaptureOutput];
+	}else{
+		QBDLogEx(@"cantAddOutput");
+	}
+ 
+	/*We create a serial queue to handle the processing of our frames*/
+	dispatch_queue_t callbackQueue= dispatch_queue_create("cameraQueue", NULL);
+	[videoCaptureOutput setSampleBufferDelegate:self queue:callbackQueue];
+ 
+	// Add preview layer
+	AVCaptureVideoPreviewLayer *prewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.frontSession];
+	[prewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+	CGRect layerRect = [[self.myVideoView layer] bounds];
+	[prewLayer setBounds:layerRect];
+	[prewLayer setPosition:CGPointMake(CGRectGetMidX(layerRect),CGRectGetMidY(layerRect))];
+	self.myVideoView.hidden = NO;
+	[self.myVideoView.layer addSublayer:prewLayer];
+ 
+ 
+	/*We start the capture*/
+	[self.frontSession startRunning];
+}
+
+- (AVCaptureDevice *) cameraWithPosition:(AVCaptureDevicePosition) position{
+	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+	for (AVCaptureDevice *device in devices) {
+		if ([device position] == position) {
+			return device;
+		}
+	}
+	return nil;
+}
+
+- (AVCaptureDevice *) frontFacingCamera{
+	return [self cameraWithPosition:AVCaptureDevicePositionFront];
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput  didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+	// Usually we just forward camera frames to QuickBlox SDK
+	// But we also can do something with them before, for example - apply some video filters or so
+	if ([connection isVideoOrientationSupported]) {
+		[connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
+	}
+	[self.videoChat processVideoChatCaptureVideoSample:sampleBuffer];
 }
 
 #pragma mark - UI/Interaction
@@ -542,8 +668,7 @@ float _arrowMargin = 5.0f;
 	if (_isChatting) {
 		[self connect];
 	}
-	[self refreshVideoFeeds];
-//	[self.view bringSubviewToFront:self.statusLabel];
+	[self refreshBackCameraFeed];
 }
 
 - (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view {
@@ -737,11 +862,14 @@ float _arrowMargin = 5.0f;
 	if(self.videoChat == nil){
 		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:sessionID];
 	}
-	
+
+	self.videoChat.isUseCustomVideoChatCaptureSession = YES;
+
 	// Accept call
 	//
 	[self.videoChat acceptCallWithOpponentID:videoChatOpponentID conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
 	
+	[self createVideoChatViews];
 }
 
 - (void)hideCallAlert{
@@ -801,6 +929,8 @@ float _arrowMargin = 5.0f;
 
 - (void)chatCallDidStartWithUser:(NSUInteger)userID sessionID:(NSString *)sID{
 	NSLog(@"call started with user: %d session: %@", (int)userID, sID);
+	videoChatOpponentID = userID;
+	[self fireOpponentAlignedTimer];
 }
 
 -(void) chatCallDidStopByUser:(NSUInteger)userID status:(NSString *)status{
@@ -823,34 +953,33 @@ float _arrowMargin = 5.0f;
 
 #pragma mark - Timers
 
-//- (void) fireAlignedTimer
-//{
-//	if (self.alignedTimer && [self.alignedTimer isValid])
-//		return;
-//	
-//	alignedTimerStart = [[NSDate alloc] init];
-//	
-//	self.alignedTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
-//													 target:self
-//												   selector:@selector(onAlignedTimer:)
-//												   userInfo:nil
-//													   repeats:YES];
-//}
-//
-//- (void) stopAlignedTimer {
-//	if (self.alignedTimer && [self.alignedTimer isValid])
-//		[self.alignedTimer invalidate];
-//	[self.otherView hideAlert];
-//	alignedTimerStart = nil;
-//}
-//
-//- (void) onAlignedTimer:(NSTimer *)timer {
-//	if (!_isAligned) {
-//		self.statusLabel.text = @"You are not aligned!";
-//	} else {
-//		[self stopAlignedTimer];
-//	}
-//}
+- (void) fireOpponentAlignedTimer
+{
+	if (self.activeTimer && [self.activeTimer isValid])
+		return;
+	self.activeTimer = [NSTimer scheduledTimerWithTimeInterval:1
+														target:self
+													  selector:@selector(onOpponentAlignedTimer:)
+													  userInfo:nil
+													   repeats:YES];
+}
+- (void) stopOpponentAlignedTimer {
+	if (self.activeTimer && [self.activeTimer isValid])
+		[self.activeTimer invalidate];
+}
+- (void) onOpponentAlignedTimer:(NSTimer *)timer {
+//	 NSLog(@"mode: %d, id: %lu", m_mode, (unsigned long)videoChatOpponentID);
+	if (videoChatOpponentID != 0) {
+		@weakify(self);
+		[QBRequest userWithID:videoChatOpponentID successBlock:^(QBResponse *response, QBUUser *user) {
+			@strongify(self);
+			// success
+			self.receiverObject = user;
+		} errorBlock:^(QBResponse *response) {
+			// error
+		}];
+	}
+}
 
 #pragma mark - QB stuff
 
@@ -874,7 +1003,6 @@ float _arrowMargin = 5.0f;
 		self.appDelegate.callerID = userID.stringValue;
 		
 		[self opponentDidCall];
-		
 		[self pointToUser:userTitle withID:userID andLocation:location andAltitude:userAltitude.doubleValue];
 	} errorBlock:^(QBResponse *response) {
 		// error
@@ -884,9 +1012,14 @@ float _arrowMargin = 5.0f;
 - (void)connect
 {
 	NSLog(@"connecting");
-	[self createVideoChatViews];
+	[self.view bringSubviewToFront:self.myVideoView];
+	[self.view bringSubviewToFront:self.controlsView];
+	[self setupVideoCapture];
 	self.videoChat.viewToRenderOpponentVideoStream = self.opponentVideoView;
 	self.videoChat.viewToRenderOwnVideoStream = self.myVideoView;
+	self.myVideoView.hidden = NO;
+	self.opponentVideoView.hidden = NO;
+	NSLog(@"me: %@, opponent: %@", self.myVideoView,self.opponentVideoView);
 }
 
 - (void)disconnect
@@ -917,14 +1050,17 @@ float _arrowMargin = 5.0f;
 	self.appDelegate.callReceiverLocation = nil;
 	self.appDelegate.callReceiverAltitude = 0;
 	
+	videoChatOpponentID = 0;
+	
 	_toLat=0, _toLon=0, _toAlt=0;
 	
 	self.cityLabel.text = @"";
 	self.receiverObject = nil;
 	
+	[self stopOpponentAlignedTimer];
 	[self hideArrows];
 	[self.otherView zoomOut];
-	[self refreshVideoFeeds];
+	[self refreshBackCameraFeed];
 }
 
 #pragma mark - Alert

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289619DB9FD500B358F2 /* AppIcon180x180.png */; };
 		CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */; };
+		CC3B2A301A47BA7D0011F4C4 /* OpponentVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3B2A2F1A47BA7D0011F4C4 /* OpponentVideoView.m */; };
 		CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */; };
 		CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */; };
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
@@ -52,8 +53,6 @@
 		CCD6D68019EC756A0060DBAE /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CCD6D67F19EC756A0060DBAE /* libresolv.dylib */; };
 		CCE1DB921A3E2ADD00119867 /* EXTRuntimeExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE1DB8C1A3E2ADD00119867 /* EXTRuntimeExtensions.m */; };
 		CCE1DB931A3E2ADD00119867 /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE1DB8E1A3E2ADD00119867 /* EXTScope.m */; };
-		CCE1DB941A3E2ADD00119867 /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = CCE1DB901A3E2ADD00119867 /* LICENSE.md */; };
-		CCE1DB951A3E2ADD00119867 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = CCE1DB911A3E2ADD00119867 /* README.md */; };
 		CCFFAF5F19CF9782008555A1 /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */; };
 		CCFFAF6019CF9782008555A1 /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */; };
 		CCFFAF6119CF9782008555A1 /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */; };
@@ -75,6 +74,8 @@
 /* Begin PBXFileReference section */
 		CC09289619DB9FD500B358F2 /* AppIcon180x180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon180x180.png; path = edda/icons/AppIcon180x180.png; sourceTree = "<group>"; };
 		CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon180x180@2x.png"; path = "edda/icons/AppIcon180x180@2x.png"; sourceTree = "<group>"; };
+		CC3B2A2E1A47BA7D0011F4C4 /* OpponentVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpponentVideoView.h; sourceTree = "<group>"; };
+		CC3B2A2F1A47BA7D0011F4C4 /* OpponentVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpponentVideoView.m; sourceTree = "<group>"; };
 		CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaOtherView.h; sourceTree = "<group>"; };
 		CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaOtherView.m; sourceTree = "<group>"; };
 		CC3F1C1219BE8D4D00F6AD43 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
@@ -140,8 +141,6 @@
 		CCE1DB8D1A3E2ADD00119867 /* EXTScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTScope.h; sourceTree = "<group>"; };
 		CCE1DB8E1A3E2ADD00119867 /* EXTScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTScope.m; sourceTree = "<group>"; };
 		CCE1DB8F1A3E2ADD00119867 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
-		CCE1DB901A3E2ADD00119867 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
-		CCE1DB911A3E2ADD00119867 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		CCFFAF4F19CF9782008555A1 /* AppIcon29x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon29x29.png; path = edda/icons/AppIcon29x29.png; sourceTree = "<group>"; };
 		CCFFAF5019CF9782008555A1 /* AppIcon29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon29x29@2x.png"; path = "edda/icons/AppIcon29x29@2x.png"; sourceTree = "<group>"; };
 		CCFFAF5119CF9782008555A1 /* AppIcon40x40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon40x40.png; path = edda/icons/AppIcon40x40.png; sourceTree = "<group>"; };
@@ -193,6 +192,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CC3B2A2D1A47BA7D0011F4C4 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CC3B2A2E1A47BA7D0011F4C4 /* OpponentVideoView.h */,
+				CC3B2A2F1A47BA7D0011F4C4 /* OpponentVideoView.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		CC3F1C0B19BE8A1B00F6AD43 /* utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -256,6 +264,7 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
+				CC3B2A2D1A47BA7D0011F4C4 /* View */,
 				CCD2DDB219EE1F140029BD6C /* QBHelper.h */,
 				CCD2DDB319EE1F140029BD6C /* QBHelper.m */,
 				CC5B4F9519D8D67B001BA61D /* LSViewController.h */,
@@ -345,8 +354,6 @@
 			isa = PBXGroup;
 			children = (
 				CCE1DB8A1A3E2ADD00119867 /* extobjc */,
-				CCE1DB901A3E2ADD00119867 /* LICENSE.md */,
-				CCE1DB911A3E2ADD00119867 /* README.md */,
 			);
 			path = libextobjc;
 			sourceTree = "<group>";
@@ -492,9 +499,8 @@
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
 				CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
+				CC3B2A301A47BA7D0011F4C4 /* OpponentVideoView.m in Sources */,
 				CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */,
-				CCE1DB951A3E2ADD00119867 /* README.md in Sources */,
-				CCE1DB941A3E2ADD00119867 /* LICENSE.md in Sources */,
 				CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */,
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
 				CCE1DB921A3E2ADD00119867 /* EXTRuntimeExtensions.m in Sources */,
