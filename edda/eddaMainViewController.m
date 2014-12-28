@@ -79,6 +79,8 @@ float _arrowMargin = 5.0f;
 	
 	self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
 
+	self.statusLabel.text = @"";
+
 	// other view
 	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
 	self.otherView.hidden = YES;
@@ -170,9 +172,6 @@ float _arrowMargin = 5.0f;
 	currentUser.ID = self.appDelegate.loggedInUser.ID;
 	currentUser.password = [QBHelper uniqueDeviceIdentifier];
 	[[QBChat instance] loginWithUser:currentUser];
-	if (self.videoChat == nil) {
-		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
-	}
 	[NSTimer scheduledTimerWithTimeInterval:30
 									 target:[QBChat instance]
 								   selector:@selector(sendPresence)
@@ -229,7 +228,7 @@ float _arrowMargin = 5.0f;
 -(void) showReceiverBusyMsg
 {
 	NSLog(@"Receiver is busy on another call. Please try later.");
-	self.statusLabel.text = @"Receiver is busy on another call. Please try later.";
+	self.statusLabel.text = @"Receiver is busy. Please try later.";
 	[self performSelector:@selector(goBack) withObject:nil afterDelay:5.0];
 }
 
@@ -422,17 +421,20 @@ float _arrowMargin = 5.0f;
 }
 
 - (void)updateVideoChatViews {
+	NSString *other = m_mode == streamingModeIncoming ? self.appDelegate.callerTitle : self.appDelegate.callReceiverTitle;
+
 	if (_isOpponentAligned) {
 		self.opponentVideoView.layer.borderColor = [UIColor greenColor].CGColor;
 		self.statusLabel.text = @"";
 	} else {
 		self.opponentVideoView.layer.borderColor = [UIColor grayColor].CGColor;
-		self.statusLabel.text = [NSString stringWithFormat:@"%@ is not aligned!", m_mode == streamingModeIncoming ? self.appDelegate.callerTitle : self.appDelegate.callReceiverTitle];
+		self.statusLabel.text = [NSString stringWithFormat:@"%@ is not aligned!", other];
 		// TODO: apply some blur to video
 	}
 	
 	if (!_isAligned) {
-		self.statusLabel.text = @"You are not aligned!";
+		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
+//		self.statusLabel.text = @"You are not aligned!";
 		// TODO: apply some blur to video
 	}
 }
@@ -623,8 +625,8 @@ float _arrowMargin = 5.0f;
 	_toLat = location.coordinate.latitude;
 	_toLon = location.coordinate.longitude;
 	_toAlt = altitude;
-	self.cityLabel.text =[NSString stringWithFormat:@"find %@", nickname];
 	[self updateViewAngle];
+	NSLog(@"from %f %f %f to %f %f %f", _fromLat, _fromLon, _fromAlt, _toLat, _toLon, _toAlt);
 }
 
 - (IBAction)endButtonTapped:(id)sender {
@@ -788,8 +790,8 @@ float _arrowMargin = 5.0f;
 	_isChatting = YES;
 	
 	m_mode = streamingModeOutgoing;
-
-	[self pointToUser:self.appDelegate.callReceiverTitle withID:self.appDelegate.callReceiverID andLocation:self.appDelegate.callReceiverLocation andAltitude:self.appDelegate.callReceiverAltitude.doubleValue];
+	
+	self.statusLabel.text = [NSString stringWithFormat:@"waiting for %@ to accept",  self.appDelegate.callReceiverTitle];
 
 	[self startVideoChat];
 }
@@ -805,7 +807,7 @@ float _arrowMargin = 5.0f;
 	_toLat = 0;
 	_toLon = 0;
 	_toAlt = 0;
-	self.cityLabel.text = self.appDelegate.callReceiverTitle;
+//	self.cityLabel.text = self.appDelegate.callReceiverTitle;
 	[self hideArrows];
 	_isChatting = NO;
 	self.otherView.hidden = YES;
@@ -918,6 +920,7 @@ float _arrowMargin = 5.0f;
 
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID{
 	NSLog(@"call accepted by: %d", (int)userID);
+	[self pointToUser:self.appDelegate.callReceiverTitle withID:self.appDelegate.callReceiverID andLocation:self.appDelegate.callReceiverLocation andAltitude:self.appDelegate.callReceiverAltitude.doubleValue];
 }
 
 -(void) chatCallDidRejectByUser:(NSUInteger)userID{
@@ -1014,6 +1017,7 @@ float _arrowMargin = 5.0f;
 	NSLog(@"connecting");
 	[self.view bringSubviewToFront:self.myVideoView];
 	[self.view bringSubviewToFront:self.controlsView];
+	[self.view bringSubviewToFront:self.statusLabel];
 	[self setupVideoCapture];
 	self.videoChat.viewToRenderOpponentVideoStream = self.opponentVideoView;
 	self.videoChat.viewToRenderOwnVideoStream = self.myVideoView;
@@ -1055,7 +1059,7 @@ float _arrowMargin = 5.0f;
 	
 	_toLat=0, _toLon=0, _toAlt=0;
 	
-	self.cityLabel.text = @"";
+	self.statusLabel.text = @"";
 	self.receiverObject = nil;
 	
 	[self stopOpponentAlignedTimer];

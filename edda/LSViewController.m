@@ -190,7 +190,15 @@
 
 			NSNumber *userAltitude = [custom valueForKey:@"altitude"];
 			
-			NSString *userTitle = [QBHelper decodeUsername:[custom valueForKey:@"username"]];
+			NSString *qbname = [custom valueForKey:@"username"];
+			
+			NSString *userTitle;
+			
+			if (qbname != nil) {
+				userTitle = [QBHelper decodeUsername:qbname];
+			} else {
+				userTitle = @"old Edda version";
+			}
 
 			NSMutableDictionary * dict = [NSMutableDictionary dictionary];
 			[dict setObject:userID forKey:@"userID"];

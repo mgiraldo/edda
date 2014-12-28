@@ -52,8 +52,6 @@ typedef struct sViewAngle sViewAngle;
 
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
-@property (weak, nonatomic) IBOutlet UILabel *cityLabel;
-
 @property (nonatomic) AVCaptureDevice *rearVideoCaptureDevice;
 @property (nonatomic) AVCaptureSession *rearSession;
 @property (nonatomic) AVCaptureDeviceInput *rearVideoInput;
