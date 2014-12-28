@@ -114,18 +114,27 @@
 }
 
 +(void)signUpUser:(NSString *)username {
+	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+
 	// Registration/sign up of User
 	QBUUser *user = [QBUUser user];
-	user.login = [NSString stringWithFormat:@"%@_%@", username, [QBHelper uniqueDeviceIdentifier]];
+	user.login = [QBHelper uniqueDeviceIdentifier];
 	user.password = [QBHelper uniqueDeviceIdentifier];
+
+	NSNumber *zero = [NSNumber numberWithFloat:0.0];
+	NSNumber *alignment = [NSNumber numberWithBool:NO];
 	
+	NSDictionary *custom = [[NSDictionary alloc] initWithObjectsAndKeys:zero, @"latitude", zero, @"longitude", zero, @"altitude", alignment, @"alignment", [[appDelegate.userTitle dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0], @"username", nil];
+	
+	NSString *customString = [QBHelper DictionaryToQBCustomData:custom];
+	user.customData = customString;
+
 	[QBRequest signUp:user successBlock:^(QBResponse *response, QBUUser *ruser) {
-		eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
 		// Sign up was successful
 		// Sign In to QuickBlox Chat
 		appDelegate.loggedInUser = ruser;
 		NSLog(@"signed up: %@", appDelegate.loggedInUser);
-		[self showUserTitlePrompt];
+		[QBHelper showUserTitlePrompt];
 	} errorBlock:^(QBResponse *response) {
 		// Handle error here
 		NSLog(@"error while signing up with QB");
@@ -136,11 +145,12 @@
 {
     if (kUIAlertViewTagUserName == alertView.tag && ![[alertView textFieldAtIndex:0].text isEqualToString:@""])
     {
-        //lets differe saving title till we have the location.
-        //saveuserwithlocationtoQB will handle it.
-        eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-		NSLog(@"nick: %@", [alertView textFieldAtIndex:0].text);
-        appDelegate.userTitle = [[alertView textFieldAtIndex:0].text copy];
+		NSString *login = [[alertView textFieldAtIndex:0].text stringByTrimmingCharactersInSet:
+						   [NSCharacterSet whitespaceCharacterSet]];
+		
+		eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+		NSLog(@"nick: %@", login);
+        appDelegate.userTitle = login;
         appDelegate.bFullyLoggedIn = YES;
 		
 		// Store the data
@@ -148,9 +158,8 @@
 		[defaults setObject:appDelegate.userTitle forKey:@"nickname"];
 		[defaults synchronize];
 		
-		// Store the deviceToken in the current Installation and save it to QB.
-//		[appDelegate saveInstallation];
-
+		[QBHelper changeLoginToLogin:login];
+		
 		//fire appdelegate timer
 		[self saveCurrentUserToQB];
     }
@@ -173,6 +182,21 @@
 	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
 }
 
++ (void) changeLoginToLogin:(NSString *)newlogin
+{
+	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	
+	NSDictionary * oldCustom = [QBHelper QBCustomDataToObject:appDelegate.loggedInUser.customData];
+	
+	NSMutableDictionary * newCustom = [NSMutableDictionary dictionaryWithDictionary:oldCustom];
+	
+	[newCustom setValue:[[newlogin dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0] forKey:@"username"];
+	
+	appDelegate.userTitle = newlogin;
+
+	[self saveCustomToQB:newCustom];
+}
+
 + (void) saveUserAlignmentToQB:(BOOL)alignment
 {
 	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -188,8 +212,8 @@
 
 + (NSDictionary *)QBCustomDataToObject:(NSString *)customData {
 	NSError *e = nil;
-    NSDictionary *JSON = [NSJSONSerialization JSONObjectWithData:[customData dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&e];
-	return JSON;
+    NSDictionary *custom = [NSJSONSerialization JSONObjectWithData:[customData dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&e];
+	return custom;
 }
 
 + (NSString *)DictionaryToQBCustomData:(NSDictionary *)dictionary {
@@ -199,6 +223,14 @@
 														 error:&error];
 	NSString *string = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 	return string;
+}
+
++ (NSString *)decodeUsername:(NSString *)encodedUsername {
+	NSData *encodedData = [[NSData alloc] initWithBase64EncodedString:encodedUsername options:0];
+	
+	NSString *userTitle = [[NSString alloc] initWithData:encodedData encoding:NSUTF8StringEncoding];
+	
+	return userTitle;
 }
 
 + (void) saveCustomToQB:(NSDictionary *)custom {
@@ -217,49 +249,18 @@
 	NSNumber *lat = [NSNumber numberWithDouble:place.latitude];
 	NSNumber *lon = [NSNumber numberWithDouble:place.longitude];
 	NSNumber *alignment = [NSNumber numberWithBool:NO];
-	NSDictionary *custom = [[NSDictionary alloc] initWithObjectsAndKeys:lat, @"latitude", lon, @"longitude", altitude, @"altitude", alignment, @"alignment", nil];
+
+	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	NSDictionary * oldCustom = [QBHelper QBCustomDataToObject:appDelegate.loggedInUser.customData];
 	
-	[self saveCustomToQB:custom];
+	NSMutableDictionary * newCustom = [NSMutableDictionary dictionaryWithDictionary:oldCustom];
 	
-//	// first get this user's geodata, if any
-//	QBLGeoDataFilter *geoFilter = [QBLGeoDataFilter new];
-//	geoFilter.userID = [QBHelper self.loggedInUser].ID;
-//	
-//	[QBRequest geoDataWithFilter:geoFilter page:[QBGeneralResponsePage responsePageWithCurrentPage:1 perPage:70]
-//					successBlock:^(QBResponse *response, NSArray *objects, QBGeneralResponsePage *page) {
-//		// success
-//		if (objects.count > 0) {
-//			// delete dem locations
-//			for (int i = 0; i < objects.count; i++) {
-//				QBLGeoData *geoData = (QBLGeoData *)[objects objectAtIndex:i];
-//				[QBRequest deleteGeoDataWithID:geoData.ID successBlock:^(QBResponse *response) {
-//					// Successful response
-//				} errorBlock:^(QBResponse *response) {
-//					// Handle error
-//				}];
-//			}
-//		}
-//		// create
-//		QBLGeoData *geodata = [QBLGeoData geoData];
-//		
-//		// place coordinates
-//		geodata.latitude = place.latitude;
-//		geodata.longitude = place.longitude;
-//		geodata.status = altitude.stringValue;
-//		
-//		[QBRequest createGeoData:geodata
-//					successBlock:^(QBResponse *response, QBLGeoData *geoData) {
-//						// Geodata created successfully
-//						NSLog(@"success saving location!");
-//						[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUserLocSavedNotification object:nil]];
-//					} errorBlock:^(QBResponse *response) {
-//						// Handle error
-//						NSLog(@"ERROR saving location!");
-//					}];
-//	} errorBlock:^(QBResponse *response) {
-//		// error
-//		NSLog(@"some error with the geo data filter query");
-//	}];
+	[newCustom setValue:lat forKey:@"latitude"];
+	[newCustom setValue:lon forKey:@"longitude"];
+	[newCustom setValue:altitude forKey:@"altitude"];
+	[newCustom setValue:alignment forKey:@"alignment"];
+	
+	[self saveCustomToQB:newCustom];
 }
 
 +(void) showAlert : (NSString *) message

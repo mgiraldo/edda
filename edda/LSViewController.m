@@ -159,30 +159,26 @@
     //delete all existing rows,first from front end, then from data source.
     [m_userArray removeAllObjects];
     [m_userTableView reloadData];    
-    
+	
+	@weakify(self);
 	[QBRequest usersForPage:[QBGeneralResponsePage responsePageWithCurrentPage:0 perPage:100] successBlock:^(QBResponse *response, QBGeneralResponsePage *page, NSArray *arrayOfUsers) {
+		@strongify(self);
 		int index = 0;
 		for (QBUUser *object in arrayOfUsers) {
 			//if for this user, skip it.
 			NSString *userID = [NSString stringWithFormat:@"%lu",(unsigned long)object.ID];
-			NSString *currentuser = [NSString stringWithFormat:@"%lu",(unsigned long)self.appDelegate.loggedInUser.ID];
-//			NSLog(@"userid: %@",userID);
-//			NSLog(@"current: %@",currentuser);
 			
-			if ([userID isEqualToString:currentuser]) {
+			if (object.ID == self.appDelegate.loggedInUser.ID) {
 //				NSLog(@"skipping - current user");
 				continue;
 			}
 			
-			NSRange underscore = [object.login rangeOfString:@"_" options:NSBackwardsSearch];
-			
-			if (underscore.length==0 || object.customData == nil) {
+			if (object.customData == nil) {
 				// not found
 //				NSLog(@"skipping - no underscore");
 				continue;
 			}
 			
-			NSString *userTitle = [object.login substringToIndex:underscore.location];
 			NSDictionary *custom = [QBHelper QBCustomDataToObject:object.customData];
 			
 			// create
@@ -194,6 +190,8 @@
 
 			NSNumber *userAltitude = [custom valueForKey:@"altitude"];
 			
+			NSString *userTitle = [QBHelper decodeUsername:[custom valueForKey:@"username"]];
+
 			NSMutableDictionary * dict = [NSMutableDictionary dictionary];
 			[dict setObject:userID forKey:@"userID"];
 			[dict setObject:userTitle forKey:@"userTitle"];

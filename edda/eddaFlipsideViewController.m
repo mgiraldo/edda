@@ -81,21 +81,24 @@
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-    [self animateTextField: textField up:NO];
+    [self animateTextField:textField up:NO];
 
 	if ([textField.text isEqualToString:@""]) {
 		textField.text = self.nickname;
 		return;
 	}
 	if (textField == _nicknameLabel) {
-		eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-		appDelegate.userTitle = textField.text;
+		NSString *newlogin = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+		
+		self.nickname = newlogin;
+		
+		textField.text = newlogin;
+		
+		[QBHelper changeLoginToLogin:newlogin];
 
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-		[defaults setObject:appDelegate.userTitle forKey:@"nickname"];
+		[defaults setObject:newlogin forKey:@"nickname"];
 		[defaults synchronize];
-		
-//		[ParseHelper saveCurrentUserToParse];
 	}
 	self.currentResponder = nil;
 }

@@ -22,8 +22,10 @@ static bool bPollingTimerOn = NO;
    
 }
 
++ (void) changeLoginToLogin:(NSString *)login;
 + (void) saveUserAlignmentToQB:(BOOL)alignment;
 + (NSDictionary *)QBCustomDataToObject:(NSString *)customData;
++ (NSString *)decodeUsername:(NSString *)encodedUsername;
 //+ (void)saveUserToQB:(NSDictionary *)inputDict;
 +(void)saveCurrentUserToQB;
 +(void)saveSessionToQB:(NSDictionary *)inputDict;

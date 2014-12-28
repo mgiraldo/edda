@@ -509,7 +509,7 @@ float _arrowMargin = 5.0f;
 	__block NSError *error = nil;
  
 	// set preset
-	[self.frontSession setSessionPreset:AVCaptureSessionPresetLow];
+	[self.frontSession setSessionPreset:AVCaptureSessionPresetMedium];
  
  
 	// Setup the Video input
@@ -822,7 +822,7 @@ float _arrowMargin = 5.0f;
 #pragma mark QBChatDelegate
 
 -(void) initQBSession {
-	NSString *login = [NSString stringWithFormat:@"%@_%@", self.appDelegate.userTitle, [QBHelper uniqueDeviceIdentifier]];
+	NSString *login = [QBHelper uniqueDeviceIdentifier];
 	NSString *password = [QBHelper uniqueDeviceIdentifier];
 	NSString *username = self.appDelegate.userTitle;
 	@weakify(self);
@@ -992,9 +992,9 @@ float _arrowMargin = 5.0f;
 		self.receiverObject = user;
 
 		NSNumber *userID = [NSNumber numberWithInteger:user.ID];
-		NSRange underscore = [user.login rangeOfString:@"_" options:NSBackwardsSearch];
-		NSString *userTitle = [user.login substringToIndex:underscore.location];
 		NSDictionary *custom = [QBHelper QBCustomDataToObject:user.customData];
+
+		NSString *userTitle = [QBHelper decodeUsername:[custom valueForKey:@"username"]];
 		
 		CLLocation * location = [[CLLocation alloc] initWithLatitude:[[custom valueForKey:@"latitude"] doubleValue] longitude:[[custom valueForKey:@"longitude"] doubleValue]];
 		NSNumber *userAltitude = [custom valueForKey:@"altitude"];
@@ -1024,7 +1024,8 @@ float _arrowMargin = 5.0f;
 
 - (void)disconnect
 {
-	[self.videoChat finishCall];
+	if (self.videoChat != nil)
+		[self.videoChat finishCall];
 	
 	[self.opponentVideoView removeFromSuperview];
 	[self.myVideoView removeFromSuperview];
