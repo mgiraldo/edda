@@ -30,44 +30,45 @@
 }
 
 // self preview size
-float _previewWidth = 60;
-float _previewHeight = 90;
+const float _previewWidth = 60;
+const float _previewHeight = 90;
 
-CLLocationManager *locationManager;
-CMMotionManager *motionManager;
+static CLLocationManager *locationManager;
+static CMMotionManager *motionManager;
 
-BOOL _videoActive = YES;
-BOOL _rearVideoInited = NO;
-BOOL _haveArrows = NO;
-BOOL _isChatting = NO;
-BOOL _isAligned = NO;
-BOOL _isOpponentAligned = NO;
+static BOOL _videoActive = YES;
+static BOOL _rearVideoInited = NO;
+static BOOL _haveArrows = NO;
+static BOOL _isChatting = NO;
+static BOOL _isAligned = NO;
+static BOOL _isOpponentAligned = NO;
+static BOOL _hasFirstAligned = NO;
 
-float _timeToWaitForAlignment = 10.0f;
+static float _timeToWaitForAlignment = 10.0f;
 
-float _headingThreshold = 20.0f;
-float _pitchThreshold = 10.0f;
+static float _headingThreshold = 20.0f;
+static float _pitchThreshold = 10.0f;
 
-NSArray *_places;
-NSArray *_placeCoordinates;
+static NSArray *_places;
+static NSArray *_placeCoordinates;
 
 // proj4
-projPJ pj_geoc;
-projPJ pj_geod;
+static projPJ pj_geoc;
+static projPJ pj_geod;
 
-double _fromLat = 0.0;
-double _fromLon = 0.0;
-double _fromAlt = 0.0;
+static double _fromLat = 0.0;
+static double _fromLon = 0.0;
+static double _fromAlt = 0.0;
 
-double _toLat = 0.0;
-double _toLon = 0.0;
-double _toAlt = 0.0;
+static double _toLat = 0.0;
+static double _toLon = 0.0;
+static double _toAlt = 0.0;
 
-sViewAngle viewAngle;
+static sViewAngle viewAngle;
 
 // arrows
-float _arrowSize = 15.0f;
-float _arrowMargin = 5.0f;
+static float _arrowSize = 15.0f;
+static float _arrowMargin = 5.0f;
 
 #pragma mark - View lifecycle
 
@@ -297,6 +298,10 @@ float _arrowMargin = 5.0f;
 	BOOL oldAligned = _isAligned;
 	
 	_isAligned = (rightHead && rightPitch);
+	
+	if (!_hasFirstAligned && _isAligned) {
+		_hasFirstAligned = YES;
+	}
 
 	if (_isChatting && oldAligned != _isAligned) {
 		[QBHelper saveUserAlignmentToQB:_isAligned];
@@ -433,9 +438,13 @@ float _arrowMargin = 5.0f;
 	}
 	
 	if (!_isAligned) {
-		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
-//		self.statusLabel.text = @"You are not aligned!";
+//		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
+		self.statusLabel.text = @"You are not aligned!";
 		// TODO: apply some blur to video
+	}
+	
+	if (!_hasFirstAligned) {
+		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
 	}
 }
 
@@ -474,7 +483,6 @@ float _arrowMargin = 5.0f;
 	_isChatting = YES;
 	
 	if (self.appDelegate.callReceiverID != nil && m_mode != streamingModeIncoming) {
-		NSLog(@"calling: %@", self.appDelegate.callReceiverID);
 		if(self.videoChat == nil){
 			self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
 		}
@@ -483,6 +491,8 @@ float _arrowMargin = 5.0f;
 
 		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
 		
+		NSLog(@"calling: %@ chat: %@", self.appDelegate.callReceiverID, self.videoChat);
+
 		[self createVideoChatViews];
 		
 		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
@@ -496,6 +506,7 @@ float _arrowMargin = 5.0f;
 		myMessage.additionalInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@",[NSNumber numberWithInt:(int)self.appDelegate.loggedInUser.ID]], @"callerID", self.appDelegate.userTitle, @"callerTitle", nil];
 		
 		[QBRequest sendPush:myMessage toUsers:userid successBlock:^(QBResponse *response, QBMEvent *event) {
+			NSLog(@"sent push: %@",response);
 			[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 		} errorBlock:^(QBError *error) {
 			NSLog(@"Errors=%@", [error.reasons description]);

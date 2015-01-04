@@ -33,6 +33,10 @@
 	[QBSettings setAccountKey:configuration[@"Quickblox"][@"AccountKey"]];
 	[QBSettings setLogLevel:QBLogLevelNothing];
 	
+#ifndef DEBUG
+	[QBApplication sharedApplication].productionEnvironmentForPushesEnabled = YES;
+#endif
+	
 	NSMutableDictionary *videoChatConfiguration = [[QBSettings videoChatConfiguration] mutableCopy];
 	[videoChatConfiguration setObject:@20 forKey:kQBVideoChatCallTimeout];
 	[videoChatConfiguration setObject:AVCaptureSessionPresetLow forKey:kQBVideoChatFrameQualityPreset];
@@ -105,6 +109,7 @@
         [application endBackgroundTask:backgroundTask];
         backgroundTask = UIBackgroundTaskInvalid;
 				   });
+	[[QBChat instance] logout];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -121,7 +126,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-	// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+	[[QBChat instance] logout];
 }
 
 #pragma mark - Push notifications
@@ -135,9 +140,8 @@
 		NSLog(@"QB push register success");
 	} errorBlock:^(QBError *error) {
 		// error
-		NSLog(@"QB push register ERROR!");
+		NSLog(@"QB push register ERROR: %@", error);
 	}];
-	[self saveInstallation];
 }
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
@@ -163,40 +167,6 @@
 	if (completionHandler) {
 		completionHandler(UIBackgroundFetchResultNewData);
 	}
-}
-
--(void)saveInstallation{
-//	if ([PFUser currentUser]) {
-//		PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-//		[currentInstallation setDeviceTokenFromData:self.token];
-//		[currentInstallation setObject:[PFUser currentUser] forKey:@"user"];
-//		[currentInstallation saveInBackground];
-//		
-//		NSLog(@"INSTALLATION REGISTERED");
-//	}
-}
-
-#pragma mark - Call timer
-
-//this method will be called once logged in. It will poll QB ActiveSessions object
-//for incoming calls.
--(void) fireListeningTimer
-{
-	if (self.appTimer && [self.appTimer isValid])
-		return;
-	
-	self.appTimer = [NSTimer scheduledTimerWithTimeInterval:8.0
-													 target:self
-												   selector:@selector(onTick:)
-												   userInfo:nil
-													repeats:YES];
-	NSLog(@"fired timer");
-}
-
-
--(void)onTick:(NSTimer *)timer
-{
-//	NSLog(@"OnTick");
 }
 
 @end

@@ -7,20 +7,6 @@
 			<key>ApplicationId</key>
 			<string>your_app_id</string>
 		</dict>
-		<key>Opentok</key>
-		<dict>
-			<key>APIKey</key>
-			<string>your_api_key</string>
-			<key>ProjectSecret</key>
-			<string>your_secret</string>
-		</dict>
-		<key>Parse</key>
-		<dict>
-			<key>ApplicationID</key>
-			<string>your_app_id</string>
-			<key>ClientKey</key>
-			<string>your_client_key</string>
-		</dict>
 		<key>Quickblox</key>
 		<dict>
 			<key>ApplicationID</key>

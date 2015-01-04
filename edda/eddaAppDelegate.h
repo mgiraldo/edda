@@ -40,7 +40,4 @@
 
 @property (strong) NSData* token;
 
--(void)saveInstallation;
--(void)fireListeningTimer;
-
 @end

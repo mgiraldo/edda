@@ -8,82 +8,6 @@
 
 @implementation QBHelper 
 
-//will initiate the call by saving session
-//if there is a session already existing, do not save,
-//just pop an alert
-+(void)saveSessionToQB:(NSDictionary *)inputDict
-{
-//    NSString * receiverID = [inputDict objectForKey:@"receiverID"];
-//	
-//	PFQuery *recID = [PFQuery queryWithClassName:@"ActiveSessions"];
-//	[recID whereKey:@"receiverID" equalTo:receiverID];
-// 
-//	PFQuery *callID = [PFQuery queryWithClassName:@"ActiveSessions"];
-//	[callID whereKey:@"callerID" equalTo:receiverID];
-//	
-//	PFQuery *query = [PFQuery orQueryWithSubqueries:@[recID,callID]];
-//	
-//    [query getFirstObjectInBackgroundWithBlock:^
-//    (PFObject *object, NSError *error)
-//    {
-//        if (!object)
-//        {
-//            NSLog(@"No session with receiverID exists.");
-//            [self storeToQB:inputDict];
-//        }
-//        else
-//        {
-//           [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kReceiverBusyNotification object:nil]];
-//           return;
-//        }
-//    }];
-}
-
-//+(void) storeToQB:(NSDictionary *)inputDict
-//{
-//    __block PFObject *activeSession = [PFObject objectWithClassName:@"ActiveSessions"];
-//    NSString * callerID = [inputDict objectForKey:@"callerID"];
-//    if (callerID)
-//    {
-//        [activeSession setObject:callerID forKey:@"callerID"];
-//    }
-//	
-//    NSString * receiverID = [inputDict objectForKey:@"receiverID"];
-//    if (receiverID)
-//    {
-//        [activeSession setObject:receiverID forKey:@"receiverID"];
-//    }
-//    
-//    //callerTitle
-//    NSString * callerTitle = [inputDict objectForKey:@"callerTitle"];
-//    if (receiverID)
-//    {
-//        [activeSession setObject:callerTitle forKey:@"callerTitle"];
-//    }
-//    
-//    [activeSession saveInBackgroundWithBlock:^(BOOL succeeded, NSError* error)
-//     {
-//         if (!error)
-//         {
-////             NSLog(@"sessionID: %@, publisherToken: %@ , subscriberToken: %@", activeSession[@"sessionID"],activeSession[@"publisherToken"],
-////                   activeSession[@"subscriberToken"]);
-//			 
-//             eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-//             appDelegate.sessionID = activeSession[@"sessionID"];
-//             appDelegate.subscriberToken = activeSession[@"subscriberToken"];
-//             appDelegate.publisherToken = activeSession[@"publisherToken"];
-//             appDelegate.callerTitle = activeSession[@"callerTitle"];
-//             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kSessionSavedNotification object:nil]];
-//         }
-//         else
-//         {
-//             NSLog(@"savesession error!!! %@", [error localizedDescription]);
-//             NSString * msg = [NSString stringWithFormat:@"Failed to save outgoing call session. Please try again.  %@", [error localizedDescription]];
-//             [self showAlert:msg];
-//         }         
-//     }];
-//}
-
 +(void) showUserTitlePrompt
 {
 	// Get the stored data before the view loads
@@ -185,6 +109,8 @@
 + (void) changeLoginToLogin:(NSString *)newlogin
 {
 	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	
+	if (appDelegate.loggedInUser == nil) return;
 	
 	NSDictionary * oldCustom = [QBHelper QBCustomDataToObject:appDelegate.loggedInUser.customData];
 	
