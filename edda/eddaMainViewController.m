@@ -36,15 +36,13 @@ const float _previewHeight = 90;
 static CLLocationManager *locationManager;
 static CMMotionManager *motionManager;
 
-static BOOL _videoActive = YES;
+static BOOL _videoActive = NO;
 static BOOL _rearVideoInited = NO;
 static BOOL _haveArrows = NO;
 static BOOL _isChatting = NO;
 static BOOL _isAligned = NO;
 static BOOL _isOpponentAligned = NO;
 static BOOL _hasFirstAligned = NO;
-
-static float _timeToWaitForAlignment = 10.0f;
 
 static float _headingThreshold = 20.0f;
 static float _pitchThreshold = 10.0f;
@@ -248,6 +246,7 @@ static float _arrowMargin = 5.0f;
 	self.endButton.hidden = !_isChatting;
 	self.startButton.hidden = _isChatting;
 
+	if (!_isChatting) return;
 	if (self.currentHeading == nil || self.currentLocation == nil) return;
 	if (_toLat==0 && _toLon==0 && _toAlt==0) return;
 	
@@ -260,6 +259,7 @@ static float _arrowMargin = 5.0f;
 	float correctHeading = self.currentHeading.trueHeading - viewAngle.azimuth;
 	float headingAdjusted = abs(correctHeading);
 	float headingTransparency;
+	
 	if (headingAdjusted < 180) {
 		headingTransparency = ofMap(headingAdjusted, 0, 180, 30.0, 0.0, true);
 	} else {
@@ -279,6 +279,7 @@ static float _arrowMargin = 5.0f;
 		self.W_arrowView.hidden = NO;
 		rightHead = NO;
 	}
+	
 	if (correctPitch > _pitchThreshold) {
 		self.N_arrowView.hidden = NO;
 		rightPitch = NO;
@@ -487,6 +488,10 @@ static float _arrowMargin = 5.0f;
 			self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
 		}
 		
+		_videoActive = YES;
+		
+		[self refreshBackCameraFeed];
+		
 		self.videoChat.isUseCustomVideoChatCaptureSession = YES;
 
 		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
@@ -631,11 +636,8 @@ static float _arrowMargin = 5.0f;
 
 #pragma mark - UI/Interaction
 
-- (void)pointToUser:(NSString *)nickname withID:(NSNumber *)userID andLocation:(CLLocation *)location andAltitude:(double)altitude {
+- (void)pointToUser {
 	self.otherView.hidden = NO;
-	_toLat = location.coordinate.latitude;
-	_toLon = location.coordinate.longitude;
-	_toAlt = altitude;
 	[self updateViewAngle];
 	NSLog(@"from %f %f %f to %f %f %f", _fromLat, _fromLon, _fromAlt, _toLat, _toLon, _toAlt);
 }
@@ -685,7 +687,7 @@ static float _arrowMargin = 5.0f;
 }
 
 - (void)eddaOtherViewStartedZoomOut:(eddaOtherView *)view {
-	_videoActive = YES;
+	_videoActive = NO;
 }
 
 - (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view {
@@ -870,6 +872,12 @@ static float _arrowMargin = 5.0f;
 	NSLog(@"accept id: %@", sessionID);
 	_isChatting = YES;
 	
+	_videoActive = YES;
+	
+	[self refreshBackCameraFeed];
+	
+	[self pointToUser];
+
 	// Setup video chat
 	//
 	if(self.videoChat == nil){
@@ -931,7 +939,14 @@ static float _arrowMargin = 5.0f;
 
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID{
 	NSLog(@"call accepted by: %d", (int)userID);
-	[self pointToUser:self.appDelegate.callReceiverTitle withID:self.appDelegate.callReceiverID andLocation:self.appDelegate.callReceiverLocation andAltitude:self.appDelegate.callReceiverAltitude.doubleValue];
+	_videoActive = YES;
+	[self refreshBackCameraFeed];
+
+	_toLat = self.appDelegate.callReceiverLocation.coordinate.latitude;
+	_toLon = self.appDelegate.callReceiverLocation.coordinate.longitude;
+	_toAlt = self.appDelegate.callReceiverAltitude.doubleValue;
+
+	[self pointToUser];
 }
 
 -(void) chatCallDidRejectByUser:(NSUInteger)userID{
@@ -1017,7 +1032,11 @@ static float _arrowMargin = 5.0f;
 		self.appDelegate.callerID = userID.stringValue;
 		
 		[self opponentDidCall];
-		[self pointToUser:userTitle withID:userID andLocation:location andAltitude:userAltitude.doubleValue];
+
+		_toLat = location.coordinate.latitude;
+		_toLon = location.coordinate.longitude;
+		_toAlt = userAltitude.doubleValue;
+
 	} errorBlock:^(QBResponse *response) {
 		// error
 	}];
@@ -1053,6 +1072,7 @@ static float _arrowMargin = 5.0f;
 
 - (void) disconnectAndGoBack {
 	_isChatting = NO;
+	_videoActive = NO;
 	
 	[self disconnect];
 

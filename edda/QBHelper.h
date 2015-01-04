@@ -27,7 +27,6 @@ static bool bPollingTimerOn = NO;
 + (NSDictionary *)QBCustomDataToObject:(NSString *)customData;
 + (NSString *)decodeUsername:(NSString *)encodedUsername;
 +(void)saveCurrentUserToQB;
-+(void)saveSessionToQB:(NSDictionary *)inputDict;
 +(void) saveUserWithLocationToQB:(QBLPlace *)place altitude:(NSNumber *)altitude;
 +(void) processPushedCall:(NSDictionary *)userInfo;
 +(void)signUpUser:(NSString *)username;

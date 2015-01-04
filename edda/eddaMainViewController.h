@@ -75,7 +75,5 @@ typedef struct sViewAngle sViewAngle;
 - (void)startVideoChat;
 - (sViewAngle)findViewAngleFromLat:(double)fromLat fromLon:(double)fromLon fromAlt:(double)fromAlt toLat:(double)toLat toLon:(double)toLon toAlt:(double)toAlt;
 - (void) disconnectAndGoBack;
-//- (void)eddaOtherViewDidZoomIn:(eddaOtherView *)view;
-//- (void)eddaOtherViewDidZoomOut:(eddaOtherView *)view;
 
 @end
