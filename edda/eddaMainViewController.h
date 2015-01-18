@@ -15,7 +15,8 @@
 
 @class eddaMainViewController;
 
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
+	AVAudioPlayer *ringingPlayer;
 }
 
 enum streamingMode

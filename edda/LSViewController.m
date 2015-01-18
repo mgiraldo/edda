@@ -24,6 +24,7 @@
     m_userArray = [NSMutableArray array];
     self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
     m_userTableView.backgroundColor = [UIColor clearColor];
+	[m_userTableView setSeparatorInset:UIEdgeInsetsZero];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -66,7 +67,25 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 60.0;
+    return 80.0;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	// Remove seperator inset
+	if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+		[cell setSeparatorInset:UIEdgeInsetsZero];
+	}
+	
+	// Prevent the cell from inheriting the Table View's margin settings
+	if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+		[cell setPreservesSuperviewLayoutMargins:NO];
+	}
+	
+	// Explictly set your cell's layout margins
+	if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+		[cell setLayoutMargins:UIEdgeInsetsZero];
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -76,27 +95,26 @@
     if (!dict)
         return nil;
     
-    NSString * userTitle = [NSString stringWithFormat:@"%@, %@",[dict objectForKey:@"userTitle"],[dict objectForKey:@"locality"]];
-   
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil)
     {
         // Init new cell
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
-    
+	
     //background view
-    [cell setBackgroundColor:[UIColor clearColor]];    
-    
-    cell.textLabel.backgroundColor = [UIColor clearColor];
-    cell.textLabel.text = userTitle;   
-//    cell.textLabel.font = [UIFont fontWithName:@"Verdana" size:13];
+    [cell setBackgroundColor:[UIColor clearColor]];
+
+	cell.textLabel.backgroundColor = [UIColor clearColor];
+	cell.textLabel.text = [dict objectForKey:@"userTitle"];
+    cell.textLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:24];
+	cell.detailTextLabel.text = [dict objectForKey:@"locality"];
+	cell.detailTextLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:18];
+	cell.detailTextLabel.textColor = [UIColor grayColor];
     cell.contentView.backgroundColor = [UIColor clearColor];
  
- //   [cell.textLabel sizeToFit];    
-     
     return cell;
 }
 

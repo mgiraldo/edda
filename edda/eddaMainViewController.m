@@ -65,7 +65,7 @@ static double _toAlt = 0.0;
 static sViewAngle viewAngle;
 
 // arrows
-static float _arrowSize = 15.0f;
+static float _arrowSize = 44.0f;
 static float _arrowMargin = 5.0f;
 
 #pragma mark - View lifecycle
@@ -132,14 +132,10 @@ static float _arrowMargin = 5.0f;
 
 - (void) viewDidAppear:(BOOL)animated
 {
-	[self refreshBackCameraFeed];
-	[super viewDidAppear:animated];
-}
-
-- (void) viewDidLayoutSubviews {
 	[self setupArrows];
 	[self hideArrows];
-	[self.view layoutSubviews];
+	[self refreshBackCameraFeed];
+	[super viewDidAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -287,7 +283,7 @@ static float _arrowMargin = 5.0f;
 		self.S_arrowView.hidden = NO;
 		rightPitch = NO;
 	}
-
+	
 	float newX, newY;
 	float radius = 600 * ofMap(correctPitch, -90, 90, 0, 1, true);
 	float radians = -DEG_TO_RAD*correctHeading;
@@ -311,8 +307,6 @@ static float _arrowMargin = 5.0f;
 	if (_isAligned && !self.otherView.zoomed) {
 		[self.otherView zoomIn];
 	}
-
-//	[self.otherView setTappable:_isAligned];
 
 	[self pointObjects:correctHeading pitch:correctPitch];
 	
@@ -357,6 +351,7 @@ static float _arrowMargin = 5.0f;
 	CGRect viewBounds = self.view.bounds;
 	CGFloat topBarOffset = self.topLayoutGuide.length;
 	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
+	
 	// help arrows
 	self.N_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
 	self.N_arrowView.center = CGPointMake(viewBounds.size.width * .5, topBarOffset + _arrowSize * .5 + _arrowMargin);
@@ -488,10 +483,6 @@ static float _arrowMargin = 5.0f;
 			self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstance];
 		}
 		
-		_videoActive = YES;
-		
-		[self refreshBackCameraFeed];
-		
 		self.videoChat.isUseCustomVideoChatCaptureSession = YES;
 
 		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
@@ -508,6 +499,7 @@ static float _arrowMargin = 5.0f;
 		
 		QBMPushMessage * myMessage = [QBMPushMessage pushMessage];
 		myMessage.alertBody = message;
+		myMessage.soundFile = @"Zen_mg_JFK_LO_short.wav";
 		myMessage.additionalInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@",[NSNumber numberWithInt:(int)self.appDelegate.loggedInUser.ID]], @"callerID", self.appDelegate.userTitle, @"callerTitle", nil];
 		
 		[QBRequest sendPush:myMessage toUsers:userid successBlock:^(QBResponse *response, QBMEvent *event) {
@@ -800,7 +792,6 @@ static float _arrowMargin = 5.0f;
 - (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
 {
 	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
-	_isChatting = YES;
 	
 	m_mode = streamingModeOutgoing;
 	
@@ -820,7 +811,6 @@ static float _arrowMargin = 5.0f;
 	_toLat = 0;
 	_toLon = 0;
 	_toAlt = 0;
-//	self.cityLabel.text = self.appDelegate.callReceiverTitle;
 	[self hideArrows];
 	_isChatting = NO;
 	self.otherView.hidden = YES;
@@ -872,6 +862,7 @@ static float _arrowMargin = 5.0f;
 	NSLog(@"accept id: %@", sessionID);
 	_isChatting = YES;
 	
+	ringingPlayer = nil;
 	_videoActive = YES;
 	
 	[self refreshBackCameraFeed];
@@ -920,14 +911,14 @@ static float _arrowMargin = 5.0f;
 	
 	// play call music
 	//
-//	if(ringingPlayer == nil){
-//		NSString *path =[[NSBundle mainBundle] pathForResource:@"ringing" ofType:@"wav"];
-//		NSURL *url = [NSURL fileURLWithPath:path];
-//		ringingPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
-//		ringingPlayer.delegate = self;
-//		[ringingPlayer setVolume:1.0];
-//		[ringingPlayer play];
-//	}
+	if(ringingPlayer == nil){
+		NSString *path =[[NSBundle mainBundle] pathForResource:@"Zen_mg_JFK_LO_short" ofType:@"wav"];
+		NSURL *url = [NSURL fileURLWithPath:path];
+		ringingPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
+		ringingPlayer.delegate = self;
+		[ringingPlayer setVolume:1.0];
+		[ringingPlayer play];
+	}
 }
 
 -(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
@@ -939,6 +930,7 @@ static float _arrowMargin = 5.0f;
 
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID{
 	NSLog(@"call accepted by: %d", (int)userID);
+
 	_videoActive = YES;
 	[self refreshBackCameraFeed];
 
@@ -978,6 +970,13 @@ static float _arrowMargin = 5.0f;
 
 - (void)didReceiveAudioBuffer:(AudioBuffer)buffer{
 	NSLog(@"received audio buffer");
+}
+
+#pragma mark -
+#pragma mark AVAudioPlayerDelegate
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
+	ringingPlayer = nil;
 }
 
 #pragma mark - Timers
@@ -1087,15 +1086,16 @@ static float _arrowMargin = 5.0f;
 	self.appDelegate.callReceiverAltitude = 0;
 	
 	videoChatOpponentID = 0;
+	ringingPlayer = nil;
 	
 	_toLat=0, _toLon=0, _toAlt=0;
 	
 	self.statusLabel.text = @"";
 	self.receiverObject = nil;
+	self.otherView.hidden = YES;
 	
 	[self stopOpponentAlignedTimer];
 	[self hideArrows];
-	[self.otherView zoomOut];
 	[self refreshBackCameraFeed];
 }
 

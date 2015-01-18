@@ -10,13 +10,11 @@
 
 @implementation eddaOtherView
 
-BOOL _touchDown = NO;
-BOOL _isTappable = NO;
-BOOL _isActive = NO;
+static BOOL _touchDown = NO;
+static BOOL _isActive = NO;
 
-float _borderWidth = 5;
-float _zoomDuration = .25;
-float _otherSize = 50.0f;
+static float _zoomDuration = .25;
+static float _otherSize = 50.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -26,8 +24,6 @@ float _otherSize = 50.0f;
 //		self.contentMode = UIViewContentModeRedraw;
 		self.layer.cornerRadius = _otherSize * .5;
 		self.layer.backgroundColor = [UIColor blackColor].CGColor;
-		self.layer.borderWidth = _borderWidth;
-		self.layer.borderColor = [UIColor yellowColor].CGColor;
 		
 		//create the frame that will contain our label
 		CGRect labelFrame = CGRectMake(0.0f, 0.0f, 200.0f, 50.0f);
@@ -46,17 +42,12 @@ float _otherSize = 50.0f;
 }
 
 - (void)refreshView {
-	if (_isTappable) {
-		self.layer.backgroundColor = [UIColor blackColor].CGColor;
-//		self.layer.opacity = 1.0;
-	} else {
-		self.layer.backgroundColor = [UIColor darkGrayColor].CGColor;
-//		self.layer.opacity = 0.5;
-	}
+	self.layer.backgroundColor = [UIColor blackColor].CGColor;
+
 	if (_isActive) {
-		self.layer.borderColor = [UIColor greenColor].CGColor;
+//		self.layer.borderColor = [UIColor greenColor].CGColor;
 	} else {
-		self.layer.borderColor = [UIColor grayColor].CGColor;
+//		self.layer.borderColor = [UIColor grayColor].CGColor;
 	}
 }
 
@@ -89,11 +80,6 @@ float _otherSize = 50.0f;
 							 [self setNeedsDisplay];
 						 }];
 	}
-}
-
-- (void)setTappable:(BOOL)tappable {
-	_isTappable = tappable;
-	[self refreshView];
 }
 
 - (void)setActiveState:(BOOL)active {

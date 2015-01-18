@@ -14,6 +14,14 @@
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
 		CC40DE3419B8271300E86968 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3219B8271300E86968 /* arrow.png */; };
 		CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3319B8271300E86968 /* arrow@2x.png */; };
+		CC5989C91A6B01DE0047D119 /* home.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989C81A6B01DE0047D119 /* home.jpg */; };
+		CC5989CB1A6B042C0047D119 /* info.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989CA1A6B042C0047D119 /* info.jpg */; };
+		CC5989CD1A6B05230047D119 /* home-info.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989CC1A6B05230047D119 /* home-info.jpg */; };
+		CC5989E41A6B0D920047D119 /* default-375w-667h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC5989E21A6B0D920047D119 /* default-375w-667h@2x.png */; };
+		CC5989E51A6B0D920047D119 /* default-414w-736h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC5989E31A6B0D920047D119 /* default-414w-736h@3x.png */; };
+		CC5989E81A6B0E470047D119 /* default-5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC5989E61A6B0E470047D119 /* default-5@2x.png */; };
+		CC5989E91A6B0E470047D119 /* default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC5989E71A6B0E470047D119 /* default@2x.png */; };
+		CC5989EC1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav in Resources */ = {isa = PBXBuildFile; fileRef = CC5989EB1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav */; };
 		CC5B4F9719D8D67B001BA61D /* LSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC5B4F9619D8D67B001BA61D /* LSViewController.m */; };
 		CC7329D019B6D899005FEC7D /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC7329CF19B6D899005FEC7D /* CoreMotion.framework */; };
 		CC77D4F119B003E8009BA59F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC77D4F019B003E8009BA59F /* Foundation.framework */; };
@@ -80,6 +88,14 @@
 		CC40DE2D19B813A000E86968 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
+		CC5989C81A6B01DE0047D119 /* home.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = home.jpg; sourceTree = "<group>"; };
+		CC5989CA1A6B042C0047D119 /* info.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = info.jpg; sourceTree = "<group>"; };
+		CC5989CC1A6B05230047D119 /* home-info.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "home-info.jpg"; sourceTree = "<group>"; };
+		CC5989E21A6B0D920047D119 /* default-375w-667h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-375w-667h@2x.png"; sourceTree = "<group>"; };
+		CC5989E31A6B0D920047D119 /* default-414w-736h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-414w-736h@3x.png"; sourceTree = "<group>"; };
+		CC5989E61A6B0E470047D119 /* default-5@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-5@2x.png"; sourceTree = "<group>"; };
+		CC5989E71A6B0E470047D119 /* default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default@2x.png"; sourceTree = "<group>"; };
+		CC5989EB1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Zen_mg_JFK_LO_short.wav; sourceTree = "<group>"; };
 		CC5B4F9519D8D67B001BA61D /* LSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSViewController.h; sourceTree = "<group>"; };
 		CC5B4F9619D8D67B001BA61D /* LSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSViewController.m; sourceTree = "<group>"; };
 		CC7329CF19B6D899005FEC7D /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
@@ -197,10 +213,19 @@
 			name = utils;
 			sourceTree = "<group>";
 		};
+		CC5989EA1A6B33AA0047D119 /* sounds */ = {
+			isa = PBXGroup;
+			children = (
+				CC5989EB1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav */,
+			);
+			name = sounds;
+			sourceTree = "<group>";
+		};
 		CC77D4E419B003E8009BA59F = {
 			isa = PBXGroup;
 			children = (
 				CC3F1C0B19BE8A1B00F6AD43 /* utils */,
+				CC5989EA1A6B33AA0047D119 /* sounds */,
 				CC77D53A19B02734009BA59F /* images */,
 				CC77D52819B003F3009BA59F /* TestFlightSDK3.0.2 */,
 				CC77D4F619B003E8009BA59F /* edda */,
@@ -307,6 +332,13 @@
 		CC77D53A19B02734009BA59F /* images */ = {
 			isa = PBXGroup;
 			children = (
+				CC5989E61A6B0E470047D119 /* default-5@2x.png */,
+				CC5989E71A6B0E470047D119 /* default@2x.png */,
+				CC5989E21A6B0D920047D119 /* default-375w-667h@2x.png */,
+				CC5989E31A6B0D920047D119 /* default-414w-736h@3x.png */,
+				CC5989CC1A6B05230047D119 /* home-info.jpg */,
+				CC5989CA1A6B042C0047D119 /* info.jpg */,
+				CC5989C81A6B01DE0047D119 /* home.jpg */,
 				CCFFAF6F19CF9788008555A1 /* icons */,
 				CC40DE3219B8271300E86968 /* arrow.png */,
 				CC40DE3319B8271300E86968 /* arrow@2x.png */,
@@ -424,10 +456,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCFFAF6619CF9782008555A1 /* AppIcon57x57@2x.png in Resources */,
+				CC5989CB1A6B042C0047D119 /* info.jpg in Resources */,
 				CC77D50C19B003E8009BA59F /* Images.xcassets in Resources */,
 				CC77D53C19B02740009BA59F /* arrowLong.png in Resources */,
 				CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */,
 				CCFFAF6A19CF9782008555A1 /* AppIcon72x72@2x.png in Resources */,
+				CC5989EC1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav in Resources */,
 				CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */,
 				CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */,
 				CC77D4FB19B003E8009BA59F /* InfoPlist.strings in Resources */,
@@ -442,14 +476,20 @@
 				CC77D50419B003E8009BA59F /* Main.storyboard in Resources */,
 				CCFFAF6919CF9782008555A1 /* AppIcon72x72.png in Resources */,
 				CC40DE3419B8271300E86968 /* arrow.png in Resources */,
+				CC5989E51A6B0D920047D119 /* default-414w-736h@3x.png in Resources */,
 				CCFFAF6419CF9782008555A1 /* AppIcon50x50@2x.png in Resources */,
+				CC5989E41A6B0D920047D119 /* default-375w-667h@2x.png in Resources */,
 				CCFFAF6519CF9782008555A1 /* AppIcon57x57.png in Resources */,
+				CC5989E81A6B0E470047D119 /* default-5@2x.png in Resources */,
 				CCFFAF5F19CF9782008555A1 /* AppIcon29x29.png in Resources */,
 				CCFFAF6C19CF9782008555A1 /* AppIcon76x76@2x.png in Resources */,
+				CC5989E91A6B0E470047D119 /* default@2x.png in Resources */,
 				CC77D53119B003F3009BA59F /* release_notes.md in Resources */,
 				CCFFAF6719CF9782008555A1 /* AppIcon60x60.png in Resources */,
+				CC5989CD1A6B05230047D119 /* home-info.jpg in Resources */,
 				CCFFAF6E19CF9782008555A1 /* iTunesArtwork@2x.png in Resources */,
 				CCFFAF6D19CF9782008555A1 /* iTunesArtwork.png in Resources */,
+				CC5989C91A6B01DE0047D119 /* home.jpg in Resources */,
 				CC78A55B19C26B4500C73E59 /* configuration.plist.example in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -640,7 +680,7 @@
 					"$(PROJECT_DIR)/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-lxml2",
 					"-ObjC",
