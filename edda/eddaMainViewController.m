@@ -22,6 +22,11 @@
 
 @end
 
+#define SAFECOLOR(color) MIN(255,MAX(0,color))
+
+typedef void (*FilterCallback)(UInt8 *pixelBuf, UInt32 offset, void *context);
+typedef void (*FilterBlendCallback)(UInt8 *pixelBuf, UInt8 *pixelBlendBuf, UInt32 offset, void *context);
+
 @implementation eddaMainViewController {
 	int m_mode;
 	int m_connectionAttempts;
@@ -30,8 +35,8 @@
 }
 
 // self preview size
-const float _previewWidth = 60;
-const float _previewHeight = 90;
+const float _previewWidth = 80;
+const float _previewHeight = 120;
 
 static CLLocationManager *locationManager;
 static CMMotionManager *motionManager;
@@ -64,6 +69,8 @@ static double _toAlt = 0.0;
 
 static sViewAngle viewAngle;
 
+static float _alignmentError = 1.0f;
+
 // arrows
 static float _arrowSize = 44.0f;
 static float _arrowMargin = 5.0f;
@@ -73,6 +80,9 @@ static float _arrowMargin = 5.0f;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	
+	// for video FX
+	_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	
 	videoChatOpponentID = 0;
 	
@@ -121,6 +131,10 @@ static float _arrowMargin = 5.0f;
 
 - (void)viewDidUnload
 {
+	// remove the _videoPreviewView
+	[_myVideoPreviewView removeFromSuperview];
+	_myVideoPreviewView = nil;
+
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super viewDidUnload];
 }
@@ -314,7 +328,6 @@ static float _arrowMargin = 5.0f;
 		NSDictionary *custom = [QBHelper QBCustomDataToObject:self.receiverObject.customData];
 		BOOL alignment = [[custom valueForKey:@"alignment"] boolValue];
 		_isOpponentAligned = alignment;
-		[self.otherView setActiveState:_isOpponentAligned];
 	}
 	
 	[self updateVideoChatViews];
@@ -331,7 +344,11 @@ static float _arrowMargin = 5.0f;
 	xBox = radiusBox * cos(inverted) + self.view.frame.size.width * .5;
 	yBox = ofMap(pitch, -90, 90, boxMax, -boxMax, true) + self.view.frame.size.height*.5f;
 //	yBox = radiusBox * sin(inverted) + self.view.window.bounds.size.height * .5;
+	
 	[self.otherView updatePosition:CGPointMake(xBox, yBox)];
+	
+	_alignmentError = ofMap(radiusBox, 0, boxMax, 0, 1, true);
+	
 //	NSLog(@"head: %.1f, x: %.3f y: %.3f radians: %.3f inverted: %.3f",
 //		  heading, xArrow, yArrow, radians, inverted);
 //	[UIView animateWithDuration:0.1
@@ -425,22 +442,60 @@ static float _arrowMargin = 5.0f;
 	NSString *other = m_mode == streamingModeIncoming ? self.appDelegate.callerTitle : self.appDelegate.callReceiverTitle;
 
 	if (_isOpponentAligned) {
-		self.opponentVideoView.layer.borderColor = [UIColor greenColor].CGColor;
+//		self.opponentVideoView.layer.borderColor = [UIColor greenColor].CGColor;
 		self.statusLabel.text = @"";
 	} else {
-		self.opponentVideoView.layer.borderColor = [UIColor grayColor].CGColor;
+//		self.opponentVideoView.layer.borderColor = [UIColor grayColor].CGColor;
 		self.statusLabel.text = [NSString stringWithFormat:@"%@ is not aligned!", other];
-		// TODO: apply some blur to video
 	}
 	
 	if (!_isAligned) {
 //		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
 		self.statusLabel.text = @"You are not aligned!";
-		// TODO: apply some blur to video
 	}
 	
 	if (!_hasFirstAligned) {
 		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
+	}
+	if (self.otherView.zoomed) {
+		if (!_isOpponentAligned) {
+			UIGraphicsBeginImageContextWithOptions(self.myVideoView.bounds.size, self.myVideoView.opaque, 0.0);
+			[self.myVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
+			
+			UIImage * myimg = UIGraphicsGetImageFromCurrentImageContext();
+			
+			UIGraphicsEndImageContext();
+			
+			CIImage *mysourceImage = [CIImage imageWithCGImage:myimg.CGImage];
+			
+			// run the filter through the filter chain
+			CIImage *myfilteredImage = [CIFilter filterWithName:@"CIColorClamp" keysAndValues:
+										kCIInputImageKey, mysourceImage,
+										@"inputMinComponents", [CIVector vectorWithX:_alignmentError Y:_alignmentError Z:_alignmentError W:_alignmentError],
+										@"inputMaxComponents", [CIVector vectorWithX:1 Y:1 Z:1 W:1],
+										nil].outputImage;
+			
+			self.myVideoView.image = [UIImage imageWithCIImage:myfilteredImage];
+		}
+		if (!_isAligned) {
+			UIGraphicsBeginImageContextWithOptions(self.opponentVideoView.bounds.size, self.opponentVideoView.opaque, 0.0);
+			[self.opponentVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
+			
+			UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+			
+			UIGraphicsEndImageContext();
+			
+			CIImage *sourceImage = [CIImage imageWithCGImage:img.CGImage];
+			
+			// run the filter through the filter chain
+			CIImage *filteredImage = [CIFilter filterWithName:@"CIColorClamp" keysAndValues:
+									  kCIInputImageKey, sourceImage,
+									  @"inputMinComponents", [CIVector vectorWithX:_alignmentError Y:_alignmentError Z:_alignmentError W:_alignmentError],
+									  @"inputMaxComponents", [CIVector vectorWithX:1 Y:1 Z:1 W:1],
+									  nil].outputImage;
+			
+			self.opponentVideoView.image = [UIImage imageWithCIImage:filteredImage];
+		}
 	}
 }
 
@@ -459,20 +514,45 @@ static float _arrowMargin = 5.0f;
 - (void)createVideoChatViews {
 	NSLog(@"createChatViews");
 	CGRect viewBounds = self.view.bounds;
-	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize + _arrowSize;
+	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize;
 	
 	if (self.opponentVideoView == nil) {
-		self.opponentVideoView = [[UIView alloc] initWithFrame:self.view.frame];
+		self.opponentVideoView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		[self.view insertSubview:self.opponentVideoView belowSubview:self.controlsView];
-		self.opponentVideoView.layer.borderWidth = 5;
+//		self.opponentVideoView.layer.borderWidth = 5;
 		self.opponentVideoView.hidden = YES;
 	}
 	
 	if (self.myVideoView == nil) {
-		self.myVideoView = [[UIView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
+		self.myVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
 		[self.view insertSubview:self.myVideoView belowSubview:self.controlsView];
 		self.myVideoView.hidden = YES;
 	}
+	
+	if (_myVideoPreviewView == nil) {
+		_myVideoPreviewView = [[GLKView alloc] initWithFrame:self.myVideoView.bounds context:_eaglContext];
+		_myVideoPreviewView.enableSetNeedsDisplay = NO;
+		
+		// because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right), we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view; if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror), you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
+		_myVideoPreviewView.frame = self.myVideoView.bounds;
+		
+		// bind the frame buffer to get the frame buffer width and height;
+		// the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
+		// hence the need to read from the frame buffer's width and height;
+		// in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
+		// we want to obtain this piece of information so that we won't be
+		// accessing _videoPreviewView's properties from another thread/queue
+		[_myVideoPreviewView bindDrawable];
+		_videoPreviewViewBounds = CGRectZero;
+		_videoPreviewViewBounds.size.width = _myVideoPreviewView.drawableWidth;
+		_videoPreviewViewBounds.size.height = _myVideoPreviewView.drawableHeight;
+		
+		// we make our video preview view a subview of the window, and send it to the back; this makes FHViewController's view (and its UI elements) on top of the video preview, and also makes video preview unaffected by device rotation
+		[self.myVideoView addSubview:_myVideoPreviewView];
+	}
+
+	// create the CIContext instance, note that this must be done after _videoPreviewView is properly set up
+	_ciContext = [CIContext contextWithEAGLContext:_eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
 }
 
 - (void)startVideoChat {
@@ -623,6 +703,62 @@ static float _arrowMargin = 5.0f;
 	if ([connection isVideoOrientationSupported]) {
 		[connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
 	}
+	// filter video
+//	CMFormatDescriptionRef formatDesc = CMSampleBufferGetFormatDescription(sampleBuffer);
+//	
+//	// update the video dimensions information
+//	_currentVideoDimensions = CMVideoFormatDescriptionGetDimensions(formatDesc);
+//	
+//	CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+//	CIImage *sourceImage = [CIImage imageWithCVPixelBuffer:(CVPixelBufferRef)imageBuffer options:nil];
+//	
+//	// run the filter through the filter chain
+//	CIImage *filteredImage = [CIFilter filterWithName:@"CICircularScreen" keysAndValues:
+//						kCIInputImageKey, sourceImage,
+//						@"inputCenter", [CIVector vectorWithX:100 Y:100],
+//						@"inputWidth", @6.00,
+//						nil].outputImage;
+//	
+//	CGRect sourceExtent = sourceImage.extent;
+//	
+//	CGFloat sourceAspect = sourceExtent.size.width / sourceExtent.size.height;
+//	CGFloat previewAspect = _videoPreviewViewBounds.size.width  / _videoPreviewViewBounds.size.height;
+//	
+//	// we want to maintain the aspect radio of the screen size, so we clip the video image
+//	CGRect drawRect = sourceExtent;
+//	if (sourceAspect > previewAspect)
+//	{
+//		// use full height of the video image, and center crop the width
+//		drawRect.origin.x += (drawRect.size.width - drawRect.size.height * previewAspect) / 2.0;
+//		drawRect.size.width = drawRect.size.height * previewAspect;
+//	}
+//	else
+//	{
+//		// use full width of the video image, and center crop the height
+//		drawRect.origin.y += (drawRect.size.height - drawRect.size.width / previewAspect) / 2.0;
+//		drawRect.size.height = drawRect.size.width / previewAspect;
+//	}
+//	
+//	[_myVideoPreviewView bindDrawable];
+//	
+//	if (_eaglContext != [EAGLContext currentContext])
+//		[EAGLContext setCurrentContext:_eaglContext];
+//	
+//	// clear eagl view to grey
+//	glClearColor(0.5, 0.5, 0.5, 1.0);
+//	glClear(GL_COLOR_BUFFER_BIT);
+//	
+//	// set the blend mode to "source over" so that CI will use that
+//	glEnable(GL_BLEND);
+//	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//	
+//	if (filteredImage)
+//		[_ciContext drawImage:filteredImage inRect:_videoPreviewViewBounds fromRect:drawRect];
+//	
+//	[_myVideoPreviewView display];
+	
+	
+	// end filter
 	[self.videoChat processVideoChatCaptureVideoSample:sampleBuffer];
 }
 
@@ -864,7 +1000,9 @@ static float _arrowMargin = 5.0f;
 	
 	ringingPlayer = nil;
 	_videoActive = YES;
-	
+
+	[self dismissViewControllerAnimated:YES completion:nil];
+
 	[self refreshBackCameraFeed];
 	
 	[self pointToUser];
@@ -1093,7 +1231,7 @@ static float _arrowMargin = 5.0f;
 	self.statusLabel.text = @"";
 	self.receiverObject = nil;
 	self.otherView.hidden = YES;
-	
+	[self.otherView zoomOut];
 	[self stopOpponentAlignedTimer];
 	[self hideArrows];
 	[self refreshBackCameraFeed];

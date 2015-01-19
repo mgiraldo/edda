@@ -182,10 +182,13 @@
 	[QBRequest usersForPage:[QBGeneralResponsePage responsePageWithCurrentPage:0 perPage:100] successBlock:^(QBResponse *response, QBGeneralResponsePage *page, NSArray *arrayOfUsers) {
 		@strongify(self);
 		int index = 0;
+		
+		// sort users
+		NSMutableArray *sortedArray = [[NSMutableArray alloc] initWithCapacity:arrayOfUsers.count];
+		
 		for (QBUUser *object in arrayOfUsers) {
-			//if for this user, skip it.
 			NSString *userID = [NSString stringWithFormat:@"%lu",(unsigned long)object.ID];
-			
+
 			if (object.ID == self.appDelegate.loggedInUser.ID) {
 //				NSLog(@"skipping - current user");
 				continue;
@@ -193,7 +196,6 @@
 			
 			if (object.customData == nil) {
 				// not found
-//				NSLog(@"skipping - no underscore");
 				continue;
 			}
 			
@@ -205,7 +207,7 @@
 			// place coordinates
 			coordinate.latitude = [[custom valueForKey:@"latitude"] doubleValue];
 			coordinate.longitude = [[custom valueForKey:@"longitude"] doubleValue];
-
+			
 			NSNumber *userAltitude = [custom valueForKey:@"altitude"];
 			
 			NSString *qbname = [custom valueForKey:@"username"];
@@ -217,7 +219,7 @@
 			} else {
 				userTitle = @"old Edda version";
 			}
-
+			
 			NSMutableDictionary * dict = [NSMutableDictionary dictionary];
 			[dict setObject:userID forKey:@"userID"];
 			[dict setObject:userTitle forKey:@"userTitle"];
@@ -225,7 +227,18 @@
 			[dict setObject:@"Locating…" forKey:@"locality"];
 			[dict setObject:userAltitude forKey:@"userAltitude"];
 			
-			[m_userArray addObject:dict];
+			[sortedArray addObject:dict];
+		}
+		
+		NSSortDescriptor *nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"userTitle" ascending:YES];
+		NSArray *sortDescriptors = [NSArray arrayWithObject:nameDescriptor];
+		[sortedArray sortUsingDescriptors:sortDescriptors];
+		
+		for (NSMutableDictionary *object in sortedArray) {
+			//if for this user, skip it.
+			QBLGeoData *coordinate = (QBLGeoData *)[object valueForKey:@"userLocation"];
+			
+			[m_userArray addObject:object];
 			
 			CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
 			[self geocodeLocation:location forIndex:index];

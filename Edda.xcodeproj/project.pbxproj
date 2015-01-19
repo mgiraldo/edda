@@ -14,6 +14,7 @@
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
 		CC40DE3419B8271300E86968 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3219B8271300E86968 /* arrow.png */; };
 		CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3319B8271300E86968 /* arrow@2x.png */; };
+		CC4B70831A6C8E540016257C /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC4B70721A6C784D0016257C /* GLKit.framework */; };
 		CC5989C91A6B01DE0047D119 /* home.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989C81A6B01DE0047D119 /* home.jpg */; };
 		CC5989CB1A6B042C0047D119 /* info.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989CA1A6B042C0047D119 /* info.jpg */; };
 		CC5989CD1A6B05230047D119 /* home-info.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989CC1A6B05230047D119 /* home-info.jpg */; };
@@ -88,6 +89,8 @@
 		CC40DE2D19B813A000E86968 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
+		CC4B70721A6C784D0016257C /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		CC4B70811A6C8A0A0016257C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		CC5989C81A6B01DE0047D119 /* home.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = home.jpg; sourceTree = "<group>"; };
 		CC5989CA1A6B042C0047D119 /* info.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = info.jpg; sourceTree = "<group>"; };
 		CC5989CC1A6B05230047D119 /* home-info.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "home-info.jpg"; sourceTree = "<group>"; };
@@ -174,6 +177,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC4B70831A6C8E540016257C /* GLKit.framework in Frameworks */,
 				CC9FD32A1A2C13F90037DD43 /* Quickblox.framework in Frameworks */,
 				CC9FD32C1A2C143F0037DD43 /* libxml2.dylib in Frameworks */,
 				CCD6D68019EC756A0060DBAE /* libresolv.dylib in Frameworks */,
@@ -245,6 +249,8 @@
 		CC77D4EF19B003E8009BA59F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CC4B70811A6C8A0A0016257C /* OpenGLES.framework */,
+				CC4B70721A6C784D0016257C /* GLKit.framework */,
 				CC9FD32B1A2C143F0037DD43 /* libxml2.dylib */,
 				CCD2DDB019EE1AEF0029BD6C /* Quickblox.framework */,
 				CCD6D68119EC75740060DBAE /* libxml2.2.dylib */,
@@ -628,6 +634,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					$SDKROOT/usr/include/libxml2,
 					/usr/include/libxml2,
+					"/Volumes/billy/stuff/xcode/GPUImage/framework/**",
 				);
 				INFOPLIST_FILE = "edda/Edda-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -671,6 +678,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					$SDKROOT/usr/include/libxml2,
 					/usr/include/libxml2,
+					"/Volumes/billy/stuff/xcode/GPUImage/framework/**",
 				);
 				INFOPLIST_FILE = "edda/Edda-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;

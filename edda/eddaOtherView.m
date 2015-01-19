@@ -10,11 +10,8 @@
 
 @implementation eddaOtherView
 
-static BOOL _touchDown = NO;
-static BOOL _isActive = NO;
-
-static float _zoomDuration = .25;
-static float _otherSize = 50.0f;
+static const float _zoomDuration = .25;
+static const float _otherSize = 50.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -25,48 +22,11 @@ static float _otherSize = 50.0f;
 		self.layer.cornerRadius = _otherSize * .5;
 		self.layer.backgroundColor = [UIColor blackColor].CGColor;
 		
-		//create the frame that will contain our label
-		CGRect labelFrame = CGRectMake(0.0f, 0.0f, 200.0f, 50.0f);
-		//create the label
-		self.alertLabel = [[UILabel alloc] initWithFrame:labelFrame];
-		self.alertLabel.lineBreakMode = NSLineBreakByWordWrapping;
-		self.alertLabel.numberOfLines = 2;
-		self.alertLabel.text = @"Simple Label";
-		self.alertLabel.font = [UIFont boldSystemFontOfSize:16.0f];
-		self.alertLabel.textColor = [UIColor whiteColor];
-		self.alertLabel.textAlignment =  NSTextAlignmentCenter;
-		self.alertLabel.hidden = YES;
-		[self addSubview:self.alertLabel];
     }
     return self;
 }
 
-- (void)refreshView {
-	self.layer.backgroundColor = [UIColor blackColor].CGColor;
-
-	if (_isActive) {
-//		self.layer.borderColor = [UIColor greenColor].CGColor;
-	} else {
-//		self.layer.borderColor = [UIColor grayColor].CGColor;
-	}
-}
-
 #pragma mark - View state
-
-- (void)showAlert:(NSString *)message {
-	if (!_zoomed) return;
-	self.alertLabel.text = message;
-	CGRect labelFrame = self.alertLabel.frame;
-	labelFrame.origin.x = self.window.bounds.size.width*.5-self.alertLabel.frame.size.width*.5;
-	labelFrame.origin.y = self.window.bounds.size.height*.5-self.alertLabel.frame.size.height*.5;
-	self.alertLabel.frame = labelFrame;
-	self.alertLabel.hidden = NO;
-}
-
-- (void)hideAlert {
-	self.alertLabel.text = @"";
-	self.alertLabel.hidden = YES;
-}
 
 - (void)updatePosition:(CGPoint)position {
 	if (!_zoomed) {
@@ -80,11 +40,6 @@ static float _otherSize = 50.0f;
 							 [self setNeedsDisplay];
 						 }];
 	}
-}
-
-- (void)setActiveState:(BOOL)active {
-	_isActive = active;
-	[self refreshView];
 }
 
 - (void)zoomIn {
@@ -105,7 +60,6 @@ static float _otherSize = 50.0f;
 
 - (void)zoomOut {
 	if (!_zoomed) return;
-	[self hideAlert];
 	[self.delegate eddaOtherViewStartedZoomOut:self];
 	_zoomed = NO;
 	[UIView animateWithDuration:_zoomDuration
@@ -120,39 +74,6 @@ static float _otherSize = 50.0f;
 						 // whatever you need to do when animations are complete
 						 [self.delegate eddaOtherViewDidZoomOut:self];
 					 }];
-}
-
-#pragma mark - Interaction
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-//	NSLog(@"touchbegan");
-	_touchDown = YES;
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-//	NSLog(@"touchend");
-    // Triggered when touch is released
-//    if (_touchDown) {
-//        if (_zoomed) {
-//			[self zoomOut];
-//		} else {
-//			[self zoomIn];
-//		}
-//    }
-	_touchDown = NO;
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
-{
-//	NSLog(@"touchcancel");
-//	if (_zoomed) {
-//		[self zoomOut];
-//	} else {
-//		[self zoomIn];
-//	}
-	_touchDown = NO;
 }
 
 // Only override drawRect: if you perform custom drawing.

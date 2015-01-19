@@ -8,6 +8,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <AVFoundation/AVFoundation.h>
+#import <GLKit/GLKit.h>
 #import "eddaAppDelegate.h"
 #import "eddaFlipsideViewController.h"
 #import "eddaOtherView.h"
@@ -17,6 +18,12 @@
 
 @interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
 	AVAudioPlayer *ringingPlayer;
+	CMVideoDimensions _currentVideoDimensions;
+	CGRect _videoPreviewViewBounds;
+	CIContext *_ciContext;
+	EAGLContext *_eaglContext;
+	GLKView *_opponentVideoPreviewView;
+	GLKView *_myVideoPreviewView;
 }
 
 enum streamingMode
@@ -67,8 +74,8 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) QBUUser * receiverObject;
 
 @property (nonatomic) QBVideoChat *videoChat;
-@property (nonatomic) UIView *opponentVideoView;
-@property (nonatomic) UIView *myVideoView;
+@property (nonatomic) UIImageView *opponentVideoView;
+@property (nonatomic) UIImageView *myVideoView;
 
 @property (nonatomic, assign) eddaAppDelegate* appDelegate;
 

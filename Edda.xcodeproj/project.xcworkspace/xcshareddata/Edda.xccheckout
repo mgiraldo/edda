@@ -12,6 +12,8 @@
 	<dict>
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>
 		<string>github.com:mgiraldo/edda.git</string>
+		<key>E609DD15689CC93D8F4D219EB393F30F9F726178</key>
+		<string>github.com:BradLarson/GPUImage.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Edda.xcodeproj</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>
 		<string>../..</string>
+		<key>E609DD15689CC93D8F4D219EB393F30F9F726178</key>
+		<string>../../../../../stuff/xcode/GPUImage</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>github.com:mgiraldo/edda.git</string>
@@ -35,6 +39,14 @@
 			<string>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</string>
 			<key>IDESourceControlWCCName</key>
 			<string>edda</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E609DD15689CC93D8F4D219EB393F30F9F726178</string>
+			<key>IDESourceControlWCCName</key>
+			<string>GPUImage</string>
 		</dict>
 	</array>
 </dict>
