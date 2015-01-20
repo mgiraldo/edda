@@ -15,6 +15,8 @@
 
 @implementation eddaFlipsideViewController
 
+static BOOL _isPrivate = NO;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -28,6 +30,10 @@
 	self.nickname = appDelegate.userTitle;
 	self.nicknameLabel.text = appDelegate.userTitle;
 	self.nicknameLabel.delegate = self;
+
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	_isPrivate = [[defaults valueForKey:@"privacy"] boolValue];
+	[self.privacySwitch setOn:_isPrivate];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -45,6 +51,20 @@
 - (IBAction)done:(id)sender
 {
     [self.delegate flipsideViewControllerDidFinish:self];
+}
+
+- (IBAction)privacyChanged:(UISwitch *)sender {
+	if (sender.isOn == _isPrivate) {
+		return;
+	}
+	
+	_isPrivate = sender.isOn;
+	
+	[QBHelper saveUserPrivacyToQB:_isPrivate];
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	[defaults setObject:[NSNumber numberWithBool:_isPrivate] forKey:@"privacy"];
+	[defaults synchronize];
 }
 
 - (void)resignOnTap:(id)sender {

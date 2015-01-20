@@ -67,7 +67,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80.0;
+    return 60.0;
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -110,14 +110,45 @@
 	cell.textLabel.backgroundColor = [UIColor clearColor];
 	cell.textLabel.text = [dict objectForKey:@"userTitle"];
     cell.textLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:24];
-	cell.detailTextLabel.text = [dict objectForKey:@"locality"];
-	cell.detailTextLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:18];
+	
+	NSString *relativeDate = [self dateDiff:(NSDate *)[dict objectForKey:@"lastRequestAt"]];
+
+	NSString * detailString = [NSString stringWithFormat:@"%@ — last active %@", [dict objectForKey:@"locality"], relativeDate];
+	
+	cell.detailTextLabel.text = detailString;
+	cell.detailTextLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:16];
 	cell.detailTextLabel.textColor = [UIColor grayColor];
     cell.contentView.backgroundColor = [UIColor clearColor];
  
     return cell;
 }
 
+
+
+-(NSString *)dateDiff:(NSDate *)convertedDate {
+	NSDateFormatter *df = [[NSDateFormatter alloc] init];
+	[df setFormatterBehavior:NSDateFormatterBehavior10_4];
+	[df setDateFormat:@"EEE, dd MMM yy HH:mm:ss VVVV"];
+	NSDate *todayDate = [NSDate date];
+	double ti = [convertedDate timeIntervalSinceDate:todayDate];
+	ti = ti * -1;
+	if(ti < 1) {
+		return @"never";
+	} else 	if (ti < 60) {
+		return @"less than a minute ago";
+	} else if (ti < 3600) {
+		int diff = round(ti / 60);
+		return [NSString stringWithFormat:@"%d minutes ago", diff];
+	} else if (ti < 86400) {
+		int diff = round(ti / 60 / 60);
+		return[NSString stringWithFormat:@"%d hours ago", diff];
+	} else if (ti < 2629743) {
+		int diff = round(ti / 60 / 60 / 24);
+		return[NSString stringWithFormat:@"%d days ago", diff];
+	} else {
+		return @"never";
+	}
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -172,8 +203,6 @@
 {
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 
-	// TODO: add user distance limit to > 100m
-	
     //delete all existing rows,first from front end, then from data source.
     [m_userArray removeAllObjects];
     [m_userTableView reloadData];    
@@ -220,22 +249,35 @@
 				userTitle = @"old Edda version";
 			}
 			
+			NSNumber *privacy = [custom valueForKey:@"privacy"];
+			
+			if (privacy == nil) {
+				privacy = [NSNumber numberWithBool:NO];
+			}
+
 			NSMutableDictionary * dict = [NSMutableDictionary dictionary];
 			[dict setObject:userID forKey:@"userID"];
 			[dict setObject:userTitle forKey:@"userTitle"];
 			[dict setObject:coordinate forKey:@"userLocation"];
 			[dict setObject:@"Locating…" forKey:@"locality"];
 			[dict setObject:userAltitude forKey:@"userAltitude"];
+			[dict setObject:privacy forKey:@"privacy"];
+			[dict setObject:object.lastRequestAt forKey:@"lastRequestAt"];
 			
 			[sortedArray addObject:dict];
 		}
 		
-		NSSortDescriptor *nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"userTitle" ascending:YES];
-		NSArray *sortDescriptors = [NSArray arrayWithObject:nameDescriptor];
+		NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastRequestAt" ascending:NO];
+		NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
 		[sortedArray sortUsingDescriptors:sortDescriptors];
 		
 		for (NSMutableDictionary *object in sortedArray) {
-			//if for this user, skip it.
+			//skip if private
+			NSNumber *private = [object valueForKey:@"privacy"];
+			if (private.boolValue) {
+				continue;
+			}
+			
 			QBLGeoData *coordinate = (QBLGeoData *)[object valueForKey:@"userLocation"];
 			
 			[m_userArray addObject:object];

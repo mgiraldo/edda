@@ -18,12 +18,12 @@
 
 @interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
 	AVAudioPlayer *ringingPlayer;
-	CMVideoDimensions _currentVideoDimensions;
-	CGRect _videoPreviewViewBounds;
-	CIContext *_ciContext;
-	EAGLContext *_eaglContext;
-	GLKView *_opponentVideoPreviewView;
-	GLKView *_myVideoPreviewView;
+//	CMVideoDimensions _currentVideoDimensions;
+//	CGRect _videoPreviewViewBounds;
+//	CIContext *_ciContext;
+//	EAGLContext *_eaglContext;
+//	GLKView *_opponentVideoPreviewView;
+//	GLKView *_myVideoPreviewView;
 }
 
 enum streamingMode

@@ -82,7 +82,7 @@ static float _arrowMargin = 5.0f;
     [super viewDidLoad];
 	
 	// for video FX
-	_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+//	_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	
 	videoChatOpponentID = 0;
 	
@@ -132,8 +132,8 @@ static float _arrowMargin = 5.0f;
 - (void)viewDidUnload
 {
 	// remove the _videoPreviewView
-	[_myVideoPreviewView removeFromSuperview];
-	_myVideoPreviewView = nil;
+//	[_myVideoPreviewView removeFromSuperview];
+//	_myVideoPreviewView = nil;
 
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super viewDidUnload];
@@ -196,7 +196,7 @@ static float _arrowMargin = 5.0f;
 	[locationManager startUpdatingHeading];
 
 	// interface refresh timer
-	[NSTimer scheduledTimerWithTimeInterval:0.1
+	[NSTimer scheduledTimerWithTimeInterval:0.05
 									 target:self
 								   selector:@selector(updateInterface:)
 								   userInfo:nil
@@ -224,8 +224,8 @@ static float _arrowMargin = 5.0f;
 	// show call alert
 	//
 	if (self.callAlert == nil) {
-		NSString *message = [NSString stringWithFormat:@"%@ is calling. Would you like to answer?", self.appDelegate.callerTitle];
-		self.callAlert = [[UIAlertView alloc] initWithTitle:@"Call" message:message delegate:self cancelButtonTitle:@"Decline" otherButtonTitles:@"Accept", nil];
+		NSString *message = [NSString stringWithFormat:@"%@\nis calling!", self.appDelegate.callerTitle];
+		self.callAlert = [[UIAlertView alloc] initWithTitle:@"🔊 Incoming call 🔊" message:message delegate:self cancelButtonTitle:@"Decline" otherButtonTitles:@"Accept", nil];
 		[self.callAlert show];
 	}
 	
@@ -339,15 +339,19 @@ static float _arrowMargin = 5.0f;
 	float radiusBox = boxMax * ofMap(pitch, -90, 90, 0, 1, true);
 	float radians = -DEG_TO_RAD*heading;
 	float inverted = radians-M_PI_2;
-	xArrow = radiusArrow * cos(inverted) + self.view.frame.size.width * .5;
-	yArrow = radiusArrow * sin(inverted) + self.view.frame.size.height * .5;
-	xBox = radiusBox * cos(inverted) + self.view.frame.size.width * .5;
-	yBox = ofMap(pitch, -90, 90, boxMax, -boxMax, true) + self.view.frame.size.height*.5f;
+
+	float xoffset =  self.view.frame.size.width*.5f;
+	float yoffset =  self.view.frame.size.height*.5f;
+
+	xArrow = radiusArrow * cos(inverted) + xoffset;
+	yArrow = radiusArrow * sin(inverted) + yoffset;
+	xBox = radiusBox * cos(inverted) + xoffset;
+	yBox = ofMap(pitch, -90, 90, boxMax, -boxMax, true) + yoffset;
 //	yBox = radiusBox * sin(inverted) + self.view.window.bounds.size.height * .5;
 	
 	[self.otherView updatePosition:CGPointMake(xBox, yBox)];
 	
-	_alignmentError = ofMap(radiusBox, 0, boxMax, 0, 1, true);
+	_alignmentError = ofMap(xBox, 0+xoffset, boxMax+xoffset, 0, 1, true) + ofMap(yBox, boxMax+yoffset, -boxMax+yoffset, 0, 1, true);
 	
 //	NSLog(@"head: %.1f, x: %.3f y: %.3f radians: %.3f inverted: %.3f",
 //		  heading, xArrow, yArrow, radians, inverted);
@@ -446,7 +450,7 @@ static float _arrowMargin = 5.0f;
 		self.statusLabel.text = @"";
 	} else {
 //		self.opponentVideoView.layer.borderColor = [UIColor grayColor].CGColor;
-		self.statusLabel.text = [NSString stringWithFormat:@"%@ is not aligned!", other];
+		self.statusLabel.text = [NSString stringWithFormat:@"%@\nis not aligned!", other];
 	}
 	
 	if (!_isAligned) {
@@ -455,29 +459,32 @@ static float _arrowMargin = 5.0f;
 	}
 	
 	if (!_hasFirstAligned) {
-		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
+		self.statusLabel.text = [NSString stringWithFormat:@"find\n%@", other];
 	}
+	
 	if (self.otherView.zoomed) {
-		if (!_isOpponentAligned) {
-			UIGraphicsBeginImageContextWithOptions(self.myVideoView.bounds.size, self.myVideoView.opaque, 0.0);
-			[self.myVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
-			
-			UIImage * myimg = UIGraphicsGetImageFromCurrentImageContext();
-			
-			UIGraphicsEndImageContext();
-			
-			CIImage *mysourceImage = [CIImage imageWithCGImage:myimg.CGImage];
-			
-			// run the filter through the filter chain
-			CIImage *myfilteredImage = [CIFilter filterWithName:@"CIColorClamp" keysAndValues:
-										kCIInputImageKey, mysourceImage,
-										@"inputMinComponents", [CIVector vectorWithX:_alignmentError Y:_alignmentError Z:_alignmentError W:_alignmentError],
-										@"inputMaxComponents", [CIVector vectorWithX:1 Y:1 Z:1 W:1],
-										nil].outputImage;
-			
-			self.myVideoView.image = [UIImage imageWithCIImage:myfilteredImage];
-		}
+//		if (!_isOpponentAligned) {
+//			UIGraphicsBeginImageContextWithOptions(self.myVideoView.bounds.size, self.myVideoView.opaque, 0.0);
+//			[self.myVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
+//			
+//			UIImage * myimg = UIGraphicsGetImageFromCurrentImageContext();
+//			
+//			UIGraphicsEndImageContext();
+//			
+//			CIImage *mysourceImage = [CIImage imageWithCGImage:myimg.CGImage];
+//			
+//			// run the filter through the filter chain
+//			CIImage *myfilteredImage = [CIFilter filterWithName:@"CIColorClamp" keysAndValues:
+//										kCIInputImageKey, mysourceImage,
+//										@"inputMinComponents", [CIVector vectorWithX:_alignmentError Y:_alignmentError Z:_alignmentError W:_alignmentError],
+//										@"inputMaxComponents", [CIVector vectorWithX:1 Y:1 Z:1 W:1],
+//										nil].outputImage;
+//			
+//			self.myVideoView.image = [UIImage imageWithCIImage:myfilteredImage];
+//		}
 		if (!_isAligned) {
+//			NSLog("-------> alignment error: %f", _alignmentError);
+			
 			UIGraphicsBeginImageContextWithOptions(self.opponentVideoView.bounds.size, self.opponentVideoView.opaque, 0.0);
 			[self.opponentVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
 			
@@ -488,10 +495,12 @@ static float _arrowMargin = 5.0f;
 			CIImage *sourceImage = [CIImage imageWithCGImage:img.CGImage];
 			
 			// run the filter through the filter chain
-			CIImage *filteredImage = [CIFilter filterWithName:@"CIColorClamp" keysAndValues:
+			
+			CIImage *filteredImage = [CIFilter filterWithName:@"CIColorControls" keysAndValues:
 									  kCIInputImageKey, sourceImage,
-									  @"inputMinComponents", [CIVector vectorWithX:_alignmentError Y:_alignmentError Z:_alignmentError W:_alignmentError],
-									  @"inputMaxComponents", [CIVector vectorWithX:1 Y:1 Z:1 W:1],
+									  @"inputSaturation", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
+									  @"inputBrightness", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 0, -0.85, true)],
+									  @"inputContrast", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
 									  nil].outputImage;
 			
 			self.opponentVideoView.image = [UIImage imageWithCIImage:filteredImage];
@@ -514,10 +523,10 @@ static float _arrowMargin = 5.0f;
 - (void)createVideoChatViews {
 	NSLog(@"createChatViews");
 	CGRect viewBounds = self.view.bounds;
-	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize;
+	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize + _arrowMargin;
 	
 	if (self.opponentVideoView == nil) {
-		self.opponentVideoView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		self.opponentVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth, topBarOffset + (_arrowMargin * 2) + _previewHeight, _previewWidth * 2, _previewHeight * 2)];
 		[self.view insertSubview:self.opponentVideoView belowSubview:self.controlsView];
 //		self.opponentVideoView.layer.borderWidth = 5;
 		self.opponentVideoView.hidden = YES;
@@ -529,30 +538,30 @@ static float _arrowMargin = 5.0f;
 		self.myVideoView.hidden = YES;
 	}
 	
-	if (_myVideoPreviewView == nil) {
-		_myVideoPreviewView = [[GLKView alloc] initWithFrame:self.myVideoView.bounds context:_eaglContext];
-		_myVideoPreviewView.enableSetNeedsDisplay = NO;
-		
-		// because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right), we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view; if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror), you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
-		_myVideoPreviewView.frame = self.myVideoView.bounds;
-		
-		// bind the frame buffer to get the frame buffer width and height;
-		// the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
-		// hence the need to read from the frame buffer's width and height;
-		// in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
-		// we want to obtain this piece of information so that we won't be
-		// accessing _videoPreviewView's properties from another thread/queue
-		[_myVideoPreviewView bindDrawable];
-		_videoPreviewViewBounds = CGRectZero;
-		_videoPreviewViewBounds.size.width = _myVideoPreviewView.drawableWidth;
-		_videoPreviewViewBounds.size.height = _myVideoPreviewView.drawableHeight;
-		
-		// we make our video preview view a subview of the window, and send it to the back; this makes FHViewController's view (and its UI elements) on top of the video preview, and also makes video preview unaffected by device rotation
-		[self.myVideoView addSubview:_myVideoPreviewView];
-	}
+//	if (_myVideoPreviewView == nil) {
+//		_myVideoPreviewView = [[GLKView alloc] initWithFrame:self.myVideoView.bounds context:_eaglContext];
+//		_myVideoPreviewView.enableSetNeedsDisplay = NO;
+//		
+//		// because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right), we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view; if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror), you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
+//		_myVideoPreviewView.frame = self.myVideoView.bounds;
+//		
+//		// bind the frame buffer to get the frame buffer width and height;
+//		// the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
+//		// hence the need to read from the frame buffer's width and height;
+//		// in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
+//		// we want to obtain this piece of information so that we won't be
+//		// accessing _videoPreviewView's properties from another thread/queue
+//		[_myVideoPreviewView bindDrawable];
+//		_videoPreviewViewBounds = CGRectZero;
+//		_videoPreviewViewBounds.size.width = _myVideoPreviewView.drawableWidth;
+//		_videoPreviewViewBounds.size.height = _myVideoPreviewView.drawableHeight;
+//		
+//		// we make our video preview view a subview of the window, and send it to the back; this makes FHViewController's view (and its UI elements) on top of the video preview, and also makes video preview unaffected by device rotation
+//		[self.myVideoView addSubview:_myVideoPreviewView];
+//	}
 
 	// create the CIContext instance, note that this must be done after _videoPreviewView is properly set up
-	_ciContext = [CIContext contextWithEAGLContext:_eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
+//	_ciContext = [CIContext contextWithEAGLContext:_eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
 }
 
 - (void)startVideoChat {
@@ -599,8 +608,7 @@ static float _arrowMargin = 5.0f;
 	__block NSError *error = nil;
  
 	// set preset
-	[self.frontSession setSessionPreset:AVCaptureSessionPresetMedium];
- 
+	[self.frontSession setSessionPreset:AVCaptureSessionPresetLow];
  
 	// Setup the Video input
 	AVCaptureDevice *videoDevice = [self frontFacingCamera];
@@ -931,7 +939,7 @@ static float _arrowMargin = 5.0f;
 	
 	m_mode = streamingModeOutgoing;
 	
-	self.statusLabel.text = [NSString stringWithFormat:@"waiting for %@ to accept",  self.appDelegate.callReceiverTitle];
+	self.statusLabel.text = [NSString stringWithFormat:@"waiting for\n%@\nto accept",  self.appDelegate.callReceiverTitle];
 
 	[self startVideoChat];
 }
@@ -1061,8 +1069,9 @@ static float _arrowMargin = 5.0f;
 
 -(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
 	NSLog(@"chatCallUserDidNotAnswer %lu", (unsigned long)userID);
+	NSString *msg = [NSString stringWithFormat:@"%@\nisn't answering.\nPlease try again later.", self.appDelegate.callReceiverTitle];
 	[self disconnectAndGoBack];
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"User isn't answering. Please try again later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No answer" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 }
 
@@ -1081,8 +1090,9 @@ static float _arrowMargin = 5.0f;
 
 -(void) chatCallDidRejectByUser:(NSUInteger)userID{
 	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
+	NSString *msg = [NSString stringWithFormat:@"%@\nhas rejected your call.", self.appDelegate.callReceiverTitle];
 	[self disconnectAndGoBack];
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Edda" message:@"User has rejected your call." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Call rejected 😕" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 }
 

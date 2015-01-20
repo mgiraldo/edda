@@ -22,10 +22,6 @@
 	
 	[TestFlight takeOff:testflightId];
 
-	// OpenTok initialization
-	self.otAPIKey = configuration[@"Opentok"][@"APIKey"];
-	self.otProjectSecret = configuration[@"Opentok"][@"ProjectSecret"];
-	
 	// Quickblox
 	[QBApplication sharedApplication].applicationId = [configuration[@"Quickblox"][@"ApplicationID"] integerValue];
 	[QBConnection registerServiceKey:configuration[@"Quickblox"][@"AuthKey"]];

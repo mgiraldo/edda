@@ -22,7 +22,7 @@
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>
 		<string>../..</string>
 		<key>E609DD15689CC93D8F4D219EB393F30F9F726178</key>
-		<string>../../../../../stuff/xcode/GPUImage</string>
+		<string>../../../stuff/xcode/GPUImage</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>github.com:mgiraldo/edda.git</string>

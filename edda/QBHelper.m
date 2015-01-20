@@ -46,9 +46,16 @@
 	user.password = [QBHelper uniqueDeviceIdentifier];
 
 	NSNumber *zero = [NSNumber numberWithFloat:0.0];
-	NSNumber *alignment = [NSNumber numberWithBool:NO];
+	NSNumber *negative = [NSNumber numberWithBool:NO];
 	
-	NSDictionary *custom = [[NSDictionary alloc] initWithObjectsAndKeys:zero, @"latitude", zero, @"longitude", zero, @"altitude", alignment, @"alignment", [[appDelegate.userTitle dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0], @"username", nil];
+	NSDictionary *custom = [[NSDictionary alloc] initWithObjectsAndKeys:
+							zero, @"latitude",
+							zero, @"longitude",
+							zero, @"altitude",
+							negative, @"privacy",
+							negative, @"alignment",
+							[[appDelegate.userTitle dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0], @"username",
+							nil];
 	
 	NSString *customString = [QBHelper DictionaryToQBCustomData:custom];
 	user.customData = customString;
@@ -132,6 +139,19 @@
 	NSMutableDictionary * newCustom = [NSMutableDictionary dictionaryWithDictionary:oldCustom];
 	
 	[newCustom setValue:[NSNumber numberWithBool:alignment] forKey:@"alignment"];
+	
+	[self saveCustomToQB:newCustom];
+}
+
++ (void) saveUserPrivacyToQB:(BOOL)privacy
+{
+	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	
+	NSDictionary * oldCustom = [QBHelper QBCustomDataToObject:appDelegate.loggedInUser.customData];
+	
+	NSMutableDictionary * newCustom = [NSMutableDictionary dictionaryWithDictionary:oldCustom];
+	
+	[newCustom setValue:[NSNumber numberWithBool:privacy] forKey:@"privacy"];
 	
 	[self saveCustomToQB:newCustom];
 }

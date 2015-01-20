@@ -24,14 +24,16 @@ static bool bPollingTimerOn = NO;
 
 + (void) changeLoginToLogin:(NSString *)login;
 + (void) saveUserAlignmentToQB:(BOOL)alignment;
++ (void) saveUserPrivacyToQB:(BOOL)privacy;
 + (NSDictionary *)QBCustomDataToObject:(NSString *)customData;
 + (NSString *)decodeUsername:(NSString *)encodedUsername;
-+(void)saveCurrentUserToQB;
-+(void) saveUserWithLocationToQB:(QBLPlace *)place altitude:(NSNumber *)altitude;
-+(void) processPushedCall:(NSDictionary *)userInfo;
-+(void)signUpUser:(NSString *)username;
-+(void) showAlert : (NSString *) message;
-+(void) showUserTitlePrompt;
-+(NSString *) uniqueDeviceIdentifier;
-+(void) anonymousLogin;
++ (void)saveCurrentUserToQB;
++ (void) saveUserWithLocationToQB:(QBLPlace *)place altitude:(NSNumber *)altitude;
++ (void) processPushedCall:(NSDictionary *)userInfo;
++ (void)signUpUser:(NSString *)username;
++ (void) showAlert : (NSString *) message;
++ (void) showUserTitlePrompt;
++ (NSString *) uniqueDeviceIdentifier;
++ (void) anonymousLogin;
+
 @end
