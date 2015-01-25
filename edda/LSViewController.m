@@ -8,8 +8,16 @@
 
 #import "LSViewController.h"
 #import "eddaMainViewController.h"
+#import "eddaMapAnnotation.h"
 
-@interface LSViewController ()
+//#import "KPAnnotation.h"
+//#import "KPGridClusteringAlgorithm.h"
+//#import "KPClusteringController.h"
+//#import "KPGridClusteringAlgorithm_Private.h"
+
+@interface LSViewController () // <KPClusteringControllerDelegate, KPClusteringControllerDelegate>
+
+//@property (strong, nonatomic) KPClusteringController *clusteringController;
 
 @end
 
@@ -18,12 +26,22 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-  
-    
-    m_userArray = [NSMutableArray array];
-    self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
-    m_userTableView.backgroundColor = [UIColor clearColor];
+	
+	self.mapView.delegate = self;
+	self.mapView.showsPointsOfInterest = NO;
+	
+//	KPGridClusteringAlgorithm *algorithm = [KPGridClusteringAlgorithm new];
+//	algorithm.annotationSize = CGSizeMake(25, 50);
+//	algorithm.clusteringStrategy = KPGridClusteringAlgorithmStrategyTwoPhase;
+//	self.clusteringController = [[KPClusteringController alloc] initWithMapView:self.mapView clusteringAlgorithm:algorithm];
+//	self.clusteringController.delegate = self;
+
+	m_userArray = [NSMutableArray array];
+	m_annotationArray = [NSMutableArray array];
+	
+	self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
+	
+	m_userTableView.backgroundColor = [UIColor clearColor];
 	[m_userTableView setSeparatorInset:UIEdgeInsetsZero];
 }
 
@@ -105,11 +123,12 @@
     }
 	
     //background view
-    [cell setBackgroundColor:[UIColor clearColor]];
+    [cell setBackgroundColor:[UIColor blackColor]];
 
 	cell.textLabel.backgroundColor = [UIColor clearColor];
 	cell.textLabel.text = [dict objectForKey:@"userTitle"];
     cell.textLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:24];
+	cell.textLabel.textColor = [UIColor whiteColor];
 	
 	NSString *relativeDate = [self dateDiff:(NSDate *)[dict objectForKey:@"lastRequestAt"]];
 
@@ -123,48 +142,40 @@
     return cell;
 }
 
-
-
--(NSString *)dateDiff:(NSDate *)convertedDate {
-	NSDateFormatter *df = [[NSDateFormatter alloc] init];
-	[df setFormatterBehavior:NSDateFormatterBehavior10_4];
-	[df setDateFormat:@"EEE, dd MMM yy HH:mm:ss VVVV"];
-	NSDate *todayDate = [NSDate date];
-	double ti = [convertedDate timeIntervalSinceDate:todayDate];
-	ti = ti * -1;
-	if(ti < 1) {
-		return @"never";
-	} else 	if (ti < 60) {
-		return @"less than a minute ago";
-	} else if (ti < 3600) {
-		int diff = round(ti / 60);
-		return [NSString stringWithFormat:@"%d minutes ago", diff];
-	} else if (ti < 86400) {
-		int diff = round(ti / 60 / 60);
-		return[NSString stringWithFormat:@"%d hours ago", diff];
-	} else if (ti < 2629743) {
-		int diff = round(ti / 60 / 60 / 24);
-		return[NSString stringWithFormat:@"%d days ago", diff];
-	} else {
-		return @"never";
-	}
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSMutableDictionary * dict = [m_userArray objectAtIndex:indexPath.row];
+	[self callUser:indexPath.row];
+}
+
+- (void)viewDidUnload {
+    m_userTableView = nil;
+    [super viewDidUnload];
+}
+
+- (IBAction)touchRefresh:(id)sender
+{
+    //fetch users from > 100 meters around.
+    NSLog(@"%f %f", self.appDelegate.currentLocation.coordinate.latitude, self.appDelegate.currentLocation.coordinate.longitude);
+	[self.mapView removeAnnotations:m_annotationArray];
+    [self fireUsersQuery:YES];
+}
+
+#pragma mark - Call stuff
+
+-(void)callUser:(NSInteger)index {
+	NSMutableDictionary * dict = [m_userArray objectAtIndex:index];
 	NSNumber * receiverID = [dict objectForKey:@"userID"];
 	NSString * receiverTitle = [dict objectForKey:@"userTitle"];
 	NSNumber * receiverAltitude = [dict objectForKey:@"userAltitude"];
-
+	
 	QBLGeoData *coordinate = [dict valueForKey:@"userLocation"];
 	CLLocation *location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
-
+	
 	m_receiverID = [receiverID copy];
 	m_receiverTitle = [receiverTitle copy];
 	m_receiverLocation = [location copy];
 	m_receiverAltitude = [receiverAltitude copy];
-
+	
 	self.appDelegate.callReceiverID = m_receiverID;
 	self.appDelegate.callReceiverTitle = m_receiverTitle;
 	self.appDelegate.callReceiverLocation = m_receiverLocation;
@@ -175,9 +186,9 @@
 //if and when a call arrives
 - (void) didCallArrive
 {
-    //pass blank because call has arrived, no need for receiverID.
+	//pass blank because call has arrived, no need for receiverID.
 	[self clearReceiver];
-    [self goToStreamingVC];
+	[self goToStreamingVC];
 }
 
 - (void) goToStreamingVC {
@@ -195,6 +206,7 @@
 	self.appDelegate.callReceiverAltitude = m_receiverAltitude;
 }
 
+#pragma mark - data and map stuff
 //this method polls for new users that gets added / removed from surrounding region.
 //distanceinMiles - range in Miles
 //bRefreshUI - whether to refresh table UI
@@ -202,24 +214,24 @@
 -(void) fireUsersQuery : (bool)bRefreshUI
 {
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-
-    //delete all existing rows,first from front end, then from data source.
-    [m_userArray removeAllObjects];
-    [m_userTableView reloadData];    
+	
+	//delete all existing rows,first from front end, then from data source.
+	[m_userArray removeAllObjects];
+	[m_annotationArray removeAllObjects];
+	[m_userTableView reloadData];
 	
 	@weakify(self);
 	[QBRequest usersForPage:[QBGeneralResponsePage responsePageWithCurrentPage:0 perPage:100] successBlock:^(QBResponse *response, QBGeneralResponsePage *page, NSArray *arrayOfUsers) {
 		@strongify(self);
-		int index = 0;
 		
 		// sort users
 		NSMutableArray *sortedArray = [[NSMutableArray alloc] initWithCapacity:arrayOfUsers.count];
 		
 		for (QBUUser *object in arrayOfUsers) {
 			NSString *userID = [NSString stringWithFormat:@"%lu",(unsigned long)object.ID];
-
+			
 			if (object.ID == self.appDelegate.loggedInUser.ID) {
-//				NSLog(@"skipping - current user");
+				//				NSLog(@"skipping - current user");
 				continue;
 			}
 			
@@ -254,7 +266,7 @@
 			if (privacy == nil) {
 				privacy = [NSNumber numberWithBool:NO];
 			}
-
+			
 			NSMutableDictionary * dict = [NSMutableDictionary dictionary];
 			[dict setObject:userID forKey:@"userID"];
 			[dict setObject:userTitle forKey:@"userTitle"];
@@ -271,6 +283,8 @@
 		NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
 		[sortedArray sortUsingDescriptors:sortDescriptors];
 		
+		int index = 0;
+
 		for (NSMutableDictionary *object in sortedArray) {
 			//skip if private
 			NSNumber *private = [object valueForKey:@"privacy"];
@@ -284,6 +298,18 @@
 			
 			CLLocation * location = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
 			[self geocodeLocation:location forIndex:index];
+			
+			NSString *relativeDate = [self dateDiff:(NSDate *)[object objectForKey:@"lastRequestAt"]];
+			NSString * detailString = [NSString stringWithFormat:@"Active %@", relativeDate];
+
+			eddaMapAnnotation *annotation = [[eddaMapAnnotation alloc] init];
+			annotation.coordinate = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude);
+			annotation.title = [object valueForKey:@"userTitle"];
+			annotation.subtitle = detailString;
+			annotation.index = index;
+
+			[m_annotationArray addObject:annotation];
+			
 			index++;
 		}
 		
@@ -291,29 +317,17 @@
 		if (bRefreshUI)
 		{
 			[m_userTableView reloadData];
+			[self.mapView showAnnotations:m_annotationArray animated:YES];
 		}
-
+		
 		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 	} errorBlock:^(QBResponse *response) {
 		NSLog(@"Errors = %@", response.error);
 		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 	}];
-
+	
 }
 
-- (void)viewDidUnload {
-    m_userTableView = nil;
-    [super viewDidUnload];
-}
-
-- (IBAction)touchRefresh:(id)sender
-{
-    //fetch users from > 100 meters around.
-    NSLog(@"%f %f", self.appDelegate.currentLocation.coordinate.latitude, self.appDelegate.currentLocation.coordinate.longitude);
-    [self fireUsersQuery:YES];
-}
-
-#pragma mark - Geocoding
 - (void)geocodeLocation:(CLLocation*)location forIndex:(int)index
 {
 	CLGeocoder *geocoder = [[CLGeocoder alloc] init];
@@ -329,5 +343,144 @@
 		 }
 	 }];
 }
+
+- (NSString *)dateDiff:(NSDate *)convertedDate {
+	NSDateFormatter *df = [[NSDateFormatter alloc] init];
+	[df setFormatterBehavior:NSDateFormatterBehavior10_4];
+	[df setDateFormat:@"EEE, dd MMM yy HH:mm:ss VVVV"];
+	NSDate *todayDate = [NSDate date];
+	double ti = [convertedDate timeIntervalSinceDate:todayDate];
+	ti = ti * -1;
+	if(ti < 1) {
+		return @"never";
+	} else 	if (ti < 60) {
+		return @"less than a minute ago";
+	} else if (ti < 3600) {
+		int diff = round(ti / 60);
+		return [NSString stringWithFormat:@"%d minutes ago", diff];
+	} else if (ti < 86400) {
+		int diff = round(ti / 60 / 60);
+		return[NSString stringWithFormat:@"%d hours ago", diff];
+	} else if (ti < 2629743) {
+		int diff = round(ti / 60 / 60 / 24);
+		return[NSString stringWithFormat:@"%d days ago", diff];
+	} else {
+		return @"never";
+	}
+}
+
+#pragma mark - MapView and Clustering
+
+-(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control {
+	id <MKAnnotation> annotation = [view annotation];
+	if ([annotation isKindOfClass:[eddaMapAnnotation class]])
+	{
+		eddaMapAnnotation *eddaPin = (eddaMapAnnotation *)annotation;
+		[self callUser:eddaPin.index];
+	}
+}
+
+//- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
+//	if ([view.annotation isKindOfClass:[KPAnnotation class]]) {
+//		
+//		KPAnnotation *cluster = (KPAnnotation *)view.annotation;
+//		
+//		if (cluster.annotations.count > 1){
+//			[self.mapView setRegion:MKCoordinateRegionMakeWithDistance(cluster.coordinate,
+//																	   cluster.radius * 2.5f,
+//																	   cluster.radius * 2.5f)
+//						   animated:YES];
+//		}
+//	}
+//}
+
+//- (void)clusteringController:(KPClusteringController *)clusteringController configureAnnotationForDisplay:(KPAnnotation *)annotation {
+////	annotation.title = [NSString stringWithFormat:@"%lu custom annotations", (unsigned long)annotation.annotations.count];
+//	annotation.subtitle = [NSString stringWithFormat:@"%.0f meters", annotation.radius];
+//}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
+{
+	// If it's the user location, just return nil.
+	if ([annotation isKindOfClass:[MKUserLocation class]])
+		return nil;
+	// Handle any custom annotations.
+	if ([annotation isKindOfClass:[eddaMapAnnotation class]])
+	{
+		// Try to dequeue an existing pin view first.
+		MKPinAnnotationView *annotationView = (MKPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
+		if (!annotationView)
+		{
+			// If an existing pin view was not available, create one.
+			annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
+			
+			UIButton* rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			rightButton.frame = CGRectMake(0, 0, 30, 26);
+			[rightButton setImage:[UIImage imageNamed:@"CallIcon"] forState:UIControlStateNormal];
+			
+			annotationView.rightCalloutAccessoryView = rightButton;
+			annotationView.pinColor = MKPinAnnotationColorRed;
+			annotationView.annotation = annotation;
+			annotationView.canShowCallout = YES;
+			annotationView.animatesDrop = YES;
+		} else {
+			annotationView.annotation = annotation;
+		}
+		return annotationView;
+	}
+
+//	// Handle any custom annotations.
+//	if ([annotation isKindOfClass:[KPAnnotation class]])
+//	{
+//		KPAnnotation *kingpinAnnotation = (KPAnnotation *)annotation;
+//		if ([kingpinAnnotation isCluster]) {
+//			annotationView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"cluster"];
+//			
+//			if (annotationView == nil) {
+//				annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:kingpinAnnotation reuseIdentifier:@"cluster"];
+//			}
+//			
+//			annotationView.pinColor = MKPinAnnotationColorGreen;
+//		} else {
+//			annotationView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
+//			
+//			if (annotationView == nil) {
+//				annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:[kingpinAnnotation.annotations anyObject] reuseIdentifier:@"pin"];
+//			}
+//			
+//			NSLog(@"pin: %@", annotation);
+//			
+//			// Add a detail disclosure button to the callout.
+//			UIButton* rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			rightButton.frame = CGRectMake(0, 0, 30, 26);
+//			[rightButton setImage:[UIImage imageNamed:@"CallIcon"] forState:UIControlStateNormal];
+//
+//			annotationView.rightCalloutAccessoryView = rightButton;
+//			annotationView.pinColor = MKPinAnnotationColorRed;
+//			annotationView.annotation = annotation;
+//			annotationView.canShowCallout = YES;
+//			annotationView.animatesDrop = YES;
+//		}
+//		
+//		return annotationView;
+//	}
+	return nil;
+}
+
+//- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
+//	[self.clusteringController refresh:YES];
+//}
+//
+//- (BOOL)clusteringControllerShouldClusterAnnotations:(KPClusteringController *)clusteringController {
+//	return YES;
+//}
+//
+//- (void)clusteringControllerWillUpdateVisibleAnnotations:(KPClusteringController *)clusteringController {
+////	NSLog(@"Clustering controller %@ will update visible annotations", clusteringController);
+//}
+//
+//- (void)clusteringControllerDidUpdateVisibleMapAnnotations:(KPClusteringController *)clusteringController {
+////	NSLog(@"Clustering controller %@ did update visible annotations", clusteringController);
+//}
 
 @end

@@ -14,6 +14,9 @@
 		CC40DE2E19B813A000E86968 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC40DE2D19B813A000E86968 /* AVFoundation.framework */; };
 		CC40DE3419B8271300E86968 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3219B8271300E86968 /* arrow.png */; };
 		CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC40DE3319B8271300E86968 /* arrow@2x.png */; };
+		CC450F681A744C9800CC195B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC450F671A744C9800CC195B /* MapKit.framework */; };
+		CC450F6A1A745BFB00CC195B /* call.pdf in Resources */ = {isa = PBXBuildFile; fileRef = CC450F691A745BFB00CC195B /* call.pdf */; };
+		CC450F881A7482D600CC195B /* eddaMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CC450F871A7482D600CC195B /* eddaMapAnnotation.m */; };
 		CC4B70831A6C8E540016257C /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC4B70721A6C784D0016257C /* GLKit.framework */; };
 		CC5989C91A6B01DE0047D119 /* home.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989C81A6B01DE0047D119 /* home.jpg */; };
 		CC5989CB1A6B042C0047D119 /* info.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC5989CA1A6B042C0047D119 /* info.jpg */; };
@@ -89,6 +92,10 @@
 		CC40DE2D19B813A000E86968 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		CC40DE3219B8271300E86968 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		CC40DE3319B8271300E86968 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
+		CC450F671A744C9800CC195B /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		CC450F691A745BFB00CC195B /* call.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = call.pdf; sourceTree = "<group>"; };
+		CC450F861A7482D600CC195B /* eddaMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaMapAnnotation.h; sourceTree = "<group>"; };
+		CC450F871A7482D600CC195B /* eddaMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaMapAnnotation.m; sourceTree = "<group>"; };
 		CC4B70721A6C784D0016257C /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		CC4B70811A6C8A0A0016257C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		CC5989C81A6B01DE0047D119 /* home.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = home.jpg; sourceTree = "<group>"; };
@@ -177,6 +184,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC450F681A744C9800CC195B /* MapKit.framework in Frameworks */,
 				CC4B70831A6C8E540016257C /* GLKit.framework in Frameworks */,
 				CC9FD32A1A2C13F90037DD43 /* Quickblox.framework in Frameworks */,
 				CC9FD32C1A2C143F0037DD43 /* libxml2.dylib in Frameworks */,
@@ -249,6 +257,7 @@
 		CC77D4EF19B003E8009BA59F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CC450F671A744C9800CC195B /* MapKit.framework */,
 				CC4B70811A6C8A0A0016257C /* OpenGLES.framework */,
 				CC4B70721A6C784D0016257C /* GLKit.framework */,
 				CC9FD32B1A2C143F0037DD43 /* libxml2.dylib */,
@@ -292,6 +301,8 @@
 				CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */,
 				CC77D50819B003E8009BA59F /* eddaFlipsideViewController.h */,
 				CC77D50919B003E8009BA59F /* eddaFlipsideViewController.m */,
+				CC450F861A7482D600CC195B /* eddaMapAnnotation.h */,
+				CC450F871A7482D600CC195B /* eddaMapAnnotation.m */,
 				CC77D50B19B003E8009BA59F /* Images.xcassets */,
 				CC77D4F719B003E8009BA59F /* Supporting Files */,
 			);
@@ -338,6 +349,7 @@
 		CC77D53A19B02734009BA59F /* images */ = {
 			isa = PBXGroup;
 			children = (
+				CC450F691A745BFB00CC195B /* call.pdf */,
 				CC5989E61A6B0E470047D119 /* default-5@2x.png */,
 				CC5989E71A6B0E470047D119 /* default@2x.png */,
 				CC5989E21A6B0D920047D119 /* default-375w-667h@2x.png */,
@@ -475,6 +487,7 @@
 				CCFFAF6319CF9782008555A1 /* AppIcon50x50.png in Resources */,
 				CC77D53019B003F3009BA59F /* README.md in Resources */,
 				CCFFAF6019CF9782008555A1 /* AppIcon29x29@2x.png in Resources */,
+				CC450F6A1A745BFB00CC195B /* call.pdf in Resources */,
 				CC78A53F19C25BFB00C73E59 /* configuration.plist in Resources */,
 				CCFFAF6819CF9782008555A1 /* AppIcon60x60@2x.png in Resources */,
 				CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */,
@@ -510,6 +523,7 @@
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
 				CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
+				CC450F881A7482D600CC195B /* eddaMapAnnotation.m in Sources */,
 				CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */,
 				CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */,
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,

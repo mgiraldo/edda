@@ -4,7 +4,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Edda Main View Controller-->
@@ -285,16 +284,17 @@
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="redraw" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="SNk-Ny-KQF">
-                                <rect key="frame" x="0.0" y="-44" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="-44" width="320" height="355"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="sectionIndexBackgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="0.0" shouldIndentWhileEditing="NO" reuseIdentifier="callerCellID" textLabel="Cw7-QE-bdi" style="IBUITableViewCellStyleDefault" id="tXe-F9-6Ak">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="0.0" shouldIndentWhileEditing="NO" reuseIdentifier="callerCellID" textLabel="nTZ-sd-aQV" style="IBUITableViewCellStyleDefault" id="tXe-F9-6Ak">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tXe-F9-6Ak" id="dSe-fS-gN1">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Cw7-QE-bdi">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nTZ-sd-aQV">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -313,12 +313,20 @@
                                     <outlet property="delegate" destination="OUq-rZ-Utc" id="SBi-gG-A2p"/>
                                 </connections>
                             </tableView>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="NgX-f6-1Y9">
+                                <rect key="frame" x="0.0" y="311" width="320" height="213"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="NgX-f6-1Y9" secondAttribute="height" multiplier="3:2" id="uL3-Rr-6SZ"/>
+                                </constraints>
+                            </mapView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="bottomMargin" secondItem="SNk-Ny-KQF" secondAttribute="bottom" id="9NN-yz-ZUU"/>
+                            <constraint firstItem="cOp-IR-Von" firstAttribute="top" secondItem="NgX-f6-1Y9" secondAttribute="bottom" id="7cy-cX-vUp"/>
+                            <constraint firstAttribute="trailing" secondItem="NgX-f6-1Y9" secondAttribute="trailing" id="GCU-VT-Y0v"/>
+                            <constraint firstItem="NgX-f6-1Y9" firstAttribute="top" secondItem="SNk-Ny-KQF" secondAttribute="bottom" id="O3U-xs-LVs"/>
                             <constraint firstAttribute="trailing" secondItem="SNk-Ny-KQF" secondAttribute="trailing" id="ZDw-Pk-AtP"/>
                             <constraint firstItem="SNk-Ny-KQF" firstAttribute="top" secondItem="bcS-0A-nY8" secondAttribute="bottom" constant="-44" id="jlQ-a3-fnv"/>
+                            <constraint firstItem="NgX-f6-1Y9" firstAttribute="leading" secondItem="9b7-M3-rcr" secondAttribute="leading" id="pTa-Kg-nVs"/>
                             <constraint firstItem="SNk-Ny-KQF" firstAttribute="leading" secondItem="9b7-M3-rcr" secondAttribute="leading" id="wAA-r4-yck"/>
                         </constraints>
                     </view>
@@ -341,6 +349,7 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
                         <outlet property="m_userTableView" destination="SNk-Ny-KQF" id="quE-Ci-u9x"/>
+                        <outlet property="mapView" destination="NgX-f6-1Y9" id="bcd-9J-h2s"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7dT-ie-95q" sceneMemberID="firstResponder"/>
