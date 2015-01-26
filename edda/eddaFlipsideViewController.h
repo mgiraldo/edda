@@ -22,6 +22,7 @@
 @property (weak, nonatomic) id <eddaFlipsideViewControllerDelegate> delegate;
 @property (weak, nonatomic) NSString *nickname;
 @property (weak, nonatomic) IBOutlet UITextField *nicknameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *backgroundView;
 
 - (IBAction)done:(id)sender;
 - (IBAction)privacyChanged:(UISwitch *)sender;

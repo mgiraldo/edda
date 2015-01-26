@@ -57,6 +57,15 @@
 		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
 		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
 		CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD2DDB319EE1F140029BD6C /* QBHelper.m */; };
+		CCD596311A759BBB0094E2EA /* default.png in Resources */ = {isa = PBXBuildFile; fileRef = CCD5962E1A759BBB0094E2EA /* default.png */; };
+		CCD596321A759BBB0094E2EA /* hangup.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CCD5962F1A759BBB0094E2EA /* hangup.mp3 */; };
+		CCD596331A759BBB0094E2EA /* rechaza.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CCD596301A759BBB0094E2EA /* rechaza.mp3 */; };
+		CCD596351A759C7C0094E2EA /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = CCD596341A759C7C0094E2EA /* Launch Screen.xib */; };
+		CCD596371A75A03E0094E2EA /* splash-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CCD596361A75A03E0094E2EA /* splash-icon.png */; };
+		CCD5963F1A75A7680094E2EA /* eddaInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD5963E1A75A7680094E2EA /* eddaInfoViewController.m */; };
+		CCD596491A75BEE50094E2EA /* info.html in Resources */ = {isa = PBXBuildFile; fileRef = CCD596481A75BEE50094E2EA /* info.html */; };
+		CCD5964D1A75C4CF0094E2EA /* info-exit.png in Resources */ = {isa = PBXBuildFile; fileRef = CCD5964C1A75C4CF0094E2EA /* info-exit.png */; };
+		CCD596521A75DBE50094E2EA /* info-enter.png in Resources */ = {isa = PBXBuildFile; fileRef = CCD596511A75DBE50094E2EA /* info-enter.png */; };
 		CCD6D67B19EC74FD0060DBAE /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A54419C267E300C73E59 /* CFNetwork.framework */; };
 		CCD6D67C19EC75160060DBAE /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A54819C2680700C73E59 /* MobileCoreServices.framework */; };
 		CCD6D67D19EC75300060DBAE /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A54A19C2681D00C73E59 /* CoreData.framework */; };
@@ -154,6 +163,16 @@
 		CCD2DDB019EE1AEF0029BD6C /* Quickblox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quickblox.framework; path = "../../../stuff/xcode/quickblox-ios-sdk-master/Framework/Quickblox.framework"; sourceTree = "<group>"; };
 		CCD2DDB219EE1F140029BD6C /* QBHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QBHelper.h; sourceTree = "<group>"; };
 		CCD2DDB319EE1F140029BD6C /* QBHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QBHelper.m; sourceTree = "<group>"; };
+		CCD5962E1A759BBB0094E2EA /* default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = default.png; sourceTree = "<group>"; };
+		CCD5962F1A759BBB0094E2EA /* hangup.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = hangup.mp3; sourceTree = "<group>"; };
+		CCD596301A759BBB0094E2EA /* rechaza.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = rechaza.mp3; sourceTree = "<group>"; };
+		CCD596341A759C7C0094E2EA /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		CCD596361A75A03E0094E2EA /* splash-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "splash-icon.png"; sourceTree = "<group>"; };
+		CCD5963D1A75A7680094E2EA /* eddaInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaInfoViewController.h; sourceTree = "<group>"; };
+		CCD5963E1A75A7680094E2EA /* eddaInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaInfoViewController.m; sourceTree = "<group>"; };
+		CCD596481A75BEE50094E2EA /* info.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = info.html; sourceTree = "<group>"; };
+		CCD5964C1A75C4CF0094E2EA /* info-exit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "info-exit.png"; sourceTree = "<group>"; };
+		CCD596511A75DBE50094E2EA /* info-enter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "info-enter.png"; sourceTree = "<group>"; };
 		CCD6D67F19EC756A0060DBAE /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		CCD6D68119EC75740060DBAE /* libxml2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.dylib; path = usr/lib/libxml2.2.dylib; sourceTree = SDKROOT; };
 		CCE1DB8B1A3E2ADD00119867 /* EXTRuntimeExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTRuntimeExtensions.h; sourceTree = "<group>"; };
@@ -228,6 +247,8 @@
 		CC5989EA1A6B33AA0047D119 /* sounds */ = {
 			isa = PBXGroup;
 			children = (
+				CCD5962F1A759BBB0094E2EA /* hangup.mp3 */,
+				CCD596301A759BBB0094E2EA /* rechaza.mp3 */,
 				CC5989EB1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav */,
 			);
 			name = sounds;
@@ -295,6 +316,8 @@
 				CC77D4FF19B003E8009BA59F /* eddaAppDelegate.h */,
 				CC77D50019B003E8009BA59F /* eddaAppDelegate.m */,
 				CC77D50219B003E8009BA59F /* Main.storyboard */,
+				CCD5963D1A75A7680094E2EA /* eddaInfoViewController.h */,
+				CCD5963E1A75A7680094E2EA /* eddaInfoViewController.m */,
 				CC77D50519B003E8009BA59F /* eddaMainViewController.h */,
 				CC77D50619B003E8009BA59F /* eddaMainViewController.m */,
 				CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */,
@@ -303,6 +326,8 @@
 				CC77D50919B003E8009BA59F /* eddaFlipsideViewController.m */,
 				CC450F861A7482D600CC195B /* eddaMapAnnotation.h */,
 				CC450F871A7482D600CC195B /* eddaMapAnnotation.m */,
+				CCD596481A75BEE50094E2EA /* info.html */,
+				CCD596341A759C7C0094E2EA /* Launch Screen.xib */,
 				CC77D50B19B003E8009BA59F /* Images.xcassets */,
 				CC77D4F719B003E8009BA59F /* Supporting Files */,
 			);
@@ -349,7 +374,11 @@
 		CC77D53A19B02734009BA59F /* images */ = {
 			isa = PBXGroup;
 			children = (
+				CCD596511A75DBE50094E2EA /* info-enter.png */,
+				CCD5964C1A75C4CF0094E2EA /* info-exit.png */,
+				CCD596361A75A03E0094E2EA /* splash-icon.png */,
 				CC450F691A745BFB00CC195B /* call.pdf */,
+				CCD5962E1A759BBB0094E2EA /* default.png */,
 				CC5989E61A6B0E470047D119 /* default-5@2x.png */,
 				CC5989E71A6B0E470047D119 /* default@2x.png */,
 				CC5989E21A6B0D920047D119 /* default-375w-667h@2x.png */,
@@ -478,16 +507,23 @@
 				CC77D50C19B003E8009BA59F /* Images.xcassets in Resources */,
 				CC77D53C19B02740009BA59F /* arrowLong.png in Resources */,
 				CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */,
+				CCD596311A759BBB0094E2EA /* default.png in Resources */,
 				CCFFAF6A19CF9782008555A1 /* AppIcon72x72@2x.png in Resources */,
+				CCD596491A75BEE50094E2EA /* info.html in Resources */,
+				CCD596331A759BBB0094E2EA /* rechaza.mp3 in Resources */,
+				CCD596321A759BBB0094E2EA /* hangup.mp3 in Resources */,
 				CC5989EC1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav in Resources */,
 				CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */,
 				CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */,
 				CC77D4FB19B003E8009BA59F /* InfoPlist.strings in Resources */,
 				CCFFAF6119CF9782008555A1 /* AppIcon40x40.png in Resources */,
 				CCFFAF6319CF9782008555A1 /* AppIcon50x50.png in Resources */,
+				CCD5964D1A75C4CF0094E2EA /* info-exit.png in Resources */,
+				CCD596371A75A03E0094E2EA /* splash-icon.png in Resources */,
 				CC77D53019B003F3009BA59F /* README.md in Resources */,
 				CCFFAF6019CF9782008555A1 /* AppIcon29x29@2x.png in Resources */,
 				CC450F6A1A745BFB00CC195B /* call.pdf in Resources */,
+				CCD596521A75DBE50094E2EA /* info-enter.png in Resources */,
 				CC78A53F19C25BFB00C73E59 /* configuration.plist in Resources */,
 				CCFFAF6819CF9782008555A1 /* AppIcon60x60@2x.png in Resources */,
 				CC40DE3519B8271300E86968 /* arrow@2x.png in Resources */,
@@ -510,6 +546,7 @@
 				CCFFAF6D19CF9782008555A1 /* iTunesArtwork.png in Resources */,
 				CC5989C91A6B01DE0047D119 /* home.jpg in Resources */,
 				CC78A55B19C26B4500C73E59 /* configuration.plist.example in Resources */,
+				CCD596351A759C7C0094E2EA /* Launch Screen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -530,6 +567,7 @@
 				CCE1DB921A3E2ADD00119867 /* EXTRuntimeExtensions.m in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,
 				CC77D50719B003E8009BA59F /* eddaMainViewController.m in Sources */,
+				CCD5963F1A75A7680094E2EA /* eddaInfoViewController.m in Sources */,
 				CC5B4F9719D8D67B001BA61D /* LSViewController.m in Sources */,
 				CCE1DB931A3E2ADD00119867 /* EXTScope.m in Sources */,
 			);

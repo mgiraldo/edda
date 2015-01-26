@@ -127,6 +127,26 @@ static float _arrowMargin = 5.0f;
         NSLog(@"Could not initialise MERCATOR");
 	if (!(pj_geoc = pj_init_plus("+proj=geocent +datum=WGS84")) )
         NSLog(@"Could not initialise CARTESIAN");
+	
+	self.backgroundView.alpha = 0.0;
+	self.settingsButton.alpha = 0.0;
+	self.infoButton.alpha = 0.0;
+	self.startButton.alpha = 0.0;
+	
+	[UIView animateKeyframesWithDuration:1.0 delay:0.25 options:UIViewKeyframeAnimationOptionCalculationModeLinear animations:^{
+		[UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.25 animations:^{
+			self.backgroundView.alpha = 1.0;
+		}];
+		[UIView addKeyframeWithRelativeStartTime:0.25 relativeDuration:0.25 animations:^{
+			self.settingsButton.alpha = 1.0;
+		}];
+		[UIView addKeyframeWithRelativeStartTime:0.5 relativeDuration:0.25 animations:^{
+			self.infoButton.alpha = 1.0;
+		}];
+		[UIView addKeyframeWithRelativeStartTime:0.75 relativeDuration:0.25 animations:^{
+			self.startButton.alpha = 1.0;
+		}];
+	} completion:nil];
 }
 
 - (void)viewDidUnload
@@ -152,6 +172,10 @@ static float _arrowMargin = 5.0f;
 	[super viewDidAppear:animated];
 }
 
+- (BOOL)checkStatusBarHidden {
+	return [UIApplication sharedApplication].statusBarHidden;
+}
+
 - (void)didReceiveMemoryWarning
 {
 	[super didReceiveMemoryWarning];
@@ -165,9 +189,11 @@ static float _arrowMargin = 5.0f;
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
 	NSLog(@"prepare for segue: [%@] sender: [%@]", [segue identifier], sender);
-	if ([[segue identifier] isEqualToString:@"showAlternate"]) {
+	if ([[segue identifier] isEqualToString:@"showSettings"]) {
 		[[segue destinationViewController] setDelegate:self];
 	} else if ([[segue identifier] isEqualToString:@"showList"]) {
+		[[segue destinationViewController] setDelegate:self];
+	} else if ([[segue identifier] isEqualToString:@"showInfo"]) {
 		[[segue destinationViewController] setDelegate:self];
 	}
 }
@@ -779,6 +805,7 @@ static float _arrowMargin = 5.0f;
 }
 
 - (IBAction)endButtonTapped:(id)sender {
+	[self playSound:@"hangup" type:@"mp3"];
 	[self disconnectAndGoBack];
 }
 
@@ -960,11 +987,16 @@ static float _arrowMargin = 5.0f;
 	self.otherView.hidden = YES;
 }
 
-#pragma mark - Flipside View
+#pragma mark - Modal Views
 
 - (void)flipsideViewControllerDidFinish:(eddaFlipsideViewController *)controller
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)infoViewControllerDidFinish:(eddaInfoViewController *)controller
+{
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -
@@ -1057,14 +1089,7 @@ static float _arrowMargin = 5.0f;
 	
 	// play call music
 	//
-	if(ringingPlayer == nil){
-		NSString *path =[[NSBundle mainBundle] pathForResource:@"Zen_mg_JFK_LO_short" ofType:@"wav"];
-		NSURL *url = [NSURL fileURLWithPath:path];
-		ringingPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
-		ringingPlayer.delegate = self;
-		[ringingPlayer setVolume:1.0];
-		[ringingPlayer play];
-	}
+	[self playSound:@"Zen_mg_JFK_LO_short" type:@"wav"];
 }
 
 -(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
@@ -1092,6 +1117,7 @@ static float _arrowMargin = 5.0f;
 	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
 	NSString *msg = [NSString stringWithFormat:@"%@\nhas rejected your call.", self.appDelegate.callReceiverTitle];
 	[self disconnectAndGoBack];
+	[self playSound:@"rechaza" type:@"mp3"];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Call rejected 😕" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 }
@@ -1104,7 +1130,7 @@ static float _arrowMargin = 5.0f;
 
 -(void) chatCallDidStopByUser:(NSUInteger)userID status:(NSString *)status{
 	NSLog(@"chatCallDidStopByUser %lu purpose %@", (unsigned long)userID, status);
-	
+
 	if([status isEqualToString:kStopVideoChatCallStatus_OpponentDidNotAnswer]){
 		
 		self.callAlert.delegate = nil;
@@ -1113,6 +1139,8 @@ static float _arrowMargin = 5.0f;
 		
 	}
 	
+	[self playSound:@"hangup" type:@"mp3"];
+
 	[self disconnectAndGoBack];
 }
 
@@ -1122,6 +1150,19 @@ static float _arrowMargin = 5.0f;
 
 #pragma mark -
 #pragma mark AVAudioPlayerDelegate
+
+-(void) playSound:(NSString *)sound type:(NSString *)type {
+	if(ringingPlayer != nil){
+		[ringingPlayer stop];
+		ringingPlayer = nil;
+	}
+	NSString *path =[[NSBundle mainBundle] pathForResource:sound ofType:type];
+	NSURL *url = [NSURL fileURLWithPath:path];
+	ringingPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
+	ringingPlayer.delegate = self;
+	[ringingPlayer setVolume:1.0];
+	[ringingPlayer play];
+}
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
 	ringingPlayer = nil;
@@ -1234,7 +1275,6 @@ static float _arrowMargin = 5.0f;
 	self.appDelegate.callReceiverAltitude = 0;
 	
 	videoChatOpponentID = 0;
-	ringingPlayer = nil;
 	
 	_toLat=0, _toLon=0, _toAlt=0;
 	

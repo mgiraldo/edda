@@ -21,6 +21,8 @@ static BOOL _isPrivate = NO;
 {
     [super viewDidLoad];
 
+	self.backgroundView.transform = CGAffineTransformMakeScale(-1, 1);
+	
 	UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(resignOnTap:)];
 	[singleTap setNumberOfTapsRequired:1];
 	[singleTap setNumberOfTouchesRequired:1];

@@ -14,6 +14,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	[UIApplication sharedApplication].idleTimerDisabled = YES;
+	[UIApplication sharedApplication].statusBarHidden = YES;
 
 	NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"configuration" ofType:@"plist"];
 	NSDictionary *configuration = [[NSDictionary alloc] initWithContentsOfFile:plistPath];

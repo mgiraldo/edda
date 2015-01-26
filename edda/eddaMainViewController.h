@@ -11,6 +11,7 @@
 #import <GLKit/GLKit.h>
 #import "eddaAppDelegate.h"
 #import "eddaFlipsideViewController.h"
+#import "eddaInfoViewController.h"
 #import "eddaOtherView.h"
 #import "proj_api.h"
 
@@ -57,6 +58,10 @@ typedef struct sViewAngle sViewAngle;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
 @property (weak, nonatomic) IBOutlet UIButton *endButton;
+
+@property (weak, nonatomic) IBOutlet UIButton *infoButton;
+@property (weak, nonatomic) IBOutlet UIButton *settingsButton;
+@property (weak, nonatomic) IBOutlet UIImageView *backgroundView;
 
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 

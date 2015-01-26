@@ -43,6 +43,28 @@
 	
 	m_userTableView.backgroundColor = [UIColor clearColor];
 	[m_userTableView setSeparatorInset:UIEdgeInsetsZero];
+	
+	// blur
+	
+	CAGradientLayer* maskLayer = [CAGradientLayer layer];
+	
+	maskLayer.bounds = CGRectMake(0, 0,
+								  self.view.frame.size.width,
+								  self.mapView.frame.size.height);
+	
+	CGColorRef outerColor = [UIColor colorWithWhite:0.0 alpha:1.0].CGColor;
+	CGColorRef innerColor = [UIColor colorWithWhite:0.5 alpha:0.0].CGColor;
+	
+	maskLayer.colors = [NSArray arrayWithObjects:(__bridge id)outerColor,
+						(__bridge id)innerColor, (__bridge id)innerColor, nil];
+	
+	maskLayer.locations = [NSArray arrayWithObjects:[NSNumber numberWithFloat:0.0],
+						   [NSNumber numberWithFloat:0.1],
+						   [NSNumber numberWithFloat:1.0], nil];
+	
+	maskLayer.anchorPoint = CGPointZero;
+	
+	[self.mapView.layer addSublayer:maskLayer];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -415,7 +437,7 @@
 			annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
 			
 			UIButton* rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			rightButton.frame = CGRectMake(0, 0, 30, 26);
+			rightButton.frame = CGRectMake(0, 0, 26, 27);
 			[rightButton setImage:[UIImage imageNamed:@"CallIcon"] forState:UIControlStateNormal];
 			
 			annotationView.rightCalloutAccessoryView = rightButton;
