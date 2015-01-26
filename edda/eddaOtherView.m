@@ -22,7 +22,8 @@ static const float _margin = 30.0f;
 //		self.contentMode = UIViewContentModeRedraw;
 		self.layer.cornerRadius = _otherSize * .5;
 		self.layer.backgroundColor = [UIColor blackColor].CGColor;
-		self.layer.borderColor = [UIColor clearColor].CGColor;
+		self.layer.borderColor = [UIColor whiteColor].CGColor;
+		self.layer.borderWidth = 1;
     }
     return self;
 }
@@ -52,8 +53,6 @@ static const float _margin = 30.0f;
 						 CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width - _margin, self.window.bounds.size.width - _margin);
 						 self.layer.cornerRadius = (self.window.bounds.size.width - _margin) * .5;
 						 self.layer.backgroundColor = [UIColor clearColor].CGColor;
-						 self.layer.borderColor = [UIColor whiteColor].CGColor;
-						 self.layer.borderWidth = 1;
 						 self.frame = frame;
 					 }
 					 completion:^(BOOL finished){
@@ -73,8 +72,6 @@ static const float _margin = 30.0f;
 						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherSize)*.5, (self.window.bounds.size.height-_otherSize)*.5, _otherSize, _otherSize);
 						 self.layer.cornerRadius = _otherSize * .5;
 						 self.layer.backgroundColor = [UIColor blackColor].CGColor;
-						 self.layer.borderColor = [UIColor clearColor].CGColor;
-						 self.layer.borderWidth = 0;
 						 self.frame = frame;
 					 }
 					 completion:^(BOOL finished){
