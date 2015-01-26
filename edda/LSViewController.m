@@ -27,6 +27,10 @@
 {
     [super viewDidLoad];
 	
+	m_refreshControl = [[UIRefreshControl alloc] init];
+	[m_userTableView addSubview:m_refreshControl];
+	[m_refreshControl addTarget:self action:@selector(refreshView) forControlEvents:UIControlEventValueChanged];
+	
 	self.mapView.delegate = self;
 	self.mapView.showsPointsOfInterest = NO;
 	
@@ -42,6 +46,8 @@
 	self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
 	
 	m_userTableView.backgroundColor = [UIColor clearColor];
+	m_userTableView.separatorColor = [UIColor darkGrayColor];
+//	m_userTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[m_userTableView setSeparatorInset:UIEdgeInsetsZero];
 	
 	// blur
@@ -145,7 +151,7 @@
     }
 	
     //background view
-    [cell setBackgroundColor:[UIColor blackColor]];
+	cell.backgroundColor = [UIColor blackColor];
 
 	cell.textLabel.backgroundColor = [UIColor clearColor];
 	cell.textLabel.text = [dict objectForKey:@"userTitle"];
@@ -176,10 +182,12 @@
 
 - (IBAction)touchRefresh:(id)sender
 {
-    //fetch users from > 100 meters around.
-    NSLog(@"%f %f", self.appDelegate.currentLocation.coordinate.latitude, self.appDelegate.currentLocation.coordinate.longitude);
+	[self refreshView];
+}
+
+- (void)refreshView {
 	[self.mapView removeAnnotations:m_annotationArray];
-    [self fireUsersQuery:YES];
+	[self fireUsersQuery:YES];
 }
 
 #pragma mark - Call stuff
@@ -233,7 +241,7 @@
 //distanceinMiles - range in Miles
 //bRefreshUI - whether to refresh table UI
 //argCoord - location around which to execute the search.
--(void) fireUsersQuery : (bool)bRefreshUI
+-(void) fireUsersQuery : (BOOL)bRefreshUI
 {
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 	
@@ -338,6 +346,7 @@
 		//when done, refresh the table view
 		if (bRefreshUI)
 		{
+			[m_refreshControl endRefreshing];
 			[m_userTableView reloadData];
 			[self.mapView showAnnotations:m_annotationArray animated:YES];
 		}

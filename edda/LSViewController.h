@@ -19,6 +19,7 @@
 	NSString * m_receiverTitle;
 	CLLocation * m_receiverLocation;
 	NSNumber * m_receiverAltitude;
+	UIRefreshControl *m_refreshControl;
     __weak IBOutlet UITableView *m_userTableView;
 }
 

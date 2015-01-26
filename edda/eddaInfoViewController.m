@@ -46,8 +46,8 @@
 	CAGradientLayer* maskLayer = [CAGradientLayer layer];
 	
 	maskLayer.bounds = CGRectMake(0, 0,
-								  self.view.frame.size.width,
-								  self.view.frame.size.height);
+								  blurView.frame.size.width,
+								  blurView.frame.size.height);
 	
 	CGColorRef outerColor = [UIColor colorWithWhite:0.0 alpha:1.0].CGColor;
 	CGColorRef innerColor = [UIColor colorWithWhite:0.0 alpha:0.0].CGColor;

@@ -18,7 +18,7 @@
 	NSUInteger videoChatOpponentID;
 }
 
-@property (strong, nonatomic) NSMutableSet *disconnectListeners;
+@property (nonatomic) UIView *blackView;
 
 @end
 
@@ -511,25 +511,25 @@ static float _arrowMargin = 5.0f;
 		if (!_isAligned) {
 //			NSLog("-------> alignment error: %f", _alignmentError);
 			
-			UIGraphicsBeginImageContextWithOptions(self.opponentVideoView.bounds.size, self.opponentVideoView.opaque, 0.0);
-			[self.opponentVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
-			
-			UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-			
-			UIGraphicsEndImageContext();
-			
-			CIImage *sourceImage = [CIImage imageWithCGImage:img.CGImage];
-			
-			// run the filter through the filter chain
-			
-			CIImage *filteredImage = [CIFilter filterWithName:@"CIColorControls" keysAndValues:
-									  kCIInputImageKey, sourceImage,
-									  @"inputSaturation", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
-									  @"inputBrightness", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 0, -0.85, true)],
-									  @"inputContrast", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
-									  nil].outputImage;
-			
-			self.opponentVideoView.image = [UIImage imageWithCIImage:filteredImage];
+//			UIGraphicsBeginImageContextWithOptions(self.opponentVideoView.bounds.size, self.opponentVideoView.opaque, 0.0);
+//			[self.opponentVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
+//			
+//			UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+//			
+//			UIGraphicsEndImageContext();
+//			
+//			CIImage *sourceImage = [CIImage imageWithCGImage:img.CGImage];
+//			
+//			// run the filter through the filter chain
+//			
+//			CIImage *filteredImage = [CIFilter filterWithName:@"CIColorControls" keysAndValues:
+//									  kCIInputImageKey, sourceImage,
+//									  @"inputSaturation", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
+//									  @"inputBrightness", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 0, -0.85, true)],
+//									  @"inputContrast", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
+//									  nil].outputImage;
+//			
+//			self.opponentVideoView.image = [UIImage imageWithCIImage:filteredImage];
 		}
 	}
 }
@@ -538,29 +538,37 @@ static float _arrowMargin = 5.0f;
 	[self stopRearCapture];
 	if (_videoActive) {
 		[self startRearCapture];
-		if (_isChatting) {
-			self.otherView.hidden = NO;
-		} else {
-			self.otherView.hidden = YES;
-		}
+//		if (_isChatting) {
+//			self.otherView.hidden = NO;
+//		} else {
+//			self.otherView.hidden = YES;
+//		}
 	}
 }
 
 - (void)createVideoChatViews {
 	NSLog(@"createChatViews");
 	CGRect viewBounds = self.view.bounds;
-	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize + _arrowMargin;
+	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize + (_arrowMargin * 2);
 	
 	if (self.opponentVideoView == nil) {
-		self.opponentVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth, topBarOffset + (_arrowMargin * 2) + _previewHeight, _previewWidth * 2, _previewHeight * 2)];
-		[self.view insertSubview:self.opponentVideoView belowSubview:self.controlsView];
+		self.blackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewBounds.size.width, viewBounds.size.height)];
+		self.blackView.backgroundColor = [UIColor blackColor];
+		[self.view insertSubview:self.blackView belowSubview:self.otherView];
+		self.blackView.hidden = YES;
+		self.opponentVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - (_previewWidth * 1.5), topBarOffset + (_arrowMargin * 2) + _previewHeight, _previewWidth * 3, _previewWidth * 3)];
+		self.opponentVideoView.layer.cornerRadius = _previewWidth * 1.5;
+		self.opponentVideoView.layer.masksToBounds = YES;
+		[self.view insertSubview:self.opponentVideoView belowSubview:self.otherView];
 //		self.opponentVideoView.layer.borderWidth = 5;
 		self.opponentVideoView.hidden = YES;
 	}
 	
 	if (self.myVideoView == nil) {
-		self.myVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewHeight)];
-		[self.view insertSubview:self.myVideoView belowSubview:self.controlsView];
+		self.myVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewWidth)];
+		self.myVideoView.layer.cornerRadius = _previewWidth * .5;
+		self.myVideoView.layer.masksToBounds = YES;
+		[self.view insertSubview:self.myVideoView belowSubview:self.otherView];
 		self.myVideoView.hidden = YES;
 	}
 	
@@ -1241,6 +1249,7 @@ static float _arrowMargin = 5.0f;
 	self.videoChat.viewToRenderOwnVideoStream = self.myVideoView;
 	self.myVideoView.hidden = NO;
 	self.opponentVideoView.hidden = NO;
+	self.blackView.hidden = NO;
 	NSLog(@"me: %@, opponent: %@", self.myVideoView,self.opponentVideoView);
 }
 
@@ -1249,8 +1258,10 @@ static float _arrowMargin = 5.0f;
 	if (self.videoChat != nil)
 		[self.videoChat finishCall];
 	
+	[self.blackView removeFromSuperview];
 	[self.opponentVideoView removeFromSuperview];
 	[self.myVideoView removeFromSuperview];
+	self.blackView = nil;
 	self.opponentVideoView = nil;
 	self.myVideoView = nil;
 
@@ -1280,7 +1291,6 @@ static float _arrowMargin = 5.0f;
 	
 	self.statusLabel.text = @"";
 	self.receiverObject = nil;
-	self.otherView.hidden = YES;
 	[self.otherView zoomOut];
 	[self stopOpponentAlignedTimer];
 	[self hideArrows];

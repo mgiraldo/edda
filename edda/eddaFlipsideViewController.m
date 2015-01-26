@@ -22,6 +22,11 @@ static BOOL _isPrivate = NO;
     [super viewDidLoad];
 
 	self.backgroundView.transform = CGAffineTransformMakeScale(-1, 1);
+
+	CALayer *bottomBorder = [CALayer layer];
+	bottomBorder.frame = CGRectMake(0.0f, self.nicknameLabel.frame.size.height - 1, self.nicknameLabel.frame.size.width, 1.0f);
+	bottomBorder.backgroundColor = [UIColor yellowColor].CGColor;
+	[self.nicknameLabel.layer addSublayer:bottomBorder];
 	
 	UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(resignOnTap:)];
 	[singleTap setNumberOfTapsRequired:1];

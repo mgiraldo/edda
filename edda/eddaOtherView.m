@@ -12,6 +12,7 @@
 
 static const float _zoomDuration = .25;
 static const float _otherSize = 50.0f;
+static const float _margin = 30.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -21,7 +22,7 @@ static const float _otherSize = 50.0f;
 //		self.contentMode = UIViewContentModeRedraw;
 		self.layer.cornerRadius = _otherSize * .5;
 		self.layer.backgroundColor = [UIColor blackColor].CGColor;
-		
+		self.layer.borderColor = [UIColor clearColor].CGColor;
     }
     return self;
 }
@@ -29,7 +30,7 @@ static const float _otherSize = 50.0f;
 #pragma mark - View state
 
 - (void)updatePosition:(CGPoint)position {
-	if (!_zoomed) {
+//	if (!_zoomed) {
 		[UIView animateWithDuration:0.1
 							  delay:0
 							options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction
@@ -39,7 +40,7 @@ static const float _otherSize = 50.0f;
 						 completion:^(BOOL finished){
 							 [self setNeedsDisplay];
 						 }];
-	}
+//	}
 }
 
 - (void)zoomIn {
@@ -48,8 +49,11 @@ static const float _otherSize = 50.0f;
 	_zoomed = YES;
 	[UIView animateWithDuration:_zoomDuration
 					 animations:^{
-						 CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height);
-						 self.layer.cornerRadius = 0;
+						 CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width - _margin, self.window.bounds.size.width - _margin);
+						 self.layer.cornerRadius = (self.window.bounds.size.width - _margin) * .5;
+						 self.layer.backgroundColor = [UIColor clearColor].CGColor;
+						 self.layer.borderColor = [UIColor whiteColor].CGColor;
+						 self.layer.borderWidth = 1;
 						 self.frame = frame;
 					 }
 					 completion:^(BOOL finished){
@@ -68,6 +72,9 @@ static const float _otherSize = 50.0f;
 					 animations:^{
 						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherSize)*.5, (self.window.bounds.size.height-_otherSize)*.5, _otherSize, _otherSize);
 						 self.layer.cornerRadius = _otherSize * .5;
+						 self.layer.backgroundColor = [UIColor blackColor].CGColor;
+						 self.layer.borderColor = [UIColor clearColor].CGColor;
+						 self.layer.borderWidth = 0;
 						 self.frame = frame;
 					 }
 					 completion:^(BOOL finished){
