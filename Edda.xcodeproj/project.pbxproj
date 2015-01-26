@@ -56,6 +56,12 @@
 		CC9FD32C1A2C143F0037DD43 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC9FD32B1A2C143F0037DD43 /* libxml2.dylib */; };
 		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
 		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
+		CCBF45411A76CA88005E2750 /* KPAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45331A76CA88005E2750 /* KPAnnotation.m */; };
+		CCBF45421A76CA88005E2750 /* KPAnnotationTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45351A76CA88005E2750 /* KPAnnotationTree.m */; };
+		CCBF45431A76CA88005E2750 /* KPClusteringController.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45391A76CA88005E2750 /* KPClusteringController.m */; };
+		CCBF45441A76CA88005E2750 /* KPGridClusteringAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF453C1A76CA88005E2750 /* KPGridClusteringAlgorithm.m */; };
+		CCBF45451A76CA88005E2750 /* NSArray+KP.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45401A76CA88005E2750 /* NSArray+KP.m */; };
+		CCBF454B1A76DA14005E2750 /* eddaClusterAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF454A1A76DA14005E2750 /* eddaClusterAnnotationView.m */; };
 		CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD2DDB319EE1F140029BD6C /* QBHelper.m */; };
 		CCD596311A759BBB0094E2EA /* default.png in Resources */ = {isa = PBXBuildFile; fileRef = CCD5962E1A759BBB0094E2EA /* default.png */; };
 		CCD596321A759BBB0094E2EA /* hangup.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CCD5962F1A759BBB0094E2EA /* hangup.mp3 */; };
@@ -160,6 +166,24 @@
 		CCA397D019B529B000754BEB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		CCA397D919B6987A00754BEB /* geodesic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geodesic.h; sourceTree = "<group>"; };
 		CCA397E119B6A00B00754BEB /* geodesic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geodesic.c; sourceTree = "<group>"; };
+		CCBF45311A76CA88005E2750 /* kp_2dtree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kp_2dtree.h; sourceTree = "<group>"; };
+		CCBF45321A76CA88005E2750 /* KPAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPAnnotation.h; sourceTree = "<group>"; };
+		CCBF45331A76CA88005E2750 /* KPAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPAnnotation.m; sourceTree = "<group>"; };
+		CCBF45341A76CA88005E2750 /* KPAnnotationTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPAnnotationTree.h; sourceTree = "<group>"; };
+		CCBF45351A76CA88005E2750 /* KPAnnotationTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPAnnotationTree.m; sourceTree = "<group>"; };
+		CCBF45361A76CA88005E2750 /* KPAnnotationTree_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPAnnotationTree_Private.h; sourceTree = "<group>"; };
+		CCBF45371A76CA88005E2750 /* KPClusteringAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPClusteringAlgorithm.h; sourceTree = "<group>"; };
+		CCBF45381A76CA88005E2750 /* KPClusteringController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPClusteringController.h; sourceTree = "<group>"; };
+		CCBF45391A76CA88005E2750 /* KPClusteringController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPClusteringController.m; sourceTree = "<group>"; };
+		CCBF453A1A76CA88005E2750 /* KPGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPGeometry.h; sourceTree = "<group>"; };
+		CCBF453B1A76CA88005E2750 /* KPGridClusteringAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPGridClusteringAlgorithm.h; sourceTree = "<group>"; };
+		CCBF453C1A76CA88005E2750 /* KPGridClusteringAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPGridClusteringAlgorithm.m; sourceTree = "<group>"; };
+		CCBF453D1A76CA88005E2750 /* KPGridClusteringAlgorithm_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPGridClusteringAlgorithm_Private.h; sourceTree = "<group>"; };
+		CCBF453E1A76CA88005E2750 /* KPGridClusteringAlgorithmDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPGridClusteringAlgorithmDelegate.h; sourceTree = "<group>"; };
+		CCBF453F1A76CA88005E2750 /* NSArray+KP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+KP.h"; sourceTree = "<group>"; };
+		CCBF45401A76CA88005E2750 /* NSArray+KP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+KP.m"; sourceTree = "<group>"; };
+		CCBF45491A76DA14005E2750 /* eddaClusterAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaClusterAnnotationView.h; sourceTree = "<group>"; };
+		CCBF454A1A76DA14005E2750 /* eddaClusterAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaClusterAnnotationView.m; sourceTree = "<group>"; };
 		CCD2DDB019EE1AEF0029BD6C /* Quickblox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quickblox.framework; path = "../../../stuff/xcode/quickblox-ios-sdk-master/Framework/Quickblox.framework"; sourceTree = "<group>"; };
 		CCD2DDB219EE1F140029BD6C /* QBHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QBHelper.h; sourceTree = "<group>"; };
 		CCD2DDB319EE1F140029BD6C /* QBHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QBHelper.m; sourceTree = "<group>"; };
@@ -258,6 +282,7 @@
 			isa = PBXGroup;
 			children = (
 				CC3F1C0B19BE8A1B00F6AD43 /* utils */,
+				CCBF45301A76CA88005E2750 /* kingpin */,
 				CC5989EA1A6B33AA0047D119 /* sounds */,
 				CC77D53A19B02734009BA59F /* images */,
 				CC77D52819B003F3009BA59F /* TestFlightSDK3.0.2 */,
@@ -309,6 +334,8 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
+				CCBF45491A76DA14005E2750 /* eddaClusterAnnotationView.h */,
+				CCBF454A1A76DA14005E2750 /* eddaClusterAnnotationView.m */,
 				CCD2DDB219EE1F140029BD6C /* QBHelper.h */,
 				CCD2DDB319EE1F140029BD6C /* QBHelper.m */,
 				CC5B4F9519D8D67B001BA61D /* LSViewController.h */,
@@ -393,6 +420,29 @@
 			);
 			name = images;
 			sourceTree = "<group>";
+		};
+		CCBF45301A76CA88005E2750 /* kingpin */ = {
+			isa = PBXGroup;
+			children = (
+				CCBF45311A76CA88005E2750 /* kp_2dtree.h */,
+				CCBF45321A76CA88005E2750 /* KPAnnotation.h */,
+				CCBF45331A76CA88005E2750 /* KPAnnotation.m */,
+				CCBF45341A76CA88005E2750 /* KPAnnotationTree.h */,
+				CCBF45351A76CA88005E2750 /* KPAnnotationTree.m */,
+				CCBF45361A76CA88005E2750 /* KPAnnotationTree_Private.h */,
+				CCBF45371A76CA88005E2750 /* KPClusteringAlgorithm.h */,
+				CCBF45381A76CA88005E2750 /* KPClusteringController.h */,
+				CCBF45391A76CA88005E2750 /* KPClusteringController.m */,
+				CCBF453A1A76CA88005E2750 /* KPGeometry.h */,
+				CCBF453B1A76CA88005E2750 /* KPGridClusteringAlgorithm.h */,
+				CCBF453C1A76CA88005E2750 /* KPGridClusteringAlgorithm.m */,
+				CCBF453D1A76CA88005E2750 /* KPGridClusteringAlgorithm_Private.h */,
+				CCBF453E1A76CA88005E2750 /* KPGridClusteringAlgorithmDelegate.h */,
+				CCBF453F1A76CA88005E2750 /* NSArray+KP.h */,
+				CCBF45401A76CA88005E2750 /* NSArray+KP.m */,
+			);
+			path = kingpin;
+			sourceTree = SOURCE_ROOT;
 		};
 		CCE1DB891A3E2ADD00119867 /* libextobjc */ = {
 			isa = PBXGroup;
@@ -558,14 +608,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC77D50A19B003E8009BA59F /* eddaFlipsideViewController.m in Sources */,
+				CCBF454B1A76DA14005E2750 /* eddaClusterAnnotationView.m in Sources */,
 				CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */,
+				CCBF45431A76CA88005E2750 /* KPClusteringController.m in Sources */,
+				CCBF45421A76CA88005E2750 /* KPAnnotationTree.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
 				CC450F881A7482D600CC195B /* eddaMapAnnotation.m in Sources */,
 				CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */,
+				CCBF45451A76CA88005E2750 /* NSArray+KP.m in Sources */,
 				CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */,
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
+				CCBF45441A76CA88005E2750 /* KPGridClusteringAlgorithm.m in Sources */,
 				CCE1DB921A3E2ADD00119867 /* EXTRuntimeExtensions.m in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,
+				CCBF45411A76CA88005E2750 /* KPAnnotation.m in Sources */,
 				CC77D50719B003E8009BA59F /* eddaMainViewController.m in Sources */,
 				CCD5963F1A75A7680094E2EA /* eddaInfoViewController.m in Sources */,
 				CC5B4F9719D8D67B001BA61D /* LSViewController.m in Sources */,

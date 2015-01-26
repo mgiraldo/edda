@@ -9,15 +9,16 @@
 #import "LSViewController.h"
 #import "eddaMainViewController.h"
 #import "eddaMapAnnotation.h"
+#import "eddaClusterAnnotationView.h"
 
-//#import "KPAnnotation.h"
-//#import "KPGridClusteringAlgorithm.h"
-//#import "KPClusteringController.h"
-//#import "KPGridClusteringAlgorithm_Private.h"
+#import "KPAnnotation.h"
+#import "KPGridClusteringAlgorithm.h"
+#import "KPClusteringController.h"
+#import "KPGridClusteringAlgorithm_Private.h"
 
-@interface LSViewController () // <KPClusteringControllerDelegate, KPClusteringControllerDelegate>
+@interface LSViewController () <KPClusteringControllerDelegate, KPClusteringControllerDelegate>
 
-//@property (strong, nonatomic) KPClusteringController *clusteringController;
+@property (strong, nonatomic) KPClusteringController *clusteringController;
 
 @end
 
@@ -34,11 +35,12 @@
 	self.mapView.delegate = self;
 	self.mapView.showsPointsOfInterest = NO;
 	
-//	KPGridClusteringAlgorithm *algorithm = [KPGridClusteringAlgorithm new];
-//	algorithm.annotationSize = CGSizeMake(25, 50);
-//	algorithm.clusteringStrategy = KPGridClusteringAlgorithmStrategyTwoPhase;
-//	self.clusteringController = [[KPClusteringController alloc] initWithMapView:self.mapView clusteringAlgorithm:algorithm];
-//	self.clusteringController.delegate = self;
+	KPGridClusteringAlgorithm *algorithm = [KPGridClusteringAlgorithm new];
+	algorithm.annotationSize = CGSizeMake(25, 50);
+	algorithm.clusteringStrategy = KPGridClusteringAlgorithmStrategyTwoPhase;
+	self.clusteringController = [[KPClusteringController alloc] initWithMapView:self.mapView clusteringAlgorithm:algorithm];
+	self.clusteringController.delegate = self;
+	self.clusteringController.animationOptions = UIViewAnimationOptionCurveEaseOut;
 
 	m_userArray = [NSMutableArray array];
 	m_annotationArray = [NSMutableArray array];
@@ -47,7 +49,7 @@
 	
 	m_userTableView.backgroundColor = [UIColor clearColor];
 	m_userTableView.separatorColor = [UIColor darkGrayColor];
-//	m_userTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	m_userTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[m_userTableView setSeparatorInset:UIEdgeInsetsZero];
 	
 	// blur
@@ -348,7 +350,10 @@
 		{
 			[m_refreshControl endRefreshing];
 			[m_userTableView reloadData];
-			[self.mapView showAnnotations:m_annotationArray animated:YES];
+			[self.clusteringController setAnnotations:m_annotationArray];
+			
+			MKCoordinateRegion region = [self regionFromLocations];
+			[self.mapView setRegion:region animated:YES];
 		}
 		
 		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
@@ -402,48 +407,100 @@
 
 #pragma mark - MapView and Clustering
 
+- (MKCoordinateRegion)regionFromLocations {
+	CLLocationCoordinate2D upper = [[m_annotationArray objectAtIndex:0] coordinate];
+	CLLocationCoordinate2D lower = [[m_annotationArray objectAtIndex:0] coordinate];
+	
+	// FIND LIMITS
+	for(eddaMapAnnotation *eachLocation in m_annotationArray) {
+		if([eachLocation coordinate].latitude > upper.latitude) upper.latitude = [eachLocation coordinate].latitude;
+		if([eachLocation coordinate].latitude < lower.latitude) lower.latitude = [eachLocation coordinate].latitude;
+		if([eachLocation coordinate].longitude > upper.longitude) upper.longitude = [eachLocation coordinate].longitude;
+		if([eachLocation coordinate].longitude < lower.longitude) lower.longitude = [eachLocation coordinate].longitude;
+	}
+	
+	// FIND REGION
+	MKCoordinateSpan locationSpan;
+	locationSpan.latitudeDelta = upper.latitude - lower.latitude;
+	locationSpan.longitudeDelta = upper.longitude - lower.longitude;
+	CLLocationCoordinate2D locationCenter;
+	locationCenter.latitude = (upper.latitude + lower.latitude) / 2;
+	locationCenter.longitude = (upper.longitude + lower.longitude) / 2;
+	
+	MKCoordinateRegion region = MKCoordinateRegionMake(locationCenter, locationSpan);
+	return region;
+}
+
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control {
-	id <MKAnnotation> annotation = [view annotation];
-	if ([annotation isKindOfClass:[eddaMapAnnotation class]])
-	{
-		eddaMapAnnotation *eddaPin = (eddaMapAnnotation *)annotation;
-		[self callUser:eddaPin.index];
+	if ([view.annotation isKindOfClass:[KPAnnotation class]]) {
+		KPAnnotation *cluster = (KPAnnotation *)view.annotation;
+		if (cluster.annotations.count == 1){
+			eddaMapAnnotation * myAnnotation = (eddaMapAnnotation *)[cluster.annotations anyObject];
+			[self callUser:myAnnotation.index];
+		}
 	}
 }
 
-//- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
-//	if ([view.annotation isKindOfClass:[KPAnnotation class]]) {
-//		
-//		KPAnnotation *cluster = (KPAnnotation *)view.annotation;
-//		
-//		if (cluster.annotations.count > 1){
-//			[self.mapView setRegion:MKCoordinateRegionMakeWithDistance(cluster.coordinate,
-//																	   cluster.radius * 2.5f,
-//																	   cluster.radius * 2.5f)
-//						   animated:YES];
-//		}
-//	}
-//}
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
+	if ([view.annotation isKindOfClass:[KPAnnotation class]]) {
+		KPAnnotation *cluster = (KPAnnotation *)view.annotation;
+		if (cluster.annotations.count > 1){
+			[self.mapView setRegion:MKCoordinateRegionMakeWithDistance(cluster.coordinate,
+																	   cluster.radius * 2.5f,
+																	   cluster.radius * 2.5f)
+						   animated:YES];
+		}
+	}
+}
 
-//- (void)clusteringController:(KPClusteringController *)clusteringController configureAnnotationForDisplay:(KPAnnotation *)annotation {
-////	annotation.title = [NSString stringWithFormat:@"%lu custom annotations", (unsigned long)annotation.annotations.count];
-//	annotation.subtitle = [NSString stringWithFormat:@"%.0f meters", annotation.radius];
-//}
+- (void)clusteringController:(KPClusteringController *)clusteringController configureAnnotationForDisplay:(KPAnnotation *)annotation {
+	if (!annotation.isCluster) {
+		eddaMapAnnotation * myAnnotation = (eddaMapAnnotation *)[annotation.annotations anyObject];
+		annotation.title = myAnnotation.title;
+		annotation.subtitle = myAnnotation.subtitle;
+	}
+}
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
 	// If it's the user location, just return nil.
 	if ([annotation isKindOfClass:[MKUserLocation class]])
 		return nil;
+
 	// Handle any custom annotations.
-	if ([annotation isKindOfClass:[eddaMapAnnotation class]])
+	if ([annotation isKindOfClass:[KPAnnotation class]])
 	{
-		// Try to dequeue an existing pin view first.
-		MKPinAnnotationView *annotationView = (MKPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
-		if (!annotationView)
-		{
-			// If an existing pin view was not available, create one.
-			annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
+		KPAnnotation *kingpinAnnotation = (KPAnnotation *)annotation;
+		if ([kingpinAnnotation isCluster]) {
+			eddaClusterAnnotationView *annotationView = nil;
+			
+			annotationView = (eddaClusterAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"cluster"];
+			
+			if (annotationView == nil) {
+				annotationView = [[eddaClusterAnnotationView alloc] initWithAnnotation:kingpinAnnotation reuseIdentifier:@"cluster"];
+			}
+			
+			NSString *text;
+
+			if (kingpinAnnotation.annotations.count < 10) {
+				text = [NSString stringWithFormat:@"%lu", (unsigned long)kingpinAnnotation.annotations.count];
+			} else {
+				text = @"10+";
+			}
+			
+			[annotationView setClusterText:text];
+			
+			return annotationView;
+		} else {
+			MKPinAnnotationView *annotationView = nil;
+			
+			annotationView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
+			
+			eddaMapAnnotation * myAnnotation = (eddaMapAnnotation *)[kingpinAnnotation.annotations anyObject];
+			
+			if (annotationView == nil) {
+				annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:myAnnotation reuseIdentifier:@"pin"];
+			}
 			
 			UIButton* rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = CGRectMake(0, 0, 26, 27);
@@ -454,64 +511,27 @@
 			annotationView.annotation = annotation;
 			annotationView.canShowCallout = YES;
 			annotationView.animatesDrop = YES;
-		} else {
-			annotationView.annotation = annotation;
+			
+			return annotationView;
 		}
-		return annotationView;
 	}
-
-//	// Handle any custom annotations.
-//	if ([annotation isKindOfClass:[KPAnnotation class]])
-//	{
-//		KPAnnotation *kingpinAnnotation = (KPAnnotation *)annotation;
-//		if ([kingpinAnnotation isCluster]) {
-//			annotationView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"cluster"];
-//			
-//			if (annotationView == nil) {
-//				annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:kingpinAnnotation reuseIdentifier:@"cluster"];
-//			}
-//			
-//			annotationView.pinColor = MKPinAnnotationColorGreen;
-//		} else {
-//			annotationView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pin"];
-//			
-//			if (annotationView == nil) {
-//				annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:[kingpinAnnotation.annotations anyObject] reuseIdentifier:@"pin"];
-//			}
-//			
-//			NSLog(@"pin: %@", annotation);
-//			
-//			// Add a detail disclosure button to the callout.
-//			UIButton* rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			rightButton.frame = CGRectMake(0, 0, 30, 26);
-//			[rightButton setImage:[UIImage imageNamed:@"CallIcon"] forState:UIControlStateNormal];
-//
-//			annotationView.rightCalloutAccessoryView = rightButton;
-//			annotationView.pinColor = MKPinAnnotationColorRed;
-//			annotationView.annotation = annotation;
-//			annotationView.canShowCallout = YES;
-//			annotationView.animatesDrop = YES;
-//		}
-//		
-//		return annotationView;
-//	}
 	return nil;
 }
 
-//- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
-//	[self.clusteringController refresh:YES];
-//}
-//
-//- (BOOL)clusteringControllerShouldClusterAnnotations:(KPClusteringController *)clusteringController {
-//	return YES;
-//}
-//
-//- (void)clusteringControllerWillUpdateVisibleAnnotations:(KPClusteringController *)clusteringController {
-////	NSLog(@"Clustering controller %@ will update visible annotations", clusteringController);
-//}
-//
-//- (void)clusteringControllerDidUpdateVisibleMapAnnotations:(KPClusteringController *)clusteringController {
-////	NSLog(@"Clustering controller %@ did update visible annotations", clusteringController);
-//}
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
+	[self.clusteringController refresh:YES];
+}
+
+- (BOOL)clusteringControllerShouldClusterAnnotations:(KPClusteringController *)clusteringController {
+	return YES;
+}
+
+- (void)clusteringControllerWillUpdateVisibleAnnotations:(KPClusteringController *)clusteringController {
+//	NSLog(@"Clustering controller %@ will update visible annotations", clusteringController);
+}
+
+- (void)clusteringControllerDidUpdateVisibleMapAnnotations:(KPClusteringController *)clusteringController {
+//	NSLog(@"Clustering controller %@ did update visible annotations", clusteringController);
+}
 
 @end

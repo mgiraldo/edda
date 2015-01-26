@@ -556,7 +556,7 @@ static float _arrowMargin = 5.0f;
 		self.blackView.backgroundColor = [UIColor blackColor];
 		[self.view insertSubview:self.blackView belowSubview:self.otherView];
 		self.blackView.hidden = YES;
-		self.opponentVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - (_previewWidth * 1.5), topBarOffset + (_arrowMargin * 2) + _previewHeight, _previewWidth * 3, _previewWidth * 3)];
+		self.opponentVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - (_previewWidth * 1.5), (viewBounds.size.height * .5 - (_previewWidth * 1.5)), _previewWidth * 3, _previewWidth * 3)];
 		self.opponentVideoView.layer.cornerRadius = _previewWidth * 1.5;
 		self.opponentVideoView.layer.masksToBounds = YES;
 		[self.view insertSubview:self.opponentVideoView belowSubview:self.otherView];
@@ -1210,6 +1210,7 @@ static float _arrowMargin = 5.0f;
 
 -(void) findCallerData
 {
+	NSLog(@"PUSH!");
 	@weakify(self);
 	[QBRequest userWithID:videoChatOpponentID successBlock:^(QBResponse *response, QBUUser *user) {
 		@strongify(self);
