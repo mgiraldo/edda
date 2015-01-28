@@ -12,7 +12,7 @@
 
 static const float _zoomDuration = .25;
 static const float _otherSize = 50.0f;
-static const float _margin = 30.0f;
+static const float _margin = 40.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -50,8 +50,8 @@ static const float _margin = 30.0f;
 	_zoomed = YES;
 	[UIView animateWithDuration:_zoomDuration
 					 animations:^{
-						 CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width - _margin, self.window.bounds.size.width - _margin);
-						 self.layer.cornerRadius = (self.window.bounds.size.width - _margin) * .5;
+						 CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width - (_margin*2), self.window.bounds.size.width - (_margin*2));
+						 self.layer.cornerRadius = (self.window.bounds.size.width - (_margin*2)) * .5;
 						 self.layer.backgroundColor = [UIColor clearColor].CGColor;
 						 self.frame = frame;
 					 }

@@ -36,7 +36,7 @@
 	self.mapView.showsPointsOfInterest = NO;
 	
 	KPGridClusteringAlgorithm *algorithm = [KPGridClusteringAlgorithm new];
-	algorithm.annotationSize = CGSizeMake(25, 50);
+	algorithm.annotationSize = CGSizeMake(1, 1);
 	algorithm.clusteringStrategy = KPGridClusteringAlgorithmStrategyTwoPhase;
 	self.clusteringController = [[KPClusteringController alloc] initWithMapView:self.mapView clusteringAlgorithm:algorithm];
 	self.clusteringController.delegate = self;
