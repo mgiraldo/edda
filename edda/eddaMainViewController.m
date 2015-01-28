@@ -22,11 +22,6 @@
 
 @end
 
-#define SAFECOLOR(color) MIN(255,MAX(0,color))
-
-typedef void (*FilterCallback)(UInt8 *pixelBuf, UInt32 offset, void *context);
-typedef void (*FilterBlendCallback)(UInt8 *pixelBuf, UInt8 *pixelBlendBuf, UInt32 offset, void *context);
-
 @implementation eddaMainViewController {
 	int m_mode;
 	int m_connectionAttempts;
@@ -35,8 +30,8 @@ typedef void (*FilterBlendCallback)(UInt8 *pixelBuf, UInt8 *pixelBlendBuf, UInt3
 }
 
 // self preview size
-const float _previewWidth = 80;
-const float _previewHeight = 120;
+static const float _myDiameter = 80;
+static const float _opponentDiameter = 240;
 
 static CLLocationManager *locationManager;
 static CMMotionManager *motionManager;
@@ -90,17 +85,14 @@ static float _arrowMargin = 5.0f;
 
 	self.statusLabel.text = @"";
 
+	self.blockingView.hidden = YES;
+	
 	// other view
 	self.otherView = [[eddaOtherView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
 	self.otherView.hidden = YES;
 	self.otherView.delegate = self;
 	[self.view insertSubview:self.otherView belowSubview:self.controlsView];
 
-	UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(resignOnTap:)];
-    [singleTap setNumberOfTapsRequired:1];
-    [singleTap setNumberOfTouchesRequired:1];
-    [self.view addGestureRecognizer:singleTap];
-	
 	// init motion manager
 	motionManager = [[CMMotionManager alloc] init];
 	NSTimeInterval updateInterval = 0.015;
@@ -247,6 +239,7 @@ static float _arrowMargin = 5.0f;
 //if and when a call arrives
 - (void) opponentDidCall
 {
+	[self playSound:@"Zen_mg_JFK_LO_short" type:@"wav"];
 	// show call alert
 	//
 	if (self.callAlert == nil) {
@@ -556,8 +549,8 @@ static float _arrowMargin = 5.0f;
 		self.blackView.backgroundColor = [UIColor blackColor];
 		[self.view insertSubview:self.blackView belowSubview:self.otherView];
 		self.blackView.hidden = YES;
-		self.opponentVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - (_previewWidth * 1.5), (viewBounds.size.height * .5 - (_previewWidth * 1.5)), _previewWidth * 3, _previewWidth * 3)];
-		self.opponentVideoView.layer.cornerRadius = _previewWidth * 1.5;
+		self.opponentVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - (_opponentDiameter * .5), (viewBounds.size.height * .5 - (_opponentDiameter * .5)), _opponentDiameter, _opponentDiameter)];
+		self.opponentVideoView.layer.cornerRadius = _opponentDiameter * .5;
 		self.opponentVideoView.layer.masksToBounds = YES;
 		[self.view insertSubview:self.opponentVideoView belowSubview:self.otherView];
 //		self.opponentVideoView.layer.borderWidth = 5;
@@ -565,8 +558,8 @@ static float _arrowMargin = 5.0f;
 	}
 	
 	if (self.myVideoView == nil) {
-		self.myVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _previewWidth * .5, topBarOffset + _arrowMargin, _previewWidth, _previewWidth)];
-		self.myVideoView.layer.cornerRadius = _previewWidth * .5;
+		self.myVideoView = [[UIImageView alloc] initWithFrame:CGRectMake(viewBounds.size.width * .5 - _myDiameter * .5, topBarOffset + _arrowMargin, _myDiameter, _myDiameter)];
+		self.myVideoView.layer.cornerRadius = _myDiameter * .5;
 		self.myVideoView.layer.masksToBounds = YES;
 		[self.view insertSubview:self.myVideoView belowSubview:self.otherView];
 		self.myVideoView.hidden = YES;
@@ -817,31 +810,6 @@ static float _arrowMargin = 5.0f;
 	[self disconnectAndGoBack];
 }
 
-- (void)onOtherTapped:(UITapGestureRecognizer *)recognizer {
-	NSLog(@"TAPPED!");
-}
-
-- (void)resignOnTap:(id)sender {
-    [self.currentResponder resignFirstResponder];
-	[self updateViewAngle];
-}
-
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-    self.currentResponder = textField;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
-    return YES;
-}
-
-- (void)textFieldDidEndEditing:(UITextField *)textField {
-    if ([textField.text isEqualToString:@""])
-        return;
-	self.currentResponder = nil;
-	[self updateViewAngle];
-}
-
 #pragma mark - eddaOtherViewDelegate
 
 - (void)eddaOtherViewStartedZoomIn:(eddaOtherView *)view {
@@ -970,7 +938,9 @@ static float _arrowMargin = 5.0f;
 
 - (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
 {
-	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
+//	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
+
+	self.blockingView.hidden = NO;
 	
 	m_mode = streamingModeOutgoing;
 	
@@ -1094,14 +1064,10 @@ static float _arrowMargin = 5.0f;
 	m_connectionAttempts = 1;
 
 	[self findCallerData];
-	
-	// play call music
-	//
-	[self playSound:@"Zen_mg_JFK_LO_short" type:@"wav"];
 }
 
 -(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
-	NSLog(@"chatCallUserDidNotAnswer %lu", (unsigned long)userID);
+//	NSLog(@"chatCallUserDidNotAnswer %lu", (unsigned long)userID);
 	NSString *msg = [NSString stringWithFormat:@"%@\nisn't answering.\nPlease try again later.", self.appDelegate.callReceiverTitle];
 	[self disconnectAndGoBack];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No answer" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -1109,7 +1075,8 @@ static float _arrowMargin = 5.0f;
 }
 
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID{
-	NSLog(@"call accepted by: %d", (int)userID);
+//	NSLog(@"call accepted by: %d", (int)userID);
+	self.blockingView.hidden = YES;
 
 	_videoActive = YES;
 	[self refreshBackCameraFeed];
@@ -1122,7 +1089,7 @@ static float _arrowMargin = 5.0f;
 }
 
 -(void) chatCallDidRejectByUser:(NSUInteger)userID{
-	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
+//	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
 	NSString *msg = [NSString stringWithFormat:@"%@\nhas rejected your call.", self.appDelegate.callReceiverTitle];
 	[self disconnectAndGoBack];
 	[self playSound:@"rechaza" type:@"mp3"];
@@ -1131,13 +1098,14 @@ static float _arrowMargin = 5.0f;
 }
 
 - (void)chatCallDidStartWithUser:(NSUInteger)userID sessionID:(NSString *)sID{
-	NSLog(@"call started with user: %d session: %@", (int)userID, sID);
+//	NSLog(@"call started with user: %d session: %@", (int)userID, sID);
+	self.blockingView.hidden = YES;
 	videoChatOpponentID = userID;
 	[self fireOpponentAlignedTimer];
 }
 
 -(void) chatCallDidStopByUser:(NSUInteger)userID status:(NSString *)status{
-	NSLog(@"chatCallDidStopByUser %lu purpose %@", (unsigned long)userID, status);
+//	NSLog(@"chatCallDidStopByUser %lu purpose %@", (unsigned long)userID, status);
 
 	if([status isEqualToString:kStopVideoChatCallStatus_OpponentDidNotAnswer]){
 		
@@ -1276,6 +1244,7 @@ static float _arrowMargin = 5.0f;
 	
 	[self disconnect];
 
+	self.blockingView.hidden = YES;
 	self.endButton.hidden = YES;
 	self.startButton.hidden = NO;
 	self.statusLabel.text = @"";

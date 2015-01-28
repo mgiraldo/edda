@@ -17,7 +17,7 @@
 
 @class eddaMainViewController;
 
-@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, UITextFieldDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
+@interface eddaMainViewController : UIViewController <eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
 	AVAudioPlayer *ringingPlayer;
 //	CMVideoDimensions _currentVideoDimensions;
 //	CGRect _videoPreviewViewBounds;
@@ -58,7 +58,7 @@ typedef struct sViewAngle sViewAngle;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
 @property (weak, nonatomic) IBOutlet UIButton *endButton;
-
+@property (weak, nonatomic) IBOutlet UIView *blockingView;
 @property (weak, nonatomic) IBOutlet UIButton *infoButton;
 @property (weak, nonatomic) IBOutlet UIButton *settingsButton;
 @property (weak, nonatomic) IBOutlet UIImageView *backgroundView;

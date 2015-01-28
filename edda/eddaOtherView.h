@@ -10,10 +10,15 @@
 
 @protocol eddaOtherViewDelegate;
 
-@interface eddaOtherView : UIView
+@interface eddaOtherView : UIView {
+	UIColor *_cyanColor;
+	UIColor *_magentaColor;
+}
 
 @property (nonatomic, assign) id <eddaOtherViewDelegate> delegate;
 @property (nonatomic, assign) BOOL zoomed;
+//@property (nonatomic) UIView *cyanView;
+//@property (nonatomic) UIView *magentaView;
 
 - (void)updatePosition:(CGPoint)position;
 - (void)zoomIn;
