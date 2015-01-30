@@ -75,10 +75,19 @@ static float _arrowMargin = 5.0f;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+	// tutorial stuff
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	BOOL didTutorial = [[defaults valueForKey:@"tutorial"] boolValue];
+
+	_pageTitles = @[@"1: Tap \"START CALL\" to show the people list", @"2: Find the person you want to call", @"3: Point your phone as directed by the arrows", @"4: Maintain orientation throughout the call"];
+	_pageImages = @[@"tutorial1.png", @"tutorial2.png", @"tutorial3.png", @"tutorial4.png"];
 	
-	// for video FX
-//	_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-	
+	if (!didTutorial) {
+		[self startTutorial:nil];
+	}
+
+	// the rest
 	videoChatOpponentID = 0;
 	
 	self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
@@ -120,23 +129,27 @@ static float _arrowMargin = 5.0f;
 	if (!(pj_geoc = pj_init_plus("+proj=geocent +datum=WGS84")) )
         NSLog(@"Could not initialise CARTESIAN");
 	
+	self.tutorialButton.alpha = 0.0;
 	self.backgroundView.alpha = 0.0;
 	self.settingsButton.alpha = 0.0;
 	self.infoButton.alpha = 0.0;
 	self.startButton.alpha = 0.0;
 	
 	[UIView animateKeyframesWithDuration:1.0 delay:0.25 options:UIViewKeyframeAnimationOptionCalculationModeLinear animations:^{
-		[UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.25 animations:^{
+		[UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.2 animations:^{
 			self.backgroundView.alpha = 1.0;
 		}];
-		[UIView addKeyframeWithRelativeStartTime:0.25 relativeDuration:0.25 animations:^{
+		[UIView addKeyframeWithRelativeStartTime:0.2 relativeDuration:0.2 animations:^{
 			self.settingsButton.alpha = 1.0;
 		}];
-		[UIView addKeyframeWithRelativeStartTime:0.5 relativeDuration:0.25 animations:^{
+		[UIView addKeyframeWithRelativeStartTime:0.4 relativeDuration:0.2 animations:^{
 			self.infoButton.alpha = 1.0;
 		}];
-		[UIView addKeyframeWithRelativeStartTime:0.75 relativeDuration:0.25 animations:^{
+		[UIView addKeyframeWithRelativeStartTime:0.6 relativeDuration:0.2 animations:^{
 			self.startButton.alpha = 1.0;
+		}];
+		[UIView addKeyframeWithRelativeStartTime:0.8 relativeDuration:0.2 animations:^{
+			self.tutorialButton.alpha = 1.0;
 		}];
 	} completion:nil];
 }
@@ -353,7 +366,7 @@ static float _arrowMargin = 5.0f;
 }
 
 - (void)pointObjects:(float)heading pitch:(float)pitch {
-	float xArrow, yArrow, xBox, yBox, arrowMax = 100, boxMax = 600;
+	float xArrow, yArrow, xBox, yBox, arrowMax = 100, boxMax = self.view.window.frame.size.height * .5;
 	float radiusArrow = arrowMax * ofMap(pitch, -90, 90, 0, 1, true);
 	float radiusBox = boxMax * ofMap(pitch, -90, 90, 0, 1, true);
 	float radians = -DEG_TO_RAD*heading;
@@ -1306,5 +1319,80 @@ static float _arrowMargin = 5.0f;
 	self.callAlert = nil;
 }
 
+#pragma mark - Page View Controller Data Source
+
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
+{
+	NSUInteger index = ((eddaTutorialContentViewController*) viewController).pageIndex;
+	
+	if ((index == 0) || (index == NSNotFound)) {
+		return nil;
+	}
+	
+	index--;
+	return [self viewControllerAtIndex:index];
+}
+
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
+{
+	NSUInteger index = ((eddaTutorialContentViewController*) viewController).pageIndex;
+	
+	if (index == NSNotFound) {
+		return nil;
+	}
+	
+	index++;
+	if (index == [self.pageTitles count]) {
+		return nil;
+	}
+	return [self viewControllerAtIndex:index];
+}
+
+- (eddaTutorialContentViewController *)viewControllerAtIndex:(NSUInteger)index
+{
+	if (([self.pageTitles count] == 0) || (index >= [self.pageTitles count])) {
+		return nil;
+	}
+	
+	// Create a new view controller and pass suitable data.
+	eddaTutorialContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TutorialContentViewController"];
+	pageContentViewController.imageFile = self.pageImages[index];
+	pageContentViewController.titleText = self.pageTitles[index];
+	pageContentViewController.pageIndex = index;
+	
+	return pageContentViewController;
+}
+
+- (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
+{
+	return [self.pageTitles count];
+}
+
+- (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
+{
+	return 0;
+}
+
+- (IBAction)startTutorial:(id)sender {
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	[defaults setObject:[NSNumber numberWithBool:YES] forKey:@"tutorial"];
+	[defaults synchronize];
+	
+	// Create page view controller
+	self.pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TutorialViewController"];
+	self.pageViewController.dataSource = self;
+	
+	eddaTutorialContentViewController *startingViewController = [self viewControllerAtIndex:0];
+	NSArray *viewControllers = @[startingViewController];
+	[self.pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+	
+	// Change the size of page view controller
+	self.pageViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+	self.pageViewController.view.backgroundColor = [UIColor blackColor];
+	
+	[self addChildViewController:_pageViewController];
+	[self.view addSubview:_pageViewController.view];
+	[self.pageViewController didMoveToParentViewController:self];
+}
 
 @end

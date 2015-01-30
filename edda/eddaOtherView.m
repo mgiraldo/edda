@@ -13,9 +13,9 @@
 static const float _zoomDuration = 0.5f;
 static const float _borderWidthIn = 1500.0f;
 static const float _otherDiameterOut = 50.0f;
-static const float _blackDiameter = 300.0f;
-static const float _cyanDiameter = 240.0f;
-static const float _magentaDiameter = 230.0f;
+static const float _blackDiameter = 310.0f;
+static const float _cyanDiameter = 280.0f;
+static const float _magentaDiameter = 250.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -76,9 +76,9 @@ static const float _magentaDiameter = 230.0f;
 							  delay:0
 							options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction
 						 animations:^{
-							 CGPoint mPoint = CGPointMake(self.window.bounds.size.width * .5, position.y);
+							 CGPoint mPoint = CGPointMake(self.window.frame.size.width * .5, position.y);
+							 CGPoint cPoint = CGPointMake(position.x, self.window.frame.size.height * .5);
 							 self.magentaView.center = mPoint;
-							 CGPoint cPoint = CGPointMake(position.x, self.window.bounds.size.height * .5);
 							 self.cyanView.center = cPoint;
 							 self.blackView.center = cPoint;
 						 }

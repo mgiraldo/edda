@@ -23,6 +23,11 @@
 	
 	[TestFlight takeOff:testflightId];
 
+	UIPageControl *pageControl = [UIPageControl appearance];
+	pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+	pageControl.currentPageIndicatorTintColor = [UIColor yellowColor];
+	pageControl.backgroundColor = [UIColor blackColor];
+	
 	// Quickblox
 	[QBApplication sharedApplication].applicationId = [configuration[@"Quickblox"][@"ApplicationID"] integerValue];
 	[QBConnection registerServiceKey:configuration[@"Quickblox"][@"AuthKey"]];

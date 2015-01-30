@@ -25,6 +25,14 @@
                                     <constraint firstAttribute="width" secondItem="zPT-Aq-6ge" secondAttribute="height" multiplier="320:369" id="rgz-LA-NTt"/>
                                 </constraints>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6NN-ma-Zd3" userLabel="tutorial button">
+                                <rect key="frame" x="20" y="40" width="30" height="34"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="16"/>
+                                <state key="normal" title="HELP"/>
+                                <connections>
+                                    <action selector="startTutorial:" destination="rQl-PL-IFJ" eventType="touchUpInside" id="BEN-3L-hTs"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jqg-sy-dxO" userLabel="settings button">
                                 <rect key="frame" x="204" y="20" width="100" height="122"/>
                                 <constraints>
@@ -133,7 +141,9 @@
                             <constraint firstAttribute="width" secondItem="IC9-XV-DMc" secondAttribute="width" id="H9V-4R-3GY"/>
                             <constraint firstAttribute="height" secondItem="IC9-XV-DMc" secondAttribute="height" id="QQ1-Rh-8yc"/>
                             <constraint firstItem="zPT-Aq-6ge" firstAttribute="width" secondItem="l9E-07-oys" secondAttribute="width" id="SfG-fu-IIN"/>
+                            <constraint firstItem="6NN-ma-Zd3" firstAttribute="leading" secondItem="l9E-07-oys" secondAttribute="leading" constant="20" id="W8t-2O-1sd"/>
                             <constraint firstAttribute="width" secondItem="XB1-jt-4UG" secondAttribute="width" id="Z2O-sh-p2O"/>
+                            <constraint firstItem="6NN-ma-Zd3" firstAttribute="top" secondItem="Jd6-aZ-5EL" secondAttribute="bottom" constant="20" id="dgV-2k-KYQ"/>
                             <constraint firstItem="uCZ-1U-qb7" firstAttribute="top" secondItem="jqg-sy-dxO" secondAttribute="bottom" constant="-40" id="e4x-ED-NhI"/>
                             <constraint firstAttribute="trailing" secondItem="OQq-eS-E7P" secondAttribute="trailing" id="eWj-td-x0E"/>
                             <constraint firstAttribute="centerX" secondItem="y5u-Jn-lFT" secondAttribute="centerX" id="pdY-5g-gT9"/>
@@ -155,6 +165,7 @@
                         <outlet property="settingsButton" destination="jqg-sy-dxO" id="wtC-4t-Oeb"/>
                         <outlet property="startButton" destination="cCn-TC-ql3" id="dOm-dA-JFg"/>
                         <outlet property="statusLabel" destination="y5u-Jn-lFT" id="Pru-cM-Ptr"/>
+                        <outlet property="tutorialButton" destination="6NN-ma-Zd3" id="4Y4-tD-OUt"/>
                         <outlet property="videoView" destination="IC9-XV-DMc" id="rvK-7s-toI"/>
                     </connections>
                 </viewController>
@@ -214,6 +225,80 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zg7-Or-5Pi" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="471" y="230"/>
+        </scene>
+        <!--Edda Tutorial Content View Controller-->
+        <scene sceneID="j00-nC-0fU">
+            <objects>
+                <viewController storyboardIdentifier="TutorialContentViewController" id="h9I-fS-ybl" customClass="eddaTutorialContentViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="42Y-4i-J9K"/>
+                        <viewControllerLayoutGuide type="bottom" id="4qk-AO-ZXZ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="tqo-Cj-Q3z">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Igl-Hj-2TH">
+                                <rect key="frame" x="20" y="114" width="280" height="340"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="340" id="09w-Z4-kU4"/>
+                                    <constraint firstAttribute="width" constant="280" id="4vD-mT-eUs"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="ieN-HA-wEv">
+                                <rect key="frame" x="20" y="74" width="280" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="bGY-EW-ehF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="16"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GLe-8d-SB1">
+                                <rect key="frame" x="100" y="459" width="120" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="JM6-a6-zRP"/>
+                                    <constraint firstAttribute="width" constant="120" id="x1c-09-Kro"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="20"/>
+                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <size key="titleShadowOffset" width="-1" height="1"/>
+                                <state key="normal" title="CLOSE HELP">
+                                    <color key="titleColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="closeTutorial:" destination="h9I-fS-ybl" eventType="touchUpInside" id="0ox-zK-uSH"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Igl-Hj-2TH" firstAttribute="top" secondItem="ieN-HA-wEv" secondAttribute="bottom" id="E51-wS-hJX"/>
+                            <constraint firstItem="Igl-Hj-2TH" firstAttribute="width" secondItem="ieN-HA-wEv" secondAttribute="width" id="Io5-KW-VWd"/>
+                            <constraint firstItem="GLe-8d-SB1" firstAttribute="top" secondItem="Igl-Hj-2TH" secondAttribute="bottom" constant="5" id="RSK-kT-vop"/>
+                            <constraint firstAttribute="centerX" secondItem="Igl-Hj-2TH" secondAttribute="centerX" id="dcD-M2-4Be"/>
+                            <constraint firstAttribute="centerX" secondItem="GLe-8d-SB1" secondAttribute="centerX" id="jPC-31-dG4"/>
+                            <constraint firstAttribute="centerY" secondItem="Igl-Hj-2TH" secondAttribute="centerY" id="mTP-wQ-6Sg"/>
+                            <constraint firstAttribute="centerX" secondItem="ieN-HA-wEv" secondAttribute="centerX" id="uWL-hN-G4l"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="Igl-Hj-2TH" id="WD2-pR-LeS"/>
+                        <outlet property="titleLabel" destination="ieN-HA-wEv" id="IJY-oV-SYu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="buG-VN-oUp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-103" y="-1323"/>
+        </scene>
+        <!--Page View Controller-->
+        <scene sceneID="zfr-sw-9Wr">
+            <objects>
+                <pageViewController storyboardIdentifier="TutorialViewController" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="Ril-zM-Q93" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BK7-lW-W6S" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-103" y="-677"/>
         </scene>
         <!--Edda Flipside View Controller-->
         <scene sceneID="z9J-Vg-hzE">
@@ -447,4 +532,5 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <color key="tintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
 </document>
