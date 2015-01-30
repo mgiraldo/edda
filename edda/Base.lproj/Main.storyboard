@@ -63,13 +63,13 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="waiting!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="16" preferredMaxLayoutWidth="288" translatesAutoresizingMaskIntoConstraints="NO" id="y5u-Jn-lFT" userLabel="StatusLabel">
-                                <rect key="frame" x="16" y="156" width="288" height="200"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="waiting!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="16" preferredMaxLayoutWidth="288" translatesAutoresizingMaskIntoConstraints="NO" id="y5u-Jn-lFT" userLabel="StatusLabel">
+                                <rect key="frame" x="16" y="478" width="288" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="288" id="4Pt-EX-Bgh"/>
-                                    <constraint firstAttribute="height" constant="200" id="UVn-OJ-sqZ"/>
+                                    <constraint firstAttribute="height" constant="50" id="UVn-OJ-sqZ"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="30"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                                 <color key="shadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -128,9 +128,9 @@
                             <constraint firstAttribute="centerX" secondItem="zPT-Aq-6ge" secondAttribute="centerX" id="86e-Ab-cXW"/>
                             <constraint firstItem="jqg-sy-dxO" firstAttribute="top" secondItem="Jd6-aZ-5EL" secondAttribute="bottom" id="9Xp-Bg-wiP"/>
                             <constraint firstAttribute="centerY" secondItem="XB1-jt-4UG" secondAttribute="centerY" id="FPV-iZ-jom"/>
+                            <constraint firstItem="cif-Cz-1Ak" firstAttribute="top" secondItem="y5u-Jn-lFT" secondAttribute="bottom" constant="40" id="FRH-y8-m8o"/>
                             <constraint firstItem="cif-Cz-1Ak" firstAttribute="top" secondItem="OQq-eS-E7P" secondAttribute="bottom" id="GzK-O5-xwk"/>
                             <constraint firstAttribute="width" secondItem="IC9-XV-DMc" secondAttribute="width" id="H9V-4R-3GY"/>
-                            <constraint firstAttribute="centerY" secondItem="y5u-Jn-lFT" secondAttribute="centerY" constant="28" id="PtW-eP-b6S"/>
                             <constraint firstAttribute="height" secondItem="IC9-XV-DMc" secondAttribute="height" id="QQ1-Rh-8yc"/>
                             <constraint firstItem="zPT-Aq-6ge" firstAttribute="width" secondItem="l9E-07-oys" secondAttribute="width" id="SfG-fu-IIN"/>
                             <constraint firstAttribute="width" secondItem="XB1-jt-4UG" secondAttribute="width" id="Z2O-sh-p2O"/>

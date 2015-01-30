@@ -17,8 +17,9 @@
 
 @property (nonatomic, assign) id <eddaOtherViewDelegate> delegate;
 @property (nonatomic, assign) BOOL zoomed;
-//@property (nonatomic) UIView *cyanView;
-//@property (nonatomic) UIView *magentaView;
+@property (nonatomic) UIView *cyanView;
+@property (nonatomic) UIView *magentaView;
+@property (nonatomic) UIView *blackView;
 
 - (void)updatePosition:(CGPoint)position;
 - (void)zoomIn;

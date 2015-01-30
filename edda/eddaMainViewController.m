@@ -31,7 +31,7 @@
 
 // self preview size
 static const float _myDiameter = 80;
-static const float _opponentDiameter = 240;
+static const float _opponentDiameter = 260;
 
 static CLLocationManager *locationManager;
 static CMMotionManager *motionManager;
@@ -390,24 +390,26 @@ static float _arrowMargin = 5.0f;
 	_haveArrows = YES;
 	CGRect viewBounds = self.view.bounds;
 	CGFloat topBarOffset = self.topLayoutGuide.length;
-	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
+//	UIImage * arrowImage = [UIImage imageNamed:@"arrow.png"];
+	UIImage * vImage = [UIImage imageNamed:@"arrowMagenta.png"];
+	UIImage * hImage = [UIImage imageNamed:@"arrowCyan.png"];
 	
 	// help arrows
-	self.N_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.N_arrowView = [[UIImageView alloc] initWithImage:vImage];
 	self.N_arrowView.center = CGPointMake(viewBounds.size.width * .5, topBarOffset + _arrowSize * .5 + _arrowMargin);
 	[self.view addSubview:self.N_arrowView];
 	
-	self.S_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.S_arrowView = [[UIImageView alloc] initWithImage:vImage];
 	self.S_arrowView.transform = CGAffineTransformMakeRotation(M_PI);
 	self.S_arrowView.center = CGPointMake(viewBounds.size.width * .5, viewBounds.size.height - _arrowSize * .5 - _arrowMargin);
 	[self.view addSubview:self.S_arrowView];
 	
-	self.E_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.E_arrowView = [[UIImageView alloc] initWithImage:hImage];
 	self.E_arrowView.transform = CGAffineTransformMakeRotation(M_PI_2);
 	self.E_arrowView.center = CGPointMake(viewBounds.size.width - _arrowSize * .5 - _arrowMargin, viewBounds.size.height * .5);
 	[self.view addSubview:self.E_arrowView];
 	
-	self.W_arrowView = [[UIImageView alloc] initWithImage:arrowImage];
+	self.W_arrowView = [[UIImageView alloc] initWithImage:hImage];
 	self.W_arrowView.transform = CGAffineTransformMakeRotation(M_PI + M_PI_2);
 	self.W_arrowView.center = CGPointMake(_arrowSize * .5 + _arrowMargin, viewBounds.size.height * .5);
 	[self.view addSubview:self.W_arrowView];
@@ -464,17 +466,19 @@ static float _arrowMargin = 5.0f;
 - (void)updateVideoChatViews {
 	NSString *other = m_mode == streamingModeIncoming ? self.appDelegate.callerTitle : self.appDelegate.callReceiverTitle;
 
+	self.statusLabel.text = @"";
+
 	if (_isOpponentAligned) {
 //		self.opponentVideoView.layer.borderColor = [UIColor greenColor].CGColor;
-		self.statusLabel.text = @"";
+//		self.statusLabel.text = @"";
 	} else {
 //		self.opponentVideoView.layer.borderColor = [UIColor grayColor].CGColor;
-		self.statusLabel.text = [NSString stringWithFormat:@"%@\nis not aligned!", other];
+//		self.statusLabel.text = [NSString stringWithFormat:@"%@\nis not aligned!", other];
 	}
 	
 	if (!_isAligned) {
 //		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
-		self.statusLabel.text = @"You are not aligned!";
+//		self.statusLabel.text = @"You are not aligned!";
 	}
 	
 	if (!_hasFirstAligned) {
