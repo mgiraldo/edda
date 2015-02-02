@@ -1,11 +1,9 @@
 //
-//  
-//    ___  _____   ______  __ _   _________ 
-//   / _ \/ __/ | / / __ \/ /| | / / __/ _ \
-//  / , _/ _/ | |/ / /_/ / /_| |/ / _// , _/
-// /_/|_/___/ |___/\____/____/___/___/_/|_| 
+//  eddaClusterAnnotationView.h
+//  Edda
 //
-//  Created by Bart Claessens. bart (at) revolver . be
+//  Created by Mauricio Giraldo on 29/1/15.
+//  Copyright (c) 2015 Ping Pong Estudio. All rights reserved.
 //
 
 #import "eddaClusterAnnotationView.h"

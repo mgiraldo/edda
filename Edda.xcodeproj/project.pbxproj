@@ -22,14 +22,6 @@
 		CC0D4F581A7B409700F9BB0F /* info-exit.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F441A7B409700F9BB0F /* info-exit.png */; };
 		CC0D4F591A7B409700F9BB0F /* info.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F451A7B409700F9BB0F /* info.jpg */; };
 		CC0D4F5A1A7B409700F9BB0F /* splash-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F461A7B409700F9BB0F /* splash-icon.png */; };
-		CC0D4F5B1A7B409700F9BB0F /* tutorial1.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F471A7B409700F9BB0F /* tutorial1.png */; };
-		CC0D4F5C1A7B409700F9BB0F /* tutorial1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F481A7B409700F9BB0F /* tutorial1@2x.png */; };
-		CC0D4F5D1A7B409700F9BB0F /* tutorial2.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F491A7B409700F9BB0F /* tutorial2.png */; };
-		CC0D4F5E1A7B409700F9BB0F /* tutorial2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F4A1A7B409700F9BB0F /* tutorial2@2x.png */; };
-		CC0D4F5F1A7B409700F9BB0F /* tutorial3.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F4B1A7B409700F9BB0F /* tutorial3.png */; };
-		CC0D4F601A7B409700F9BB0F /* tutorial3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F4C1A7B409700F9BB0F /* tutorial3@2x.png */; };
-		CC0D4F611A7B409700F9BB0F /* tutorial4.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F4D1A7B409700F9BB0F /* tutorial4.png */; };
-		CC0D4F621A7B409700F9BB0F /* tutorial4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F4E1A7B409700F9BB0F /* tutorial4@2x.png */; };
 		CC0D4F651A7B43AA00F9BB0F /* eddaTutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0D4F641A7B43AA00F9BB0F /* eddaTutorialContentViewController.m */; };
 		CC3F1BED19BD499800F6AD43 /* eddaOtherView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */; };
 		CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC3F1C1319BE8ECB00F6AD43 /* utils.cpp */; };
@@ -72,6 +64,15 @@
 		CC9FD32C1A2C143F0037DD43 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC9FD32B1A2C143F0037DD43 /* libxml2.dylib */; };
 		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
 		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
+		CCB0D8D01A7DB9F800494228 /* tutorial1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8C81A7DB9F800494228 /* tutorial1.jpg */; };
+		CCB0D8D11A7DB9F800494228 /* tutorial1@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8C91A7DB9F800494228 /* tutorial1@2x.jpg */; };
+		CCB0D8D21A7DB9F800494228 /* tutorial2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8CA1A7DB9F800494228 /* tutorial2.jpg */; };
+		CCB0D8D31A7DB9F800494228 /* tutorial2@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8CB1A7DB9F800494228 /* tutorial2@2x.jpg */; };
+		CCB0D8D41A7DB9F800494228 /* tutorial3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8CC1A7DB9F800494228 /* tutorial3.jpg */; };
+		CCB0D8D51A7DB9F800494228 /* tutorial3@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8CD1A7DB9F800494228 /* tutorial3@2x.jpg */; };
+		CCB0D8E21A7EE41D00494228 /* tutorial4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8E01A7EE41D00494228 /* tutorial4.jpg */; };
+		CCB0D8E31A7EE41D00494228 /* tutorial4@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCB0D8E11A7EE41D00494228 /* tutorial4@2x.jpg */; };
+		CCB0D8E61A7EE5C900494228 /* MKMapView+ZoomLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = CCB0D8E51A7EE5C900494228 /* MKMapView+ZoomLevel.m */; };
 		CCBF45411A76CA88005E2750 /* KPAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45331A76CA88005E2750 /* KPAnnotation.m */; };
 		CCBF45421A76CA88005E2750 /* KPAnnotationTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45351A76CA88005E2750 /* KPAnnotationTree.m */; };
 		CCBF45431A76CA88005E2750 /* KPClusteringController.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45391A76CA88005E2750 /* KPClusteringController.m */; };
@@ -126,14 +127,6 @@
 		CC0D4F441A7B409700F9BB0F /* info-exit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "info-exit.png"; path = "images/info-exit.png"; sourceTree = "<group>"; };
 		CC0D4F451A7B409700F9BB0F /* info.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = info.jpg; path = images/info.jpg; sourceTree = "<group>"; };
 		CC0D4F461A7B409700F9BB0F /* splash-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "splash-icon.png"; path = "images/splash-icon.png"; sourceTree = "<group>"; };
-		CC0D4F471A7B409700F9BB0F /* tutorial1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tutorial1.png; path = images/tutorial1.png; sourceTree = "<group>"; };
-		CC0D4F481A7B409700F9BB0F /* tutorial1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tutorial1@2x.png"; path = "images/tutorial1@2x.png"; sourceTree = "<group>"; };
-		CC0D4F491A7B409700F9BB0F /* tutorial2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tutorial2.png; path = images/tutorial2.png; sourceTree = "<group>"; };
-		CC0D4F4A1A7B409700F9BB0F /* tutorial2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tutorial2@2x.png"; path = "images/tutorial2@2x.png"; sourceTree = "<group>"; };
-		CC0D4F4B1A7B409700F9BB0F /* tutorial3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tutorial3.png; path = images/tutorial3.png; sourceTree = "<group>"; };
-		CC0D4F4C1A7B409700F9BB0F /* tutorial3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tutorial3@2x.png"; path = "images/tutorial3@2x.png"; sourceTree = "<group>"; };
-		CC0D4F4D1A7B409700F9BB0F /* tutorial4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tutorial4.png; path = images/tutorial4.png; sourceTree = "<group>"; };
-		CC0D4F4E1A7B409700F9BB0F /* tutorial4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tutorial4@2x.png"; path = "images/tutorial4@2x.png"; sourceTree = "<group>"; };
 		CC0D4F631A7B43AA00F9BB0F /* eddaTutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaTutorialContentViewController.h; sourceTree = "<group>"; };
 		CC0D4F641A7B43AA00F9BB0F /* eddaTutorialContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaTutorialContentViewController.m; sourceTree = "<group>"; };
 		CC3F1BEB19BD499800F6AD43 /* eddaOtherView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaOtherView.h; sourceTree = "<group>"; };
@@ -196,6 +189,16 @@
 		CCA397D019B529B000754BEB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		CCA397D919B6987A00754BEB /* geodesic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geodesic.h; sourceTree = "<group>"; };
 		CCA397E119B6A00B00754BEB /* geodesic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geodesic.c; sourceTree = "<group>"; };
+		CCB0D8C81A7DB9F800494228 /* tutorial1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tutorial1.jpg; path = images/tutorial1.jpg; sourceTree = "<group>"; };
+		CCB0D8C91A7DB9F800494228 /* tutorial1@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "tutorial1@2x.jpg"; path = "images/tutorial1@2x.jpg"; sourceTree = "<group>"; };
+		CCB0D8CA1A7DB9F800494228 /* tutorial2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tutorial2.jpg; path = images/tutorial2.jpg; sourceTree = "<group>"; };
+		CCB0D8CB1A7DB9F800494228 /* tutorial2@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "tutorial2@2x.jpg"; path = "images/tutorial2@2x.jpg"; sourceTree = "<group>"; };
+		CCB0D8CC1A7DB9F800494228 /* tutorial3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tutorial3.jpg; path = images/tutorial3.jpg; sourceTree = "<group>"; };
+		CCB0D8CD1A7DB9F800494228 /* tutorial3@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "tutorial3@2x.jpg"; path = "images/tutorial3@2x.jpg"; sourceTree = "<group>"; };
+		CCB0D8E01A7EE41D00494228 /* tutorial4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tutorial4.jpg; path = images/tutorial4.jpg; sourceTree = "<group>"; };
+		CCB0D8E11A7EE41D00494228 /* tutorial4@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "tutorial4@2x.jpg"; path = "images/tutorial4@2x.jpg"; sourceTree = "<group>"; };
+		CCB0D8E41A7EE5C900494228 /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; };
+		CCB0D8E51A7EE5C900494228 /* MKMapView+ZoomLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+ZoomLevel.m"; sourceTree = "<group>"; };
 		CCBF45311A76CA88005E2750 /* kp_2dtree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kp_2dtree.h; sourceTree = "<group>"; };
 		CCBF45321A76CA88005E2750 /* KPAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPAnnotation.h; sourceTree = "<group>"; };
 		CCBF45331A76CA88005E2750 /* KPAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPAnnotation.m; sourceTree = "<group>"; };
@@ -361,10 +364,10 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
-				CCBF45491A76DA14005E2750 /* eddaClusterAnnotationView.h */,
-				CCBF454A1A76DA14005E2750 /* eddaClusterAnnotationView.m */,
 				CCD2DDB219EE1F140029BD6C /* QBHelper.h */,
 				CCD2DDB319EE1F140029BD6C /* QBHelper.m */,
+				CCB0D8E41A7EE5C900494228 /* MKMapView+ZoomLevel.h */,
+				CCB0D8E51A7EE5C900494228 /* MKMapView+ZoomLevel.m */,
 				CC5B4F9519D8D67B001BA61D /* LSViewController.h */,
 				CC5B4F9619D8D67B001BA61D /* LSViewController.m */,
 				CC77D4FF19B003E8009BA59F /* eddaAppDelegate.h */,
@@ -378,6 +381,8 @@
 				CC3F1BEC19BD499800F6AD43 /* eddaOtherView.m */,
 				CC77D50819B003E8009BA59F /* eddaFlipsideViewController.h */,
 				CC77D50919B003E8009BA59F /* eddaFlipsideViewController.m */,
+				CCBF45491A76DA14005E2750 /* eddaClusterAnnotationView.h */,
+				CCBF454A1A76DA14005E2750 /* eddaClusterAnnotationView.m */,
 				CC450F861A7482D600CC195B /* eddaMapAnnotation.h */,
 				CC450F871A7482D600CC195B /* eddaMapAnnotation.m */,
 				CC0D4F631A7B43AA00F9BB0F /* eddaTutorialContentViewController.h */,
@@ -430,6 +435,14 @@
 		CC77D53A19B02734009BA59F /* images */ = {
 			isa = PBXGroup;
 			children = (
+				CCB0D8C81A7DB9F800494228 /* tutorial1.jpg */,
+				CCB0D8C91A7DB9F800494228 /* tutorial1@2x.jpg */,
+				CCB0D8CA1A7DB9F800494228 /* tutorial2.jpg */,
+				CCB0D8CB1A7DB9F800494228 /* tutorial2@2x.jpg */,
+				CCB0D8CC1A7DB9F800494228 /* tutorial3.jpg */,
+				CCB0D8CD1A7DB9F800494228 /* tutorial3@2x.jpg */,
+				CCB0D8E01A7EE41D00494228 /* tutorial4.jpg */,
+				CCB0D8E11A7EE41D00494228 /* tutorial4@2x.jpg */,
 				CC0D4F3B1A7B409700F9BB0F /* arrow.png */,
 				CC0D4F3C1A7B409700F9BB0F /* arrow@2x.png */,
 				CC0D4F3D1A7B409700F9BB0F /* arrowCyan@2x.png */,
@@ -442,14 +455,6 @@
 				CC0D4F441A7B409700F9BB0F /* info-exit.png */,
 				CC0D4F451A7B409700F9BB0F /* info.jpg */,
 				CC0D4F461A7B409700F9BB0F /* splash-icon.png */,
-				CC0D4F471A7B409700F9BB0F /* tutorial1.png */,
-				CC0D4F481A7B409700F9BB0F /* tutorial1@2x.png */,
-				CC0D4F491A7B409700F9BB0F /* tutorial2.png */,
-				CC0D4F4A1A7B409700F9BB0F /* tutorial2@2x.png */,
-				CC0D4F4B1A7B409700F9BB0F /* tutorial3.png */,
-				CC0D4F4C1A7B409700F9BB0F /* tutorial3@2x.png */,
-				CC0D4F4D1A7B409700F9BB0F /* tutorial4.png */,
-				CC0D4F4E1A7B409700F9BB0F /* tutorial4@2x.png */,
 				CC0D4F311A7B115000F9BB0F /* arrowCyan.png */,
 				CCD5962E1A759BBB0094E2EA /* default.png */,
 				CC5989E61A6B0E470047D119 /* default-5@2x.png */,
@@ -593,13 +598,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC0D4F5C1A7B409700F9BB0F /* tutorial1@2x.png in Resources */,
 				CCFFAF6619CF9782008555A1 /* AppIcon57x57@2x.png in Resources */,
 				CC0D4F5A1A7B409700F9BB0F /* splash-icon.png in Resources */,
 				CC77D50C19B003E8009BA59F /* Images.xcassets in Resources */,
 				CC77D53C19B02740009BA59F /* arrowLong.png in Resources */,
 				CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */,
-				CC0D4F5D1A7B409700F9BB0F /* tutorial2.png in Resources */,
 				CC0D4F521A7B409700F9BB0F /* arrowMagenta.png in Resources */,
 				CC0D4F331A7B115000F9BB0F /* arrowCyan.png in Resources */,
 				CCD596311A759BBB0094E2EA /* default.png in Resources */,
@@ -608,9 +611,8 @@
 				CCD596331A759BBB0094E2EA /* rechaza.mp3 in Resources */,
 				CCD596321A759BBB0094E2EA /* hangup.mp3 in Resources */,
 				CC5989EC1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav in Resources */,
-				CC0D4F5F1A7B409700F9BB0F /* tutorial3.png in Resources */,
-				CC0D4F611A7B409700F9BB0F /* tutorial4.png in Resources */,
 				CC0D4F531A7B409700F9BB0F /* arrowMagenta@2x.png in Resources */,
+				CCB0D8E31A7EE41D00494228 /* tutorial4@2x.jpg in Resources */,
 				CC0D4F511A7B409700F9BB0F /* arrowCyan@2x.png in Resources */,
 				CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */,
 				CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */,
@@ -618,6 +620,7 @@
 				CCFFAF6119CF9782008555A1 /* AppIcon40x40.png in Resources */,
 				CC0D4F551A7B409700F9BB0F /* home-info.jpg in Resources */,
 				CC0D4F591A7B409700F9BB0F /* info.jpg in Resources */,
+				CCB0D8D01A7DB9F800494228 /* tutorial1.jpg in Resources */,
 				CCFFAF6319CF9782008555A1 /* AppIcon50x50.png in Resources */,
 				CC77D53019B003F3009BA59F /* README.md in Resources */,
 				CCFFAF6019CF9782008555A1 /* AppIcon29x29@2x.png in Resources */,
@@ -627,24 +630,26 @@
 				CCFFAF6B19CF9782008555A1 /* AppIcon76x76.png in Resources */,
 				CC0D4F581A7B409700F9BB0F /* info-exit.png in Resources */,
 				CC77D50419B003E8009BA59F /* Main.storyboard in Resources */,
+				CCB0D8D31A7DB9F800494228 /* tutorial2@2x.jpg in Resources */,
 				CCFFAF6919CF9782008555A1 /* AppIcon72x72.png in Resources */,
-				CC0D4F5B1A7B409700F9BB0F /* tutorial1.png in Resources */,
-				CC0D4F621A7B409700F9BB0F /* tutorial4@2x.png in Resources */,
 				CC5989E51A6B0D920047D119 /* default-414w-736h@3x.png in Resources */,
+				CCB0D8D11A7DB9F800494228 /* tutorial1@2x.jpg in Resources */,
 				CCFFAF6419CF9782008555A1 /* AppIcon50x50@2x.png in Resources */,
 				CC5989E41A6B0D920047D119 /* default-375w-667h@2x.png in Resources */,
 				CCFFAF6519CF9782008555A1 /* AppIcon57x57.png in Resources */,
 				CC0D4F561A7B409700F9BB0F /* home.jpg in Resources */,
+				CCB0D8D41A7DB9F800494228 /* tutorial3.jpg in Resources */,
 				CC5989E81A6B0E470047D119 /* default-5@2x.png in Resources */,
 				CCFFAF5F19CF9782008555A1 /* AppIcon29x29.png in Resources */,
 				CCFFAF6C19CF9782008555A1 /* AppIcon76x76@2x.png in Resources */,
 				CC5989E91A6B0E470047D119 /* default@2x.png in Resources */,
+				CCB0D8E21A7EE41D00494228 /* tutorial4.jpg in Resources */,
 				CC77D53119B003F3009BA59F /* release_notes.md in Resources */,
-				CC0D4F601A7B409700F9BB0F /* tutorial3@2x.png in Resources */,
 				CCFFAF6719CF9782008555A1 /* AppIcon60x60.png in Resources */,
-				CC0D4F5E1A7B409700F9BB0F /* tutorial2@2x.png in Resources */,
 				CCFFAF6E19CF9782008555A1 /* iTunesArtwork@2x.png in Resources */,
 				CCFFAF6D19CF9782008555A1 /* iTunesArtwork.png in Resources */,
+				CCB0D8D21A7DB9F800494228 /* tutorial2.jpg in Resources */,
+				CCB0D8D51A7DB9F800494228 /* tutorial3@2x.jpg in Resources */,
 				CC0D4F4F1A7B409700F9BB0F /* arrow.png in Resources */,
 				CC78A55B19C26B4500C73E59 /* configuration.plist.example in Resources */,
 				CCD596351A759C7C0094E2EA /* Launch Screen.xib in Resources */,
@@ -667,6 +672,7 @@
 				CCBF45421A76CA88005E2750 /* KPAnnotationTree.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
 				CC450F881A7482D600CC195B /* eddaMapAnnotation.m in Sources */,
+				CCB0D8E61A7EE5C900494228 /* MKMapView+ZoomLevel.m in Sources */,
 				CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */,
 				CCBF45451A76CA88005E2750 /* NSArray+KP.m in Sources */,
 				CC3F1C1419BE8ECB00F6AD43 /* utils.cpp in Sources */,

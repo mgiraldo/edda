@@ -246,9 +246,9 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="ieN-HA-wEv">
-                                <rect key="frame" x="20" y="74" width="280" height="40"/>
+                                <rect key="frame" x="20" y="70" width="280" height="44"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="bGY-EW-ehF"/>
+                                    <constraint firstAttribute="height" constant="44" id="bGY-EW-ehF"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

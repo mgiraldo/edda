@@ -80,8 +80,8 @@ static float _arrowMargin = 5.0f;
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	BOOL didTutorial = [[defaults valueForKey:@"tutorial"] boolValue];
 
-	_pageTitles = @[@"1: Tap \"START CALL\" to show the people list", @"2: Find the person you want to call", @"3: Point your phone as directed by the arrows", @"4: Maintain orientation throughout the call"];
-	_pageImages = @[@"tutorial1.png", @"tutorial2.png", @"tutorial3.png", @"tutorial4.png"];
+	_pageTitles = @[@"1: Tap \"START CALL\" to access the list of users", @"2: Use the list or map to find your friend", @"3: Hold up your phone and follow the arrows", @"4: Maintain orientation during the call"];
+	_pageImages = @[@"tutorial1.jpg", @"tutorial2.jpg", @"tutorial3.jpg", @"tutorial4.jpg"];
 	
 	if (!didTutorial) {
 		[self startTutorial:nil];
