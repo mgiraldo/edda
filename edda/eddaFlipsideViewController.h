@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
 @class eddaFlipsideViewController;
 
@@ -14,7 +15,7 @@
 - (void)flipsideViewControllerDidFinish:(eddaFlipsideViewController *)controller;
 @end
 
-@interface eddaFlipsideViewController : UIViewController <UITextFieldDelegate>
+@interface eddaFlipsideViewController : UIViewController <UITextFieldDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, assign) id currentResponder;
 
@@ -23,8 +24,10 @@
 @property (weak, nonatomic) NSString *nickname;
 @property (weak, nonatomic) IBOutlet UITextField *nicknameLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *backgroundView;
+@property (weak, nonatomic) IBOutlet UIButton *feedbackButton;
 
 - (IBAction)done:(id)sender;
 - (IBAction)privacyChanged:(UISwitch *)sender;
+- (IBAction)feedbackPressed:(id)sender;
 
 @end

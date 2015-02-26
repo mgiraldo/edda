@@ -72,7 +72,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="waiting!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="16" preferredMaxLayoutWidth="288" translatesAutoresizingMaskIntoConstraints="NO" id="y5u-Jn-lFT" userLabel="StatusLabel">
-                                <rect key="frame" x="16" y="478" width="288" height="50"/>
+                                <rect key="frame" x="16" y="498" width="288" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="288" id="4Pt-EX-Bgh"/>
                                     <constraint firstAttribute="height" constant="50" id="UVn-OJ-sqZ"/>
@@ -84,12 +84,12 @@
                                 <size key="shadowOffset" width="-1" height="1"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OQq-eS-E7P">
-                                <rect key="frame" x="0.0" y="368" width="320" height="200"/>
+                                <rect key="frame" x="0.0" y="408" width="320" height="160"/>
                                 <subviews>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sfP-WX-KSq">
-                                        <rect key="frame" x="90" y="62" width="140" height="64"/>
+                                        <rect key="frame" x="90" y="54" width="140" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="64" id="Ew0-6v-IBI"/>
+                                            <constraint firstAttribute="height" constant="40" id="Ew0-6v-IBI"/>
                                             <constraint firstAttribute="width" constant="140" id="HlT-A7-rM1"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="24"/>
@@ -104,10 +104,10 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cCn-TC-ql3">
-                                        <rect key="frame" x="90" y="62" width="140" height="64"/>
+                                        <rect key="frame" x="90" y="54" width="140" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="140" id="H5W-Uu-aUK"/>
-                                            <constraint firstAttribute="height" constant="64" id="mLb-Pe-Og7"/>
+                                            <constraint firstAttribute="height" constant="40" id="mLb-Pe-Og7"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="24"/>
                                         <size key="titleShadowOffset" width="-1" height="1"/>
@@ -123,9 +123,9 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="sfP-WX-KSq" secondAttribute="centerX" id="2bv-n8-bJe"/>
+                                    <constraint firstAttribute="height" constant="160" id="Hrb-uw-drT"/>
                                     <constraint firstAttribute="centerY" secondItem="sfP-WX-KSq" secondAttribute="centerY" constant="6" id="Kow-Jx-G3H"/>
                                     <constraint firstAttribute="centerX" secondItem="cCn-TC-ql3" secondAttribute="centerX" id="Lta-Or-DSB"/>
-                                    <constraint firstAttribute="width" secondItem="OQq-eS-E7P" secondAttribute="height" multiplier="8:5" id="qmj-eZ-3ka"/>
                                     <constraint firstAttribute="centerY" secondItem="cCn-TC-ql3" secondAttribute="centerY" constant="6" id="wF9-LV-3DF"/>
                                 </constraints>
                             </view>
@@ -133,10 +133,11 @@
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="height" secondItem="XB1-jt-4UG" secondAttribute="height" id="2wB-mr-3FN"/>
+                            <constraint firstAttribute="width" secondItem="OQq-eS-E7P" secondAttribute="width" id="66d-68-aoR"/>
                             <constraint firstAttribute="centerX" secondItem="zPT-Aq-6ge" secondAttribute="centerX" id="86e-Ab-cXW"/>
                             <constraint firstItem="jqg-sy-dxO" firstAttribute="top" secondItem="Jd6-aZ-5EL" secondAttribute="bottom" id="9Xp-Bg-wiP"/>
                             <constraint firstAttribute="centerY" secondItem="XB1-jt-4UG" secondAttribute="centerY" id="FPV-iZ-jom"/>
-                            <constraint firstItem="cif-Cz-1Ak" firstAttribute="top" secondItem="y5u-Jn-lFT" secondAttribute="bottom" constant="40" id="FRH-y8-m8o"/>
+                            <constraint firstItem="cif-Cz-1Ak" firstAttribute="top" secondItem="y5u-Jn-lFT" secondAttribute="bottom" constant="20" id="FRH-y8-m8o"/>
                             <constraint firstItem="cif-Cz-1Ak" firstAttribute="top" secondItem="OQq-eS-E7P" secondAttribute="bottom" id="GzK-O5-xwk"/>
                             <constraint firstAttribute="width" secondItem="IC9-XV-DMc" secondAttribute="width" id="H9V-4R-3GY"/>
                             <constraint firstAttribute="height" secondItem="IC9-XV-DMc" secondAttribute="height" id="QQ1-Rh-8yc"/>
@@ -380,6 +381,16 @@
                                 <nil key="highlightedColor"/>
                                 <size key="shadowOffset" width="0.0" height="0.0"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mnb-p7-R9t">
+                                <rect key="frame" x="106" y="426" width="108" height="37"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
+                                <state key="normal" title="SEND FEEDBACK">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="feedbackPressed:" destination="kIf-nA-PKG" eventType="touchUpInside" id="TFL-Bc-lM6"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -392,8 +403,10 @@
                             <constraint firstItem="YuU-kN-3Gv" firstAttribute="centerX" secondItem="Rh9-xD-R3d" secondAttribute="centerX" constant="1" id="H51-9c-AnA"/>
                             <constraint firstAttribute="centerX" secondItem="t7b-DM-Fg8" secondAttribute="centerX" constant="-0.5" id="NyI-8q-iWx"/>
                             <constraint firstItem="clI-F6-jWf" firstAttribute="top" secondItem="bQH-2l-117" secondAttribute="bottom" constant="10" id="QcG-cL-ybj"/>
+                            <constraint firstItem="Mnb-p7-R9t" firstAttribute="top" secondItem="t7b-DM-Fg8" secondAttribute="bottom" constant="40" id="UY5-qX-eEz"/>
                             <constraint firstItem="w4c-pk-0z5" firstAttribute="top" secondItem="yQW-H1-TqX" secondAttribute="bottom" constant="10" id="XKV-7I-P0O"/>
                             <constraint firstAttribute="centerX" secondItem="clI-F6-jWf" secondAttribute="centerX" constant="-1" id="Zql-gH-47J"/>
+                            <constraint firstAttribute="centerX" secondItem="Mnb-p7-R9t" secondAttribute="centerX" id="Zvq-r3-oZl"/>
                             <constraint firstItem="YuU-kN-3Gv" firstAttribute="top" secondItem="Rh9-xD-R3d" secondAttribute="top" constant="20" id="aDn-HY-Qc7"/>
                             <constraint firstItem="yQW-H1-TqX" firstAttribute="top" secondItem="clI-F6-jWf" secondAttribute="bottom" constant="40" id="bpt-Ir-tI6"/>
                             <constraint firstItem="bQH-2l-117" firstAttribute="top" secondItem="0Jt-81-7DK" secondAttribute="bottom" constant="120" id="fds-eX-v53"/>
@@ -401,6 +414,7 @@
                     </view>
                     <connections>
                         <outlet property="backgroundView" destination="Rh9-xD-R3d" id="DTe-3f-eq4"/>
+                        <outlet property="feedbackButton" destination="Mnb-p7-R9t" id="85B-5S-OM0"/>
                         <outlet property="nicknameLabel" destination="clI-F6-jWf" id="wBZ-gO-aid"/>
                         <outlet property="privacySwitch" destination="w4c-pk-0z5" id="233-0I-QAa"/>
                     </connections>

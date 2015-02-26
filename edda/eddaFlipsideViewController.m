@@ -74,6 +74,24 @@ static BOOL _isPrivate = NO;
 	[defaults synchronize];
 }
 
+- (IBAction)feedbackPressed:(id)sender {
+	MFMailComposeViewController* controller = [[MFMailComposeViewController alloc] init];
+	controller.mailComposeDelegate = self;
+	[controller setToRecipients:[NSArray arrayWithObjects:@"feedback@edda.info", nil]];
+	[controller setSubject:@"Edda feedback"];
+	[controller setMessageBody:@"" isHTML:NO];
+	[self presentViewController:controller animated:YES completion:nil];
+}
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller
+		  didFinishWithResult:(MFMailComposeResult)result
+						error:(NSError*)error {
+	if (result == MFMailComposeResultSent) {
+		NSLog(@"sent feedback email");
+	}
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)resignOnTap:(id)sender {
 	NSLog(@"tap");
 	[self.currentResponder resignFirstResponder];

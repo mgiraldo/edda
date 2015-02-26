@@ -8,31 +8,57 @@
 
 #import "eddaOtherView.h"
 
+#import "proj_api.h"
+
 @implementation eddaOtherView
 
 static const float _zoomDuration = 0.5f;
 static const float _borderWidthIn = 1500.0f;
-static const float _otherDiameterOut = 50.0f;
+static const float _otherDiameterOut = 100.0f;
 static const float _blackDiameter = 310.0f;
 static const float _cyanDiameter = 280.0f;
 static const float _magentaDiameter = 250.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
-	_cyanColor = [UIColor colorWithRed:0 green:1 blue:1 alpha:.9];
-	_magentaColor = [UIColor colorWithRed:1 green:0 blue:1 alpha:.9];
+	_cyanColor = [UIColor colorWithRed:0 green:1 blue:1 alpha:.8];
+	_magentaColor = [UIColor colorWithRed:1 green:0 blue:1 alpha:.8];
+	_yellowColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:.8];
 	CGRect f = CGRectMake(-_otherDiameterOut, -_otherDiameterOut, _otherDiameterOut, _otherDiameterOut);
-    self = [super initWithFrame:f];
+    self = [super initWithFrame:self.window.frame];
     if (self) {
         // Initialization code
 //		self.contentMode = UIViewContentModeRedraw;
-		self.layer.cornerRadius = _otherDiameterOut * .5;
-		self.layer.backgroundColor = [UIColor blackColor].CGColor;
-		self.layer.borderColor = [UIColor whiteColor].CGColor;
-		self.layer.borderWidth = 1;
+		self.holeView = [[UIView alloc] initWithFrame:f];
+		self.holeView.layer.cornerRadius = _otherDiameterOut * .5;
+		self.holeView.layer.backgroundColor = [UIColor blackColor].CGColor;
+		self.holeView.layer.borderWidth = 1;
+
+		[self addSubview:self.holeView];
+
+		// squares behind "hole"
+		self.sqCyanView = [[UIView alloc] initWithFrame:f];
+		self.sqCyanView.layer.backgroundColor = _cyanColor.CGColor;
+		self.sqMagentaView = [[UIView alloc] initWithFrame:f];
+		self.sqMagentaView.layer.backgroundColor = _magentaColor.CGColor;
+		self.sqYellowView = [[UIView alloc] initWithFrame:f];
+		self.sqYellowView.layer.backgroundColor = _yellowColor.CGColor;
+		self.sqCyanView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * 180);
+		self.sqMagentaView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * 300);
+		self.sqYellowView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * 60);
+		self.sqCyanView.hidden = YES;
+		self.sqMagentaView.hidden = YES;
+		self.sqYellowView.hidden = YES;
+		
+		[self insertSubview:self.sqCyanView belowSubview:self.holeView];
+		[self insertSubview:self.sqMagentaView belowSubview:self.holeView];
+		[self insertSubview:self.sqYellowView belowSubview:self.holeView];
+
+		// circle overlays
 		self.cyanView = [[UIView alloc] initWithFrame:f];
 		self.magentaView = [[UIView alloc] initWithFrame:f];
 		self.blackView = [[UIView alloc] initWithFrame:f];
+
 		self.cyanView.layer.cornerRadius = _otherDiameterOut * .5;
 		self.cyanView.layer.backgroundColor = [UIColor clearColor].CGColor;
 		self.cyanView.layer.borderColor = _cyanColor.CGColor;
@@ -48,6 +74,7 @@ static const float _magentaDiameter = 250.0f;
 		self.blackView.layer.borderColor = [UIColor blackColor].CGColor;
 		self.blackView.layer.borderWidth = 1;
 		self.blackView.hidden = YES;
+		
 		[self addSubview:self.magentaView];
 		[self addSubview:self.cyanView];
 		[self addSubview:self.blackView];
@@ -62,11 +89,20 @@ static const float _magentaDiameter = 250.0f;
 		self.cyanView.hidden = YES;
 		self.magentaView.hidden = YES;
 		self.blackView.hidden = YES;
+		self.sqCyanView.hidden = NO;
+		self.sqMagentaView.hidden = NO;
+		self.sqYellowView.hidden = NO;
 		[UIView animateWithDuration:0.1
 							  delay:0
 							options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction
 						 animations:^{
-							 self.center = position;
+							 self.holeView.center = position;
+							 self.sqCyanView.center = position;
+							 self.sqMagentaView.center = position;
+							 self.sqYellowView.center = position;
+							 self.sqCyanView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * ((int)position.x % 300));
+							 self.sqMagentaView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * ((int)position.y % 360));
+							 self.sqYellowView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * ((int)(position.x + position.y) % 330));
 						 }
 						 completion:^(BOOL finished){
 							 [self setNeedsDisplay];
@@ -95,9 +131,9 @@ static const float _magentaDiameter = 250.0f;
 //	[UIView animateWithDuration:_zoomDuration
 //					 animations:^{
 //						 CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height);
-//						 self.layer.cornerRadius = 0;
-//						 self.layer.backgroundColor = [UIColor blackColor].CGColor;
-//						 self.frame = frame;
+//						 self.holeView.layer.cornerRadius = 0;
+//						 self.holeView.layer.backgroundColor = [UIColor blackColor].CGColor;
+//						 self.holeView.frame = frame;
 //					 }
 //					 completion:^(BOOL finished){
 //						 // whatever you need to do when animations are complete
@@ -107,12 +143,15 @@ static const float _magentaDiameter = 250.0f;
 	[UIView animateKeyframesWithDuration:_zoomDuration delay:0.0 options:UIViewKeyframeAnimationOptionCalculationModeLinear animations:^{
 		[UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.3 animations:^{
 			CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height);
-			self.layer.cornerRadius = 0;
-			self.layer.backgroundColor = [UIColor clearColor].CGColor;
-			self.layer.borderColor = [UIColor clearColor].CGColor;
-			self.frame = frame;
+			self.holeView.layer.cornerRadius = 0;
+			self.holeView.layer.backgroundColor = [UIColor clearColor].CGColor;
+			self.holeView.frame = frame;
 		}];
 		[UIView addKeyframeWithRelativeStartTime:0.3 relativeDuration:0.3 animations:^{
+			self.sqCyanView.hidden = YES;
+			self.sqMagentaView.hidden = YES;
+			self.sqYellowView.hidden = YES;
+
 			self.magentaView.hidden = NO;
 			float _newSize = _magentaDiameter + (_borderWidthIn * 2);
 			CGRect frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
@@ -156,16 +195,14 @@ static const float _magentaDiameter = 250.0f;
 						  delay:0
 						options:UIViewAnimationOptionAllowAnimatedContent
 					 animations:^{
-						 self.layer.backgroundColor = [UIColor clearColor].CGColor;
+						 self.holeView.layer.backgroundColor = [UIColor blackColor].CGColor;
 					 }
 					 completion:^(BOOL finished){
 						 // whatever you need to do when animations are complete
 						 [self.delegate eddaOtherViewDidZoomOut:self];
 						 CGRect frame = CGRectMake((self.window.bounds.size.width-_otherDiameterOut)*.5, (self.window.bounds.size.height-_otherDiameterOut)*.5, _otherDiameterOut, _otherDiameterOut);
-						 self.frame = frame;
-						 self.layer.cornerRadius = _otherDiameterOut * .5;
-						 self.layer.borderWidth = 1;
-						 self.layer.borderColor = [UIColor whiteColor].CGColor;
+						 self.holeView.frame = frame;
+						 self.holeView.layer.cornerRadius = _otherDiameterOut * .5;
 					 }];
 }
 

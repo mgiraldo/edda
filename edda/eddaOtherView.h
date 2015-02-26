@@ -13,6 +13,7 @@
 @interface eddaOtherView : UIView {
 	UIColor *_cyanColor;
 	UIColor *_magentaColor;
+	UIColor *_yellowColor;
 }
 
 @property (nonatomic, assign) id <eddaOtherViewDelegate> delegate;
@@ -20,6 +21,10 @@
 @property (nonatomic) UIView *cyanView;
 @property (nonatomic) UIView *magentaView;
 @property (nonatomic) UIView *blackView;
+@property (nonatomic) UIView *holeView;
+@property (nonatomic) UIView *sqCyanView;
+@property (nonatomic) UIView *sqMagentaView;
+@property (nonatomic) UIView *sqYellowView;
 
 - (void)updatePosition:(CGPoint)position;
 - (void)zoomIn;
