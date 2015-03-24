@@ -101,7 +101,7 @@ static const float _magentaDiameter = 250.0f;
 							 self.sqMagentaView.center = position;
 							 self.sqYellowView.center = position;
 							 self.sqCyanView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * ((int)position.x % 300));
-							 self.sqMagentaView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * ((int)position.y % 360));
+							 self.sqMagentaView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * -((int)position.y % 360));
 							 self.sqYellowView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * ((int)(position.x + position.y) % 330));
 						 }
 						 completion:^(BOOL finished){
