@@ -19,10 +19,6 @@
 	NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"configuration" ofType:@"plist"];
 	NSDictionary *configuration = [[NSDictionary alloc] initWithContentsOfFile:plistPath];
 	
-	NSString *testflightId = configuration[@"TestFlight"][@"ApplicationId"];
-	
-	[TestFlight takeOff:testflightId];
-
 	UIPageControl *pageControl = [UIPageControl appearance];
 	pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
 	pageControl.currentPageIndicatorTintColor = [UIColor yellowColor];

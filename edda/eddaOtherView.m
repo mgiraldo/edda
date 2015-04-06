@@ -140,46 +140,47 @@ static const float _magentaDiameter = 250.0f;
 //						 [self.delegate eddaOtherViewDidZoomIn:self];
 //					 }];
 
-	[UIView animateKeyframesWithDuration:_zoomDuration delay:0.0 options:UIViewKeyframeAnimationOptionCalculationModeLinear animations:^{
-		[UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.3 animations:^{
-			CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height);
-			self.holeView.layer.cornerRadius = 0;
-			self.holeView.layer.backgroundColor = [UIColor clearColor].CGColor;
-			self.holeView.frame = frame;
-		}];
-		[UIView addKeyframeWithRelativeStartTime:0.3 relativeDuration:0.3 animations:^{
-			self.sqCyanView.hidden = YES;
-			self.sqMagentaView.hidden = YES;
-			self.sqYellowView.hidden = YES;
-
-			self.magentaView.hidden = NO;
-			float _newSize = _magentaDiameter + (_borderWidthIn * 2);
-			CGRect frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
-			self.magentaView.layer.cornerRadius = _newSize * .5;
-			self.magentaView.layer.borderWidth = _borderWidthIn;
-			self.magentaView.layer.borderColor = _magentaColor.CGColor;
-			self.magentaView.frame = frame;
-		}];
-		[UIView addKeyframeWithRelativeStartTime:0.6 relativeDuration:0.4 animations:^{
-			self.cyanView.hidden = NO;
-			float _newSize = _cyanDiameter + (_borderWidthIn * 2);
-			CGRect frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
-			self.cyanView.layer.cornerRadius = _newSize * .5;
-			self.cyanView.layer.borderWidth = _borderWidthIn;
-			self.cyanView.layer.borderColor = _cyanColor.CGColor;
-			self.cyanView.frame = frame;
-			self.cyanView.hidden = NO;
-
-			self.blackView.hidden = NO;
-			_newSize = _blackDiameter + (_borderWidthIn * 2);
-			frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
-			self.blackView.layer.cornerRadius = _newSize * .5;
-			self.blackView.layer.borderWidth = _borderWidthIn;
-			self.blackView.frame = frame;
-		}];
+	[UIView animateWithDuration:_zoomDuration
+						  delay:0
+						options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseInOut
+					 animations:^
+	{
+		CGRect frame = CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height);
+		self.holeView.layer.backgroundColor = [UIColor blackColor].CGColor;
+		self.holeView.layer.cornerRadius = 0;
+		self.holeView.frame = frame;
+		
+		self.sqCyanView.hidden = YES;
+		self.sqMagentaView.hidden = YES;
+		self.sqYellowView.hidden = YES;
 	} completion:^(BOOL finished){
-		// whatever you need to do when animations are complete
+		self.magentaView.hidden = NO;
+		float _newSize = _magentaDiameter + (_borderWidthIn * 2);
+		CGRect frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
+		self.magentaView.layer.cornerRadius = _newSize * .5;
+		self.magentaView.layer.borderWidth = _borderWidthIn;
+		self.magentaView.layer.borderColor = _magentaColor.CGColor;
+		self.magentaView.frame = frame;
+		
+		self.cyanView.hidden = NO;
+		_newSize = _cyanDiameter + (_borderWidthIn * 2);
+		frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
+		self.cyanView.layer.cornerRadius = _newSize * .5;
+		self.cyanView.layer.borderWidth = _borderWidthIn;
+		self.cyanView.layer.borderColor = _cyanColor.CGColor;
+		self.cyanView.frame = frame;
+		self.cyanView.hidden = NO;
+		
+		self.blackView.hidden = NO;
+		_newSize = _blackDiameter + (_borderWidthIn * 2);
+		frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
+		self.blackView.layer.cornerRadius = _newSize * .5;
+		self.blackView.layer.borderWidth = _borderWidthIn;
+		self.blackView.frame = frame;
+
 		[self.delegate eddaOtherViewDidZoomIn:self];
+		
+		self.holeView.layer.backgroundColor = [UIColor clearColor].CGColor;
 	}];
 
 }

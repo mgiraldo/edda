@@ -2,11 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
-		<key>TestFlight</key>
-		<dict>
-			<key>ApplicationId</key>
-			<string>your_app_id</string>
-		</dict>
 		<key>Quickblox</key>
 		<dict>
 			<key>ApplicationID</key>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rQl-PL-IFJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1514" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rQl-PL-IFJ">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -84,10 +84,10 @@
                                 <size key="shadowOffset" width="-1" height="1"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OQq-eS-E7P">
-                                <rect key="frame" x="0.0" y="408" width="320" height="160"/>
+                                <rect key="frame" x="0.0" y="368" width="320" height="200"/>
                                 <subviews>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sfP-WX-KSq">
-                                        <rect key="frame" x="90" y="54" width="140" height="40"/>
+                                        <rect key="frame" x="90" y="74" width="140" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="Ew0-6v-IBI"/>
                                             <constraint firstAttribute="width" constant="140" id="HlT-A7-rM1"/>
@@ -104,7 +104,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cCn-TC-ql3">
-                                        <rect key="frame" x="90" y="54" width="140" height="40"/>
+                                        <rect key="frame" x="90" y="74" width="140" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="140" id="H5W-Uu-aUK"/>
                                             <constraint firstAttribute="height" constant="40" id="mLb-Pe-Og7"/>
@@ -123,7 +123,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="sfP-WX-KSq" secondAttribute="centerX" id="2bv-n8-bJe"/>
-                                    <constraint firstAttribute="height" constant="160" id="Hrb-uw-drT"/>
+                                    <constraint firstAttribute="height" constant="200" id="Hrb-uw-drT"/>
                                     <constraint firstAttribute="centerY" secondItem="sfP-WX-KSq" secondAttribute="centerY" constant="6" id="Kow-Jx-G3H"/>
                                     <constraint firstAttribute="centerX" secondItem="cCn-TC-ql3" secondAttribute="centerX" id="Lta-Or-DSB"/>
                                     <constraint firstAttribute="centerY" secondItem="cCn-TC-ql3" secondAttribute="centerY" constant="6" id="wF9-LV-3DF"/>
@@ -240,14 +240,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Igl-Hj-2TH">
-                                <rect key="frame" x="20" y="114" width="280" height="340"/>
+                                <rect key="frame" x="40" y="30" width="240" height="360"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="340" id="09w-Z4-kU4"/>
-                                    <constraint firstAttribute="width" constant="280" id="4vD-mT-eUs"/>
+                                    <constraint firstAttribute="height" constant="360" id="09w-Z4-kU4"/>
+                                    <constraint firstAttribute="width" constant="240" id="4vD-mT-eUs"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="ieN-HA-wEv">
-                                <rect key="frame" x="20" y="70" width="280" height="44"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Maintain orientation throughout the call for betterment" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="ieN-HA-wEv">
+                                <rect key="frame" x="40" y="410" width="240" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="bGY-EW-ehF"/>
                                 </constraints>
@@ -255,16 +255,15 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GLe-8d-SB1">
-                                <rect key="frame" x="100" y="459" width="120" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GLe-8d-SB1">
+                                <rect key="frame" x="285" y="35" width="20" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="JM6-a6-zRP"/>
-                                    <constraint firstAttribute="width" constant="120" id="x1c-09-Kro"/>
+                                    <constraint firstAttribute="height" constant="20" id="JM6-a6-zRP"/>
+                                    <constraint firstAttribute="width" secondItem="GLe-8d-SB1" secondAttribute="height" multiplier="1:1" id="vOY-Ms-jWn"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="20"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <size key="titleShadowOffset" width="-1" height="1"/>
-                                <state key="normal" title="CLOSE HELP">
+                                <state key="normal" image="cross.png">
                                     <color key="titleColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -275,16 +274,17 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Igl-Hj-2TH" firstAttribute="top" secondItem="ieN-HA-wEv" secondAttribute="bottom" id="E51-wS-hJX"/>
+                            <constraint firstAttribute="trailing" secondItem="GLe-8d-SB1" secondAttribute="trailing" constant="15" id="EvY-gM-S5q"/>
                             <constraint firstItem="Igl-Hj-2TH" firstAttribute="width" secondItem="ieN-HA-wEv" secondAttribute="width" id="Io5-KW-VWd"/>
-                            <constraint firstItem="GLe-8d-SB1" firstAttribute="top" secondItem="Igl-Hj-2TH" secondAttribute="bottom" constant="5" id="RSK-kT-vop"/>
+                            <constraint firstItem="Igl-Hj-2TH" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="10" id="Pfl-0M-4pP"/>
+                            <constraint firstItem="ieN-HA-wEv" firstAttribute="top" secondItem="Igl-Hj-2TH" secondAttribute="bottom" constant="20" id="Z00-K0-FWd"/>
                             <constraint firstAttribute="centerX" secondItem="Igl-Hj-2TH" secondAttribute="centerX" id="dcD-M2-4Be"/>
-                            <constraint firstAttribute="centerX" secondItem="GLe-8d-SB1" secondAttribute="centerX" id="jPC-31-dG4"/>
-                            <constraint firstAttribute="centerY" secondItem="Igl-Hj-2TH" secondAttribute="centerY" id="mTP-wQ-6Sg"/>
+                            <constraint firstItem="GLe-8d-SB1" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="15" id="pnu-uf-MiR"/>
                             <constraint firstAttribute="centerX" secondItem="ieN-HA-wEv" secondAttribute="centerX" id="uWL-hN-G4l"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="closeButton" destination="GLe-8d-SB1" id="x60-Ui-bHw"/>
                         <outlet property="imageView" destination="Igl-Hj-2TH" id="WD2-pR-LeS"/>
                         <outlet property="titleLabel" destination="ieN-HA-wEv" id="IJY-oV-SYu"/>
                     </connections>
@@ -468,7 +468,7 @@
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nTZ-sd-aQV">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -521,6 +521,20 @@
                                 <segue destination="ovX-ff-FKJ" kind="unwind" unwindAction="unwindToMainViewController:" id="Hga-1A-ecz"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" id="gFt-09-dYM">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Nfc-we-OMJ">
+                                <rect key="frame" x="16" y="7" width="82" height="37"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
+                                <state key="normal" title="REFRESH">
+                                    <color key="titleColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="touchRefresh:" destination="OUq-rZ-Utc" eventType="touchUpInside" id="FXm-55-bx4"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <connections>
@@ -535,6 +549,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="cross.png" width="20" height="20"/>
         <image name="home-info.jpg" width="256" height="312"/>
         <image name="home.jpg" width="1080" height="1247"/>
         <image name="info-enter.png" width="204" height="200"/>

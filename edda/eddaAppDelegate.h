@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TestFlight.h"
 #import "QBHelper.h"
 
 @interface eddaAppDelegate : UIResponder <UIApplicationDelegate, QBActionStatusDelegate>

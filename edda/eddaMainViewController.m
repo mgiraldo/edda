@@ -80,8 +80,8 @@ static float _arrowMargin = 5.0f;
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	BOOL didTutorial = [[defaults valueForKey:@"tutorial"] boolValue];
 
-	_pageTitles = @[@"1: Tap \"START CALL\" to access the list of users", @"2: Use the list or map to find your friend", @"3: Hold up your phone and follow the arrows", @"4: Maintain orientation during the call"];
-	_pageImages = @[@"tutorial1.jpg", @"tutorial2.jpg", @"tutorial3.jpg", @"tutorial4.jpg"];
+	self.pageTitles = @[@"Tap \"START CALL\" to access the list.", @"Use the list or map to find your friend.", @"Follow the arrows. The circle indicates your friend's location.", @"Maintain orientation during the call or the view will be obscured!"];
+	self.pageImages = @[@"tutorial1.mp4", @"tutorial2.mp4", @"tutorial3.mp4", @"tutorial4.mp4"];
 	
 	if (!didTutorial) {
 		[self startTutorial:nil];
@@ -156,10 +156,6 @@ static float _arrowMargin = 5.0f;
 
 - (void)viewDidUnload
 {
-	// remove the _videoPreviewView
-//	[_myVideoPreviewView removeFromSuperview];
-//	_myVideoPreviewView = nil;
-
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super viewDidUnload];
 }
@@ -300,13 +296,6 @@ static float _arrowMargin = 5.0f;
 	// for the heading indicator
 	float correctHeading = self.currentHeading.trueHeading - viewAngle.azimuth;
 	float headingAdjusted = abs(correctHeading);
-	float headingTransparency;
-	
-	if (headingAdjusted < 180) {
-		headingTransparency = ofMap(headingAdjusted, 0, 180, 30.0, 0.0, true);
-	} else {
-		headingTransparency = ofMap(headingAdjusted, 180, 360, 0.0, 30.0, true);
-	}
 	
 	// arrows on/off
 	[self hideArrows];
@@ -481,67 +470,10 @@ static float _arrowMargin = 5.0f;
 
 	self.statusLabel.text = @"";
 
-	if (_isOpponentAligned) {
-//		self.opponentVideoView.layer.borderColor = [UIColor greenColor].CGColor;
-//		self.statusLabel.text = @"";
-	} else {
-//		self.opponentVideoView.layer.borderColor = [UIColor grayColor].CGColor;
-//		self.statusLabel.text = [NSString stringWithFormat:@"%@\nis not aligned!", other];
-	}
-	
-	if (!_isAligned) {
-//		self.statusLabel.text = [NSString stringWithFormat:@"find %@", other];
-//		self.statusLabel.text = @"You are not aligned!";
-	}
-	
 	if (!_hasFirstAligned) {
 		self.statusLabel.text = [NSString stringWithFormat:@"find\n%@", other];
 	}
 	
-	if (self.otherView.zoomed) {
-//		if (!_isOpponentAligned) {
-//			UIGraphicsBeginImageContextWithOptions(self.myVideoView.bounds.size, self.myVideoView.opaque, 0.0);
-//			[self.myVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
-//			
-//			UIImage * myimg = UIGraphicsGetImageFromCurrentImageContext();
-//			
-//			UIGraphicsEndImageContext();
-//			
-//			CIImage *mysourceImage = [CIImage imageWithCGImage:myimg.CGImage];
-//			
-//			// run the filter through the filter chain
-//			CIImage *myfilteredImage = [CIFilter filterWithName:@"CIColorClamp" keysAndValues:
-//										kCIInputImageKey, mysourceImage,
-//										@"inputMinComponents", [CIVector vectorWithX:_alignmentError Y:_alignmentError Z:_alignmentError W:_alignmentError],
-//										@"inputMaxComponents", [CIVector vectorWithX:1 Y:1 Z:1 W:1],
-//										nil].outputImage;
-//			
-//			self.myVideoView.image = [UIImage imageWithCIImage:myfilteredImage];
-//		}
-		if (!_isAligned) {
-//			NSLog("-------> alignment error: %f", _alignmentError);
-			
-//			UIGraphicsBeginImageContextWithOptions(self.opponentVideoView.bounds.size, self.opponentVideoView.opaque, 0.0);
-//			[self.opponentVideoView.layer renderInContext:UIGraphicsGetCurrentContext()];
-//			
-//			UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-//			
-//			UIGraphicsEndImageContext();
-//			
-//			CIImage *sourceImage = [CIImage imageWithCGImage:img.CGImage];
-//			
-//			// run the filter through the filter chain
-//			
-//			CIImage *filteredImage = [CIFilter filterWithName:@"CIColorControls" keysAndValues:
-//									  kCIInputImageKey, sourceImage,
-//									  @"inputSaturation", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
-//									  @"inputBrightness", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 0, -0.85, true)],
-//									  @"inputContrast", [NSNumber numberWithFloat:ofMap(_alignmentError, 0.5, 2, 1, 2, true)],
-//									  nil].outputImage;
-//			
-//			self.opponentVideoView.image = [UIImage imageWithCIImage:filteredImage];
-		}
-	}
 }
 
 - (void)refreshBackCameraFeed {
@@ -570,7 +502,6 @@ static float _arrowMargin = 5.0f;
 		self.opponentVideoView.layer.cornerRadius = _opponentDiameter * .5;
 		self.opponentVideoView.layer.masksToBounds = YES;
 		[self.view insertSubview:self.opponentVideoView belowSubview:self.otherView];
-//		self.opponentVideoView.layer.borderWidth = 5;
 		self.opponentVideoView.hidden = YES;
 	}
 	
@@ -582,30 +513,6 @@ static float _arrowMargin = 5.0f;
 		self.myVideoView.hidden = YES;
 	}
 	
-//	if (_myVideoPreviewView == nil) {
-//		_myVideoPreviewView = [[GLKView alloc] initWithFrame:self.myVideoView.bounds context:_eaglContext];
-//		_myVideoPreviewView.enableSetNeedsDisplay = NO;
-//		
-//		// because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right), we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view; if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror), you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
-//		_myVideoPreviewView.frame = self.myVideoView.bounds;
-//		
-//		// bind the frame buffer to get the frame buffer width and height;
-//		// the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
-//		// hence the need to read from the frame buffer's width and height;
-//		// in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
-//		// we want to obtain this piece of information so that we won't be
-//		// accessing _videoPreviewView's properties from another thread/queue
-//		[_myVideoPreviewView bindDrawable];
-//		_videoPreviewViewBounds = CGRectZero;
-//		_videoPreviewViewBounds.size.width = _myVideoPreviewView.drawableWidth;
-//		_videoPreviewViewBounds.size.height = _myVideoPreviewView.drawableHeight;
-//		
-//		// we make our video preview view a subview of the window, and send it to the back; this makes FHViewController's view (and its UI elements) on top of the video preview, and also makes video preview unaffected by device rotation
-//		[self.myVideoView addSubview:_myVideoPreviewView];
-//	}
-
-	// create the CIContext instance, note that this must be done after _videoPreviewView is properly set up
-//	_ciContext = [CIContext contextWithEAGLContext:_eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
 }
 
 - (void)startVideoChat {
@@ -755,60 +662,6 @@ static float _arrowMargin = 5.0f;
 	if ([connection isVideoOrientationSupported]) {
 		[connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
 	}
-	// filter video
-//	CMFormatDescriptionRef formatDesc = CMSampleBufferGetFormatDescription(sampleBuffer);
-//	
-//	// update the video dimensions information
-//	_currentVideoDimensions = CMVideoFormatDescriptionGetDimensions(formatDesc);
-//	
-//	CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-//	CIImage *sourceImage = [CIImage imageWithCVPixelBuffer:(CVPixelBufferRef)imageBuffer options:nil];
-//	
-//	// run the filter through the filter chain
-//	CIImage *filteredImage = [CIFilter filterWithName:@"CICircularScreen" keysAndValues:
-//						kCIInputImageKey, sourceImage,
-//						@"inputCenter", [CIVector vectorWithX:100 Y:100],
-//						@"inputWidth", @6.00,
-//						nil].outputImage;
-//	
-//	CGRect sourceExtent = sourceImage.extent;
-//	
-//	CGFloat sourceAspect = sourceExtent.size.width / sourceExtent.size.height;
-//	CGFloat previewAspect = _videoPreviewViewBounds.size.width  / _videoPreviewViewBounds.size.height;
-//	
-//	// we want to maintain the aspect radio of the screen size, so we clip the video image
-//	CGRect drawRect = sourceExtent;
-//	if (sourceAspect > previewAspect)
-//	{
-//		// use full height of the video image, and center crop the width
-//		drawRect.origin.x += (drawRect.size.width - drawRect.size.height * previewAspect) / 2.0;
-//		drawRect.size.width = drawRect.size.height * previewAspect;
-//	}
-//	else
-//	{
-//		// use full width of the video image, and center crop the height
-//		drawRect.origin.y += (drawRect.size.height - drawRect.size.width / previewAspect) / 2.0;
-//		drawRect.size.height = drawRect.size.width / previewAspect;
-//	}
-//	
-//	[_myVideoPreviewView bindDrawable];
-//	
-//	if (_eaglContext != [EAGLContext currentContext])
-//		[EAGLContext setCurrentContext:_eaglContext];
-//	
-//	// clear eagl view to grey
-//	glClearColor(0.5, 0.5, 0.5, 1.0);
-//	glClear(GL_COLOR_BUFFER_BIT);
-//	
-//	// set the blend mode to "source over" so that CI will use that
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-//	
-//	if (filteredImage)
-//		[_ciContext drawImage:filteredImage inRect:_videoPreviewViewBounds fromRect:drawRect];
-//	
-//	[_myVideoPreviewView display];
-	
 	
 	// end filter
 	[self.videoChat processVideoChatCaptureVideoSample:sampleBuffer];
@@ -862,7 +715,7 @@ static float _arrowMargin = 5.0f;
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
 	NSLog(@"didUpdateToLocation: %@", newLocation);
-    self.currentLocation = newLocation;
+	self.currentLocation = newLocation;
 	
 	if (self.currentLocation != nil) {
 		[locationManager stopUpdatingLocation];
@@ -1036,8 +889,17 @@ static float _arrowMargin = 5.0f;
 	ringingPlayer = nil;
 	_videoActive = YES;
 
+	// dismiss any modal dialogs
 	[self dismissViewControllerAnimated:YES completion:nil];
 
+	// destroy tutorial in case it is open
+	if (self.pageViewController != nil) {
+		[self.pageViewController willMoveToParentViewController:nil];
+		[self.pageViewController.view removeFromSuperview];
+		[self.pageViewController removeFromParentViewController];
+		self.pageViewController = nil;
+	}
+	
 	[self refreshBackCameraFeed];
 	
 	[self pointToUser];
@@ -1350,7 +1212,7 @@ static float _arrowMargin = 5.0f;
 
 - (eddaTutorialContentViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-	if (([self.pageTitles count] == 0) || (index >= [self.pageTitles count])) {
+	if ((self.pageTitles.count == 0) || (index >= self.pageTitles.count)) {
 		return nil;
 	}
 	
@@ -1359,13 +1221,14 @@ static float _arrowMargin = 5.0f;
 	pageContentViewController.imageFile = self.pageImages[index];
 	pageContentViewController.titleText = self.pageTitles[index];
 	pageContentViewController.pageIndex = index;
+	pageContentViewController.pageCount = self.pageTitles.count;
 	
 	return pageContentViewController;
 }
 
 - (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
 {
-	return [self.pageTitles count];
+	return self.pageTitles.count;
 }
 
 - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
@@ -1390,8 +1253,8 @@ static float _arrowMargin = 5.0f;
 	self.pageViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
 	self.pageViewController.view.backgroundColor = [UIColor blackColor];
 	
-	[self addChildViewController:_pageViewController];
-	[self.view addSubview:_pageViewController.view];
+	[self addChildViewController:self.pageViewController];
+	[self.view addSubview:self.pageViewController.view];
 	[self.pageViewController didMoveToParentViewController:self];
 }
 

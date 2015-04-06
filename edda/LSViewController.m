@@ -403,7 +403,8 @@
 		int diff = round(ti / 60 / 60 / 24);
 		return[NSString stringWithFormat:@"%d days ago", diff];
 	} else {
-		return @"never";
+		int diff = round(ti / 604800);
+		return[NSString stringWithFormat:@"%d weeks ago", diff];
 	}
 }
 
