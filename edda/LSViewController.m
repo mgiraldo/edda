@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Ping Pong Estudio. All rights reserved.
 //
 
+#define kUIAlertViewTagPassword 100
+
 #import "LSViewController.h"
 #import "eddaMainViewController.h"
 #import "eddaMapAnnotation.h"
@@ -24,6 +26,8 @@
 @end
 
 @implementation LSViewController
+
+static int _maxZoom = 10;
 
 - (void)viewDidLoad
 {
@@ -176,7 +180,14 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	[self callUser:indexPath.row];
+	m_selectedIndex = indexPath.row;
+	if ([[[m_userArray objectAtIndex:m_selectedIndex] valueForKey:@"password"] isEqualToString:@""]) {
+		// all cool... just call
+		[self callUser:m_selectedIndex];
+	} else {
+		[self promptPassword];
+	}
+	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)viewDidUnload {
@@ -187,6 +198,9 @@
 - (IBAction)touchRefresh:(id)sender
 {
 	[self refreshView];
+}
+
+- (IBAction)touchPrivateCall:(id)sender {
 }
 
 - (void)refreshView {
@@ -286,13 +300,21 @@
 			NSNumber *userAltitude = [custom valueForKey:@"altitude"];
 			
 			NSString *qbname = [custom valueForKey:@"username"];
-			
-			NSString *userTitle;
+
+			NSString *qbpassword = [custom valueForKey:@"password"];
+
+			NSString *userTitle, *userPassword;
 			
 			if (qbname != nil) {
-				userTitle = [QBHelper decodeUsername:qbname];
+				userTitle = [QBHelper decodeText:qbname];
 			} else {
 				userTitle = @"old Edda version";
+			}
+			
+			if (qbpassword != nil) {
+				userPassword = [QBHelper decodeText:qbpassword];
+			} else {
+				userPassword = @"";
 			}
 			
 			NSNumber *privacy = [custom valueForKey:@"privacy"];
@@ -308,6 +330,7 @@
 			[dict setObject:@"Locating…" forKey:@"locality"];
 			[dict setObject:userAltitude forKey:@"userAltitude"];
 			[dict setObject:privacy forKey:@"privacy"];
+			[dict setObject:userPassword forKey:@"password"];
 			[dict setObject:object.lastRequestAt forKey:@"lastRequestAt"];
 			
 			[sortedArray addObject:dict];
@@ -408,6 +431,41 @@
 	}
 }
 
+#pragma mark - Password Stuff
+
+- (void)promptPassword {
+	self.passwordRequiredMsg = [[UIAlertView alloc]
+								initWithTitle:@"🔒 What's the secret phrase?"
+								message:nil
+								delegate:self
+								cancelButtonTitle:@"Cancel"
+								otherButtonTitles:@"Call", nil];
+	
+	self.passwordRequiredMsg.tag = kUIAlertViewTagPassword;
+	self.passwordRequiredMsg.alertViewStyle = UIAlertViewStylePlainTextInput;
+	[self.passwordRequiredMsg textFieldAtIndex:0].delegate = self;
+	[self.passwordRequiredMsg show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if(kUIAlertViewTagPassword == alertView.tag && buttonIndex != [alertView cancelButtonIndex]) {
+		UITextField *password = [alertView textFieldAtIndex:0];
+		if ([[[m_userArray objectAtIndex:m_selectedIndex] valueForKey:@"password"] isEqualToString:password.text]) {
+			// all cool... just call
+			[self callUser:m_selectedIndex];
+		}
+	}
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	// Dismiss keyboard when return key is pressed
+	[self.passwordRequiredMsg dismissWithClickedButtonIndex:self.passwordRequiredMsg.firstOtherButtonIndex animated:YES];
+	return YES;
+}
+
 #pragma mark - MapView and Clustering
 
 - (MKCoordinateRegion)regionFromLocations {
@@ -439,7 +497,13 @@
 		KPAnnotation *cluster = (KPAnnotation *)view.annotation;
 		if (cluster.annotations.count == 1){
 			eddaMapAnnotation * myAnnotation = (eddaMapAnnotation *)[cluster.annotations anyObject];
-			[self callUser:myAnnotation.index];
+			m_selectedIndex = myAnnotation.index;
+			if ([[[m_userArray objectAtIndex:m_selectedIndex] valueForKey:@"password"] isEqualToString:@""]) {
+				// all cool... just call
+				[self callUser:m_selectedIndex];
+			} else {
+				[self promptPassword];
+			}
 		}
 	}
 }
@@ -507,13 +571,13 @@
 			
 			UIButton* rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = CGRectMake(0, 0, 26, 27);
-			[rightButton setImage:[UIImage imageNamed:@"CallIcon"] forState:UIControlStateNormal];
+			[rightButton setImage:[UIImage imageNamed:@"call.png"] forState:UIControlStateNormal];
 			
 			annotationView.rightCalloutAccessoryView = rightButton;
 			annotationView.pinColor = MKPinAnnotationColorRed;
 			annotationView.annotation = annotation;
 			annotationView.canShowCallout = YES;
-			annotationView.animatesDrop = YES;
+			annotationView.animatesDrop = NO;
 			
 			return annotationView;
 		}
@@ -522,11 +586,16 @@
 }
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
+	unsigned long zoom = mapView.zoomLevel;
+//	NSLog(@"change zoom: %lu", zoom);
+	if (zoom > _maxZoom) {
+		[mapView setCenterCoordinate:mapView.centerCoordinate zoomLevel:_maxZoom animated:YES];
+	}
 	[self.clusteringController refresh:YES];
 }
 
 - (BOOL)clusteringControllerShouldClusterAnnotations:(KPClusteringController *)clusteringController {
-	return self.mapView.zoomLevel < 14; // Find zoom level that suits your dataset
+	return self.mapView.zoomLevel <= _maxZoom; // Find zoom level that suits your dataset
 }
 
 - (void)clusteringControllerWillUpdateVisibleAnnotations:(KPClusteringController *)clusteringController {

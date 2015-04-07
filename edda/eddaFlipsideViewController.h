@@ -22,9 +22,11 @@
 @property (weak, nonatomic) IBOutlet UISwitch *privacySwitch;
 @property (weak, nonatomic) id <eddaFlipsideViewControllerDelegate> delegate;
 @property (weak, nonatomic) NSString *nickname;
+@property (weak, nonatomic) NSString *password;
 @property (weak, nonatomic) IBOutlet UITextField *nicknameLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *backgroundView;
 @property (weak, nonatomic) IBOutlet UIButton *feedbackButton;
+@property (weak, nonatomic) IBOutlet UITextField *passwordLabel;
 
 - (IBAction)done:(id)sender;
 - (IBAction)privacyChanged:(UISwitch *)sender;

@@ -23,10 +23,11 @@ static bool bPollingTimerOn = NO;
 }
 
 + (void) changeLoginToLogin:(NSString *)login;
++ (void) setPassword:(NSString *)password;
 + (void) saveUserAlignmentToQB:(BOOL)alignment;
 + (void) saveUserPrivacyToQB:(BOOL)privacy;
 + (NSDictionary *)QBCustomDataToObject:(NSString *)customData;
-+ (NSString *)decodeUsername:(NSString *)encodedUsername;
++ (NSString *)decodeText:(NSString *)encodedText;
 + (void)saveCurrentUserToQB;
 + (void) saveUserWithLocationToQB:(QBLPlace *)place altitude:(NSNumber *)altitude;
 + (void) processPushedCall:(NSDictionary *)userInfo;

@@ -55,6 +55,7 @@
 							negative, @"privacy",
 							negative, @"alignment",
 							[[appDelegate.userTitle dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0], @"username",
+							@"", @"password",
 							nil];
 	
 	NSString *customString = [QBHelper DictionaryToQBCustomData:custom];
@@ -130,6 +131,21 @@
 	[self saveCustomToQB:newCustom];
 }
 
++ (void) setPassword:(NSString *)password
+{
+	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	
+	if (appDelegate.loggedInUser == nil) return;
+	
+	NSDictionary * oldCustom = [QBHelper QBCustomDataToObject:appDelegate.loggedInUser.customData];
+	
+	NSMutableDictionary * newCustom = [NSMutableDictionary dictionaryWithDictionary:oldCustom];
+	
+	[newCustom setValue:[[password dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0] forKey:@"password"];
+	
+	[self saveCustomToQB:newCustom];
+}
+
 + (void) saveUserAlignmentToQB:(BOOL)alignment
 {
 	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -171,12 +187,12 @@
 	return string;
 }
 
-+ (NSString *)decodeUsername:(NSString *)encodedUsername {
-	NSData *encodedData = [[NSData alloc] initWithBase64EncodedString:encodedUsername options:0];
++ (NSString *)decodeText:(NSString *)encodedText {
+	NSData *encodedData = [[NSData alloc] initWithBase64EncodedString:encodedText options:0];
 	
-	NSString *userTitle = [[NSString alloc] initWithData:encodedData encoding:NSUTF8StringEncoding];
+	NSString *decodedText = [[NSString alloc] initWithData:encodedData encoding:NSUTF8StringEncoding];
 	
-	return userTitle;
+	return decodedText;
 }
 
 + (void) saveCustomToQB:(NSDictionary *)custom {

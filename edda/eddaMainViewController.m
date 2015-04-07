@@ -524,6 +524,7 @@ static float _arrowMargin = 5.0f;
 		}
 		
 		self.videoChat.isUseCustomVideoChatCaptureSession = YES;
+		self.videoChat.useHeadphone = [self isHeadsetPluggedIn];
 
 		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
 		
@@ -911,6 +912,7 @@ static float _arrowMargin = 5.0f;
 	}
 
 	self.videoChat.isUseCustomVideoChatCaptureSession = YES;
+	self.videoChat.useHeadphone = [self isHeadsetPluggedIn];
 
 	// Accept call
 	//
@@ -1006,6 +1008,15 @@ static float _arrowMargin = 5.0f;
 #pragma mark -
 #pragma mark AVAudioPlayerDelegate
 
+- (BOOL)isHeadsetPluggedIn {
+	AVAudioSessionRouteDescription* route = [[AVAudioSession sharedInstance] currentRoute];
+	for (AVAudioSessionPortDescription* desc in [route outputs]) {
+		if ([[desc portType] isEqualToString:AVAudioSessionPortHeadphones])
+			return YES;
+	}
+	return NO;
+}
+
 -(void) playSound:(NSString *)sound type:(NSString *)type {
 	if(ringingPlayer != nil){
 		[ringingPlayer stop];
@@ -1067,7 +1078,7 @@ static float _arrowMargin = 5.0f;
 		NSNumber *userID = [NSNumber numberWithInteger:user.ID];
 		NSDictionary *custom = [QBHelper QBCustomDataToObject:user.customData];
 
-		NSString *userTitle = [QBHelper decodeUsername:[custom valueForKey:@"username"]];
+		NSString *userTitle = [QBHelper decodeText:[custom valueForKey:@"username"]];
 		
 		CLLocation * location = [[CLLocation alloc] initWithLatitude:[[custom valueForKey:@"latitude"] doubleValue] longitude:[[custom valueForKey:@"longitude"] doubleValue]];
 		NSNumber *userAltitude = [custom valueForKey:@"altitude"];

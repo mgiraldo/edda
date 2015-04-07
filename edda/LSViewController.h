@@ -11,11 +11,12 @@
 #import "QBHelper.h"
 #import "eddaAppDelegate.h"
 
-@interface LSViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, MKMapViewDelegate>
+@interface LSViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, MKMapViewDelegate, UIAlertViewDelegate, UITextFieldDelegate>
 {
 	NSMutableArray * m_userArray;
 	NSMutableArray * m_annotationArray;
 	NSNumber * m_receiverID;
+	NSInteger m_selectedIndex;
 	NSString * m_receiverTitle;
 	CLLocation * m_receiverLocation;
 	NSNumber * m_receiverAltitude;
@@ -23,9 +24,11 @@
     __weak IBOutlet UITableView *m_userTableView;
 }
 
+@property (nonatomic) UIAlertView *passwordRequiredMsg;
 @property (nonatomic, assign) eddaAppDelegate* appDelegate;
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 
 - (IBAction)touchRefresh:(id)sender;
+- (IBAction)touchPrivateCall:(id)sender;
 
 @end

@@ -353,25 +353,25 @@
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="28"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" returnKeyType="done"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Private" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yQW-H1-TqX">
-                                <rect key="frame" x="74" y="274" width="172" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Privacy settings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yQW-H1-TqX">
+                                <rect key="frame" x="60" y="254" width="200" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="f6S-vb-gQQ"/>
-                                    <constraint firstAttribute="width" constant="172" id="wEd-Gg-Ffm"/>
+                                    <constraint firstAttribute="width" constant="200" id="wEd-Gg-Ffm"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w4c-pk-0z5">
-                                <rect key="frame" x="136" y="305" width="51" height="31"/>
+                                <rect key="frame" x="232" y="285" width="51" height="31"/>
                                 <color key="onTintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
                                     <action selector="privacyChanged:" destination="kIf-nA-PKG" eventType="valueChanged" id="25X-Bv-IFV"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="If enabled, your nickname will not appear in the user list." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="t7b-DM-Fg8">
-                                <rect key="frame" x="71" y="346" width="179" height="40"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hide nickname from user list" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="t7b-DM-Fg8">
+                                <rect key="frame" x="33" y="281" width="179" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="179" id="byi-3q-l7S"/>
                                     <constraint firstAttribute="height" constant="40" id="ivW-9o-Nso"/>
@@ -381,6 +381,28 @@
                                 <nil key="highlightedColor"/>
                                 <size key="shadowOffset" width="0.0" height="0.0"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Whoever wants to call you has to type this secret phrase:" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="bft-ko-nQL">
+                                <rect key="frame" x="71" y="326" width="179" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="5ha-rk-cYh"/>
+                                    <constraint firstAttribute="width" constant="179" id="nUs-dZ-h4p"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="14"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <size key="shadowOffset" width="0.0" height="0.0"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="18" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="0eN-lz-vNj">
+                                <rect key="frame" x="20" y="376" width="280" height="40"/>
+                                <color key="backgroundColor" red="0.1764705882" green="0.1764705882" blue="0.1764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="280" id="GiM-dk-FAG"/>
+                                    <constraint firstAttribute="height" constant="40" id="ijo-uj-YuV"/>
+                                </constraints>
+                                <color key="textColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" returnKeyType="done"/>
+                            </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mnb-p7-R9t">
                                 <rect key="frame" x="106" y="426" width="108" height="37"/>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
@@ -394,28 +416,33 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="t7b-DM-Fg8" firstAttribute="top" secondItem="w4c-pk-0z5" secondAttribute="bottom" constant="10" id="0dq-hl-FNW"/>
+                            <constraint firstItem="w4c-pk-0z5" firstAttribute="trailing" secondItem="clI-F6-jWf" secondAttribute="trailing" constant="-20" id="3Qs-L5-6D9"/>
                             <constraint firstAttribute="centerX" secondItem="yQW-H1-TqX" secondAttribute="centerX" id="3gF-JH-w5r"/>
+                            <constraint firstAttribute="centerX" secondItem="0eN-lz-vNj" secondAttribute="centerX" id="7oS-s6-Yc1"/>
                             <constraint firstAttribute="centerX" secondItem="bQH-2l-117" secondAttribute="centerX" id="Aza-Wh-fm3"/>
                             <constraint firstItem="Rh9-xD-R3d" firstAttribute="top" secondItem="0Jt-81-7DK" secondAttribute="bottom" id="CdZ-4g-gf6"/>
                             <constraint firstAttribute="centerX" secondItem="Rh9-xD-R3d" secondAttribute="centerX" id="DLt-lt-rZ3"/>
-                            <constraint firstAttribute="centerX" secondItem="w4c-pk-0z5" secondAttribute="centerX" constant="-0.5" id="GeH-0V-Dog"/>
                             <constraint firstItem="YuU-kN-3Gv" firstAttribute="centerX" secondItem="Rh9-xD-R3d" secondAttribute="centerX" constant="1" id="H51-9c-AnA"/>
-                            <constraint firstAttribute="centerX" secondItem="t7b-DM-Fg8" secondAttribute="centerX" constant="-0.5" id="NyI-8q-iWx"/>
+                            <constraint firstAttribute="centerX" secondItem="bft-ko-nQL" secondAttribute="centerX" id="MAU-O6-m8y"/>
+                            <constraint firstItem="bft-ko-nQL" firstAttribute="top" secondItem="w4c-pk-0z5" secondAttribute="bottom" constant="10" id="PAS-iW-OSt"/>
                             <constraint firstItem="clI-F6-jWf" firstAttribute="top" secondItem="bQH-2l-117" secondAttribute="bottom" constant="10" id="QcG-cL-ybj"/>
-                            <constraint firstItem="Mnb-p7-R9t" firstAttribute="top" secondItem="t7b-DM-Fg8" secondAttribute="bottom" constant="40" id="UY5-qX-eEz"/>
                             <constraint firstItem="w4c-pk-0z5" firstAttribute="top" secondItem="yQW-H1-TqX" secondAttribute="bottom" constant="10" id="XKV-7I-P0O"/>
+                            <constraint firstItem="t7b-DM-Fg8" firstAttribute="centerY" secondItem="w4c-pk-0z5" secondAttribute="centerY" id="YtR-9q-ikl"/>
                             <constraint firstAttribute="centerX" secondItem="clI-F6-jWf" secondAttribute="centerX" constant="-1" id="Zql-gH-47J"/>
                             <constraint firstAttribute="centerX" secondItem="Mnb-p7-R9t" secondAttribute="centerX" id="Zvq-r3-oZl"/>
                             <constraint firstItem="YuU-kN-3Gv" firstAttribute="top" secondItem="Rh9-xD-R3d" secondAttribute="top" constant="20" id="aDn-HY-Qc7"/>
-                            <constraint firstItem="yQW-H1-TqX" firstAttribute="top" secondItem="clI-F6-jWf" secondAttribute="bottom" constant="40" id="bpt-Ir-tI6"/>
+                            <constraint firstItem="yQW-H1-TqX" firstAttribute="top" secondItem="clI-F6-jWf" secondAttribute="bottom" constant="20" id="bpt-Ir-tI6"/>
                             <constraint firstItem="bQH-2l-117" firstAttribute="top" secondItem="0Jt-81-7DK" secondAttribute="bottom" constant="120" id="fds-eX-v53"/>
+                            <constraint firstItem="Mnb-p7-R9t" firstAttribute="top" secondItem="0eN-lz-vNj" secondAttribute="bottom" constant="10" id="mgP-mx-qeg"/>
+                            <constraint firstItem="0eN-lz-vNj" firstAttribute="top" secondItem="bft-ko-nQL" secondAttribute="bottom" constant="10" id="mt8-d8-SL5"/>
+                            <constraint firstItem="w4c-pk-0z5" firstAttribute="leading" secondItem="t7b-DM-Fg8" secondAttribute="trailing" constant="20" id="tPY-n8-ZXh"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="backgroundView" destination="Rh9-xD-R3d" id="DTe-3f-eq4"/>
                         <outlet property="feedbackButton" destination="Mnb-p7-R9t" id="85B-5S-OM0"/>
                         <outlet property="nicknameLabel" destination="clI-F6-jWf" id="wBZ-gO-aid"/>
+                        <outlet property="passwordLabel" destination="0eN-lz-vNj" id="INx-RL-KzU"/>
                         <outlet property="privacySwitch" destination="w4c-pk-0z5" id="233-0I-QAa"/>
                     </connections>
                 </viewController>
@@ -521,6 +548,17 @@
                                 <segue destination="ovX-ff-FKJ" kind="unwind" unwindAction="unwindToMainViewController:" id="Hga-1A-ecz"/>
                             </connections>
                         </barButtonItem>
+                        <button key="titleView" hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="qQm-9x-Ud3">
+                            <rect key="frame" x="104" y="4" width="112" height="37"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
+                            <state key="normal" title="CALL HIDDEN">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="touchPrivateCall:" destination="OUq-rZ-Utc" eventType="touchUpInside" id="Qpz-WH-foi"/>
+                            </connections>
+                        </button>
                         <barButtonItem key="rightBarButtonItem" id="gFt-09-dYM">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Nfc-we-OMJ">
                                 <rect key="frame" x="16" y="7" width="82" height="37"/>
