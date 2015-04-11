@@ -295,7 +295,7 @@ static float _arrowMargin = 5.0f;
 	
 	// for the heading indicator
 	float correctHeading = self.currentHeading.trueHeading - viewAngle.azimuth;
-	float headingAdjusted = abs(correctHeading);
+	float headingAdjusted = fabsf(correctHeading);
 	
 	// arrows on/off
 	[self hideArrows];
@@ -916,7 +916,12 @@ static float _arrowMargin = 5.0f;
 
 	// Accept call
 	//
-	[self.videoChat acceptCallWithOpponentID:videoChatOpponentID conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
+	NSArray *keys = [NSArray arrayWithObjects:@"location", nil];
+	NSArray *objects = [NSArray arrayWithObjects:self.currentLocation, nil];
+	NSDictionary *customParameters = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+	[self.videoChat acceptCallWithOpponentID:videoChatOpponentID conferenceType:QBVideoChatConferenceTypeAudioAndVideo customParameters:customParameters];
+	
+	NSLog(@"sent custom: %@", customParameters);
 	
 	[self createVideoChatViews];
 }
@@ -956,7 +961,7 @@ static float _arrowMargin = 5.0f;
 }
 
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID{
-//	NSLog(@"call accepted by: %d", (int)userID);
+	NSLog(@"call accepted by: %d", (int)userID);
 	self.blockingView.hidden = YES;
 
 	_videoActive = YES;
@@ -966,6 +971,34 @@ static float _arrowMargin = 5.0f;
 	_toLon = self.appDelegate.callReceiverLocation.coordinate.longitude;
 	_toAlt = self.appDelegate.callReceiverAltitude.doubleValue;
 
+	[self pointToUser];
+}
+
+/*
+ added this function to allow for updating opponent position on accept
+ eg: opponent has moved since they last used the app
+ */
+-(void) chatCallDidAcceptByUser:(NSUInteger)userID customParameters:(NSDictionary *)customParameters{
+	NSLog(@"call accepted by: %d params: %@", (int)userID, customParameters);
+	self.blockingView.hidden = YES;
+	
+	_videoActive = YES;
+	[self refreshBackCameraFeed];
+	
+	if ([customParameters objectForKey:@"location"] != nil) {
+		CLLocation *opponentLocation = (CLLocation *)[customParameters objectForKey:@"location"];
+		self.appDelegate.callReceiverLocation = opponentLocation;
+		self.appDelegate.callReceiverAltitude = [NSNumber numberWithDouble:opponentLocation.altitude];
+		
+		NSLog(@"opponentLocation: %@", opponentLocation);
+	}
+
+	NSLog(@"callReceiverLocation: %@ callReceiverAltitude %@", self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
+
+	_toLat = self.appDelegate.callReceiverLocation.coordinate.latitude;
+	_toLon = self.appDelegate.callReceiverLocation.coordinate.longitude;
+	_toAlt = self.appDelegate.callReceiverAltitude.doubleValue;
+	
 	[self pointToUser];
 }
 

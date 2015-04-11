@@ -20,11 +20,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "edda/LSViewController.m"
-            timestampString = "450082470.420423"
+            timestampString = "450487711.224145"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "491"
-            endingLineNumber = "491"
+            startingLineNumber = "505"
+            endingLineNumber = "505"
             landmarkName = "-regionFromLocations"
             landmarkType = "5">
          </BreakpointContent>

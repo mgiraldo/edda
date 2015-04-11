@@ -109,6 +109,13 @@ static int _maxZoom = 10;
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewDidUnload {
+	m_userTableView = nil;
+	[super viewDidUnload];
+}
+
+#pragma mark - TableView stuff
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [m_userArray count];
@@ -144,7 +151,7 @@ static int _maxZoom = 10;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSMutableDictionary * dict = [m_userArray objectAtIndex:indexPath.row];
+    NSDictionary * dict = [m_userArray objectAtIndex:indexPath.row];
     
     if (!dict)
         return nil;
@@ -160,7 +167,7 @@ static int _maxZoom = 10;
 	
     //background view
 	cell.backgroundColor = [UIColor blackColor];
-
+	
 	cell.textLabel.backgroundColor = [UIColor clearColor];
 	cell.textLabel.text = [dict objectForKey:@"userTitle"];
     cell.textLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:24];
@@ -174,7 +181,19 @@ static int _maxZoom = 10;
 	cell.detailTextLabel.font = [UIFont fontWithName:@"AvenirNextCondensed-Medium" size:16];
 	cell.detailTextLabel.textColor = [UIColor grayColor];
     cell.contentView.backgroundColor = [UIColor clearColor];
- 
+	
+	if (![[dict valueForKey:@"password"] isEqualToString:@""]) {
+		UIImageView *lockView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"lock.png"]];
+		lockView.frame = CGRectMake(0, 0, 11, 16);
+		UIView *rightView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 21, 40)];
+		[rightView addSubview:lockView];
+		lockView.center = CGPointMake(16, 20);
+
+		cell.accessoryView = rightView;
+	} else {
+		cell.accessoryView = nil;
+	}
+	
     return cell;
 }
 
@@ -188,11 +207,6 @@ static int _maxZoom = 10;
 		[self promptPassword];
 	}
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)viewDidUnload {
-    m_userTableView = nil;
-    [super viewDidUnload];
 }
 
 - (IBAction)touchRefresh:(id)sender

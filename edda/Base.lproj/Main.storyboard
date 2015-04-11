@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1514" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rQl-PL-IFJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rQl-PL-IFJ">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -84,10 +84,10 @@
                                 <size key="shadowOffset" width="-1" height="1"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OQq-eS-E7P">
-                                <rect key="frame" x="0.0" y="368" width="320" height="200"/>
+                                <rect key="frame" x="0.0" y="348" width="320" height="220"/>
                                 <subviews>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sfP-WX-KSq">
-                                        <rect key="frame" x="90" y="74" width="140" height="40"/>
+                                        <rect key="frame" x="90" y="90" width="140" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="Ew0-6v-IBI"/>
                                             <constraint firstAttribute="width" constant="140" id="HlT-A7-rM1"/>
@@ -104,7 +104,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cCn-TC-ql3">
-                                        <rect key="frame" x="90" y="74" width="140" height="40"/>
+                                        <rect key="frame" x="90" y="90" width="140" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="140" id="H5W-Uu-aUK"/>
                                             <constraint firstAttribute="height" constant="40" id="mLb-Pe-Og7"/>
@@ -123,10 +123,10 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="sfP-WX-KSq" secondAttribute="centerX" id="2bv-n8-bJe"/>
-                                    <constraint firstAttribute="height" constant="200" id="Hrb-uw-drT"/>
-                                    <constraint firstAttribute="centerY" secondItem="sfP-WX-KSq" secondAttribute="centerY" constant="6" id="Kow-Jx-G3H"/>
+                                    <constraint firstAttribute="height" constant="220" id="Hrb-uw-drT"/>
+                                    <constraint firstAttribute="centerY" secondItem="sfP-WX-KSq" secondAttribute="centerY" id="Kow-Jx-G3H"/>
                                     <constraint firstAttribute="centerX" secondItem="cCn-TC-ql3" secondAttribute="centerX" id="Lta-Or-DSB"/>
-                                    <constraint firstAttribute="centerY" secondItem="cCn-TC-ql3" secondAttribute="centerY" constant="6" id="wF9-LV-3DF"/>
+                                    <constraint firstAttribute="centerY" secondItem="cCn-TC-ql3" secondAttribute="centerY" id="wF9-LV-3DF"/>
                                 </constraints>
                             </view>
                         </subviews>
