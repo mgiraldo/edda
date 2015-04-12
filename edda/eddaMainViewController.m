@@ -203,7 +203,7 @@ static float _arrowMargin = 5.0f;
 
 - (void) userHasLoggedIn
 {
-	[QBChat instance].delegate = self;
+	[[QBChat instance] addDelegate:self];
 	QBUUser *currentUser = [QBUUser user];
 	currentUser.ID = self.appDelegate.loggedInUser.ID;
 	currentUser.password = [QBHelper uniqueDeviceIdentifier];
@@ -581,37 +581,6 @@ static float _arrowMargin = 5.0f;
 	AVCaptureVideoDataOutput *videoCaptureOutput = [[AVCaptureVideoDataOutput alloc] init];
 	videoCaptureOutput.alwaysDiscardsLateVideoFrames = YES;
 	
-	// set FPS
-	int _frameRate = 5;
-	if ([videoDevice respondsToSelector:@selector(setActiveVideoMinFrameDuration:)] &&
-		[videoDevice respondsToSelector:@selector(setActiveVideoMaxFrameDuration:)]) {
-		
-		NSError *error;
-		[videoDevice lockForConfiguration:&error];
-		if (error == nil) {
-#if defined(__IPHONE_7_0)
-			[videoDevice setActiveVideoMinFrameDuration:CMTimeMake(1, _frameRate)];
-			[videoDevice setActiveVideoMaxFrameDuration:CMTimeMake(1, _frameRate)];
-#endif
-		}
-		[videoDevice unlockForConfiguration];
-		
-	} else {
-		
-		for (AVCaptureConnection *connection in videoCaptureOutput.connections)
-		{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-			if ([connection respondsToSelector:@selector(setVideoMinFrameDuration:)])
-				connection.videoMinFrameDuration = CMTimeMake(1, _frameRate);
-			
-			if ([connection respondsToSelector:@selector(setVideoMaxFrameDuration:)])
-				connection.videoMaxFrameDuration = CMTimeMake(1, _frameRate);
-#pragma clang diagnostic pop
-		}
-	}
-	// end FPS
- 
 	//
 	// Set the video output to store frame in BGRA (It is supposed to be faster)
 	NSString* key = (NSString*)kCVPixelBufferPixelFormatTypeKey;

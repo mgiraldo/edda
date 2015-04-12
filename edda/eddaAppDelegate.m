@@ -28,6 +28,7 @@
 	[QBApplication sharedApplication].applicationId = [configuration[@"Quickblox"][@"ApplicationID"] integerValue];
 	[QBConnection registerServiceKey:configuration[@"Quickblox"][@"AuthKey"]];
 	[QBConnection registerServiceSecret:configuration[@"Quickblox"][@"AuthSecret"]];
+	[QBConnection setAutoCreateSessionEnabled:YES];
 	[QBSettings setAccountKey:configuration[@"Quickblox"][@"AccountKey"]];
 	[QBSettings setLogLevel:QBLogLevelNothing];
 	
@@ -37,8 +38,8 @@
 	
 	NSMutableDictionary *videoChatConfiguration = [[QBSettings videoChatConfiguration] mutableCopy];
 	[videoChatConfiguration setObject:@20 forKey:kQBVideoChatCallTimeout];
-	[videoChatConfiguration setObject:AVCaptureSessionPresetLow forKey:kQBVideoChatFrameQualityPreset];
-	[videoChatConfiguration setObject:@2 forKey:kQBVideoChatVideoFramesPerSecond];
+	[videoChatConfiguration setObject:AVCaptureSessionPresetMedium forKey:kQBVideoChatFrameQualityPreset];
+	[videoChatConfiguration setObject:@5 forKey:kQBVideoChatVideoFramesPerSecond];
 	[videoChatConfiguration setObject:@3 forKey:kQBVideoChatP2PTimeout];
 	[videoChatConfiguration setObject:@10 forKey:kQBVideoChatBadConnectionTimeout];
 	[QBSettings setVideoChatConfiguration:videoChatConfiguration];
