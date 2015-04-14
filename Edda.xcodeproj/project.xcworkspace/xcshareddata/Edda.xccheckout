@@ -22,7 +22,7 @@
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>43E48969AB834C98133F4F66DEBB455ACE272805</key>
-		<string>../../../../../stuff/xcode/quickblox-ios-sdk</string>
+		<string>../../../stuff/xcode/quickblox-ios-sdk</string>
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>
 		<string>../..</string>
 		<key>E609DD15689CC93D8F4D219EB393F30F9F726178</key>
