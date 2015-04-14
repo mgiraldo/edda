@@ -84,10 +84,10 @@
                                 <size key="shadowOffset" width="-1" height="1"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OQq-eS-E7P">
-                                <rect key="frame" x="50" y="348" width="220" height="220"/>
+                                <rect key="frame" x="50" y="388" width="220" height="180"/>
                                 <subviews>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sfP-WX-KSq">
-                                        <rect key="frame" x="40" y="90" width="140" height="40"/>
+                                        <rect key="frame" x="40" y="70" width="140" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="Ew0-6v-IBI"/>
                                             <constraint firstAttribute="width" constant="140" id="HlT-A7-rM1"/>
@@ -104,7 +104,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cCn-TC-ql3">
-                                        <rect key="frame" x="40" y="90" width="140" height="40"/>
+                                        <rect key="frame" x="40" y="70" width="140" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="140" id="H5W-Uu-aUK"/>
                                             <constraint firstAttribute="height" constant="40" id="mLb-Pe-Og7"/>
@@ -123,7 +123,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="sfP-WX-KSq" secondAttribute="centerX" id="2bv-n8-bJe"/>
-                                    <constraint firstAttribute="height" constant="220" id="Hrb-uw-drT"/>
+                                    <constraint firstAttribute="height" constant="180" id="Hrb-uw-drT"/>
                                     <constraint firstAttribute="centerY" secondItem="sfP-WX-KSq" secondAttribute="centerY" id="Kow-Jx-G3H"/>
                                     <constraint firstAttribute="centerX" secondItem="cCn-TC-ql3" secondAttribute="centerX" id="Lta-Or-DSB"/>
                                     <constraint firstAttribute="width" constant="220" id="n2U-k1-AAQ"/>

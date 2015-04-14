@@ -885,12 +885,16 @@ static float _arrowMargin = 5.0f;
 
 	// Accept call
 	//
-	NSArray *keys = [NSArray arrayWithObjects:@"location", nil];
-	NSArray *objects = [NSArray arrayWithObjects:self.currentLocation, nil];
-	NSDictionary *customParameters = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
-	[self.videoChat acceptCallWithOpponentID:videoChatOpponentID conferenceType:QBVideoChatConferenceTypeAudioAndVideo customParameters:customParameters];
+	NSArray *keys = [NSArray arrayWithObjects:@"latitude", @"longitude", @"altitude", nil];
+	NSArray *objects = [NSArray arrayWithObjects:
+						[NSNumber numberWithDouble:self.currentLocation.coordinate.latitude],
+						[NSNumber numberWithDouble:self.currentLocation.coordinate.longitude],
+						[NSNumber numberWithDouble:self.currentLocation.altitude],
+						nil];
+	NSDictionary *custom = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+	[self.videoChat acceptCallWithOpponentID:videoChatOpponentID conferenceType:QBVideoChatConferenceTypeAudioAndVideo customParameters:custom];
 	
-	NSLog(@"sent custom: %@", customParameters);
+	NSLog(@"sent custom: %@", custom);
 	
 	[self createVideoChatViews];
 }
@@ -907,7 +911,7 @@ static float _arrowMargin = 5.0f;
 }
 
 -(void) chatDidNotLogin{
-	// You have successfully signed in to QuickBlox Chat
+	// Sign in to QuickBlox Chat failed
 	NSLog(@"ERROR! chat NOT logged in!");
 }
 
@@ -929,20 +933,6 @@ static float _arrowMargin = 5.0f;
 	[alert show];
 }
 
--(void) chatCallDidAcceptByUser:(NSUInteger)userID{
-	NSLog(@"call accepted by: %d", (int)userID);
-	self.blockingView.hidden = YES;
-
-	_videoActive = YES;
-	[self refreshBackCameraFeed];
-
-	_toLat = self.appDelegate.callReceiverLocation.coordinate.latitude;
-	_toLon = self.appDelegate.callReceiverLocation.coordinate.longitude;
-	_toAlt = self.appDelegate.callReceiverAltitude.doubleValue;
-
-	[self pointToUser];
-}
-
 /*
  added this function to allow for updating opponent position on accept
  eg: opponent has moved since they last used the app
@@ -954,12 +944,15 @@ static float _arrowMargin = 5.0f;
 	_videoActive = YES;
 	[self refreshBackCameraFeed];
 	
-	if ([customParameters objectForKey:@"location"] != nil) {
-		CLLocation *opponentLocation = (CLLocation *)[customParameters objectForKey:@"location"];
+	if ([customParameters objectForKey:@"latitude"] != nil) {
+		CLLocationDegrees lat = [[customParameters valueForKey:@"latitude"] doubleValue];
+		CLLocationDegrees lon = [[customParameters valueForKey:@"longitude"] doubleValue];
+		CLLocationDistance alt = [[customParameters valueForKey:@"altitude"] doubleValue];
+		CLLocation *opponentLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(lat, lon) altitude:alt horizontalAccuracy:1 verticalAccuracy:1 timestamp:nil];
 		self.appDelegate.callReceiverLocation = opponentLocation;
 		self.appDelegate.callReceiverAltitude = [NSNumber numberWithDouble:opponentLocation.altitude];
 		
-		NSLog(@"opponentLocation: %@", opponentLocation);
+		NSLog(@"opponentLocation: %@ alt: %f", opponentLocation, alt);
 	}
 
 	NSLog(@"callReceiverLocation: %@ callReceiverAltitude %@", self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
