@@ -80,7 +80,6 @@
 		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
 		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
 		CCAE15DA1ADAF6B50026D835 /* Quickblox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCAE15D91ADAF6B50026D835 /* Quickblox.framework */; };
-		CCAE15DC1ADB042C0026D835 /* Quickblox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCAE15DB1ADB042C0026D835 /* Quickblox.framework */; };
 		CCBF45411A76CA88005E2750 /* KPAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45331A76CA88005E2750 /* KPAnnotation.m */; };
 		CCBF45421A76CA88005E2750 /* KPAnnotationTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45351A76CA88005E2750 /* KPAnnotationTree.m */; };
 		CCBF45431A76CA88005E2750 /* KPClusteringController.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBF45391A76CA88005E2750 /* KPClusteringController.m */; };
@@ -291,7 +290,6 @@
 				CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */,
 				CC77D53719B00876009BA59F /* CoreLocation.framework in Frameworks */,
 				CC77D4F319B003E8009BA59F /* CoreGraphics.framework in Frameworks */,
-				CCAE15DC1ADB042C0026D835 /* Quickblox.framework in Frameworks */,
 				CC77D53519B00419009BA59F /* libProj4.a in Frameworks */,
 				CC77D4F519B003E8009BA59F /* UIKit.framework in Frameworks */,
 				CC77D4F119B003E8009BA59F /* Foundation.framework in Frameworks */,
@@ -573,7 +571,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = edda;
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Ping Pong Estudio";
 				TargetAttributes = {
 					CC77D4EC19B003E8009BA59F = {
