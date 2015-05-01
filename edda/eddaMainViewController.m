@@ -70,6 +70,8 @@ static float _alignmentError = 1.0f;
 static float _arrowSize = 44.0f;
 static float _arrowMargin = 5.0f;
 
+static int callSize = 160;
+
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
@@ -152,6 +154,7 @@ static float _arrowMargin = 5.0f;
 			self.tutorialButton.alpha = 1.0;
 		}];
 	} completion:nil];
+	
 }
 
 - (void)viewDidUnload
@@ -271,7 +274,7 @@ static float _arrowMargin = 5.0f;
 
 -(void)goBack
 {
-	self.statusLabel.text = @"";
+	[self removeCallAnimation];
 }
 
 - (void) didLogin
@@ -774,6 +777,23 @@ static float _arrowMargin = 5.0f;
 	return output;
 }
 
+#pragma mark - Call Animation
+
+- (void)showCallAnimation {
+	self.statusLabel.text = [NSString stringWithFormat:@"waiting for\n%@\nto accept",  self.appDelegate.callReceiverTitle];
+	if (self.callAnimation == nil) {
+		self.callAnimation = [[eddaCallAnimationView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - callSize) *.5, 200, callSize, callSize)];
+	}
+	[self.view addSubview:self.callAnimation];
+	[self.callAnimation startAllAnimations:nil];
+}
+
+- (void)removeCallAnimation {
+	self.statusLabel.text = @"";
+	[self.callAnimation removeFromSuperview];
+	self.callAnimation = nil;
+}
+
 #pragma mark - LS View
 
 - (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
@@ -784,7 +804,7 @@ static float _arrowMargin = 5.0f;
 	
 	m_mode = streamingModeOutgoing;
 	
-	self.statusLabel.text = [NSString stringWithFormat:@"waiting for\n%@\nto accept",  self.appDelegate.callReceiverTitle];
+	[self showCallAnimation];
 
 	[self startVideoChat];
 }
@@ -927,6 +947,7 @@ static float _arrowMargin = 5.0f;
 
 -(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
 //	NSLog(@"chatCallUserDidNotAnswer %lu", (unsigned long)userID);
+	[self removeCallAnimation];
 	NSString *msg = [NSString stringWithFormat:@"%@\nisn't answering.\nPlease try again later.", self.appDelegate.callReceiverTitle];
 	[self disconnectAndGoBack];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No answer" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -939,6 +960,7 @@ static float _arrowMargin = 5.0f;
  */
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID customParameters:(NSDictionary *)customParameters{
 	NSLog(@"call accepted by: %d params: %@", (int)userID, customParameters);
+	[self removeCallAnimation];
 	self.blockingView.hidden = YES;
 	
 	_videoActive = YES;
@@ -967,6 +989,7 @@ static float _arrowMargin = 5.0f;
 -(void) chatCallDidRejectByUser:(NSUInteger)userID{
 //	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
 	NSString *msg = [NSString stringWithFormat:@"%@\nhas rejected your call.", self.appDelegate.callReceiverTitle];
+	[self removeCallAnimation];
 	[self disconnectAndGoBack];
 	[self playSound:@"rechaza" type:@"mp3"];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Call rejected 😕" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -1144,7 +1167,6 @@ static float _arrowMargin = 5.0f;
 	
 	_toLat=0, _toLon=0, _toAlt=0;
 	
-	self.statusLabel.text = @"";
 	self.receiverObject = nil;
 	[self.otherView zoomOut];
 	[self stopOpponentAlignedTimer];

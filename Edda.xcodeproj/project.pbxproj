@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289619DB9FD500B358F2 /* AppIcon180x180.png */; };
 		CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */; };
+		CC0B51221AF3179100588E27 /* eddaCallAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0B51211AF3179100588E27 /* eddaCallAnimationView.m */; };
+		CC0B51251AF3279100588E27 /* QCMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0B51241AF3279100588E27 /* QCMethod.m */; };
 		CC0D4F331A7B115000F9BB0F /* arrowCyan.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F311A7B115000F9BB0F /* arrowCyan.png */; };
 		CC0D4F4F1A7B409700F9BB0F /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F3B1A7B409700F9BB0F /* arrow.png */; };
 		CC0D4F501A7B409700F9BB0F /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F3C1A7B409700F9BB0F /* arrow@2x.png */; };
@@ -121,6 +123,10 @@
 /* Begin PBXFileReference section */
 		CC09289619DB9FD500B358F2 /* AppIcon180x180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon180x180.png; path = edda/icons/AppIcon180x180.png; sourceTree = "<group>"; };
 		CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon180x180@2x.png"; path = "edda/icons/AppIcon180x180@2x.png"; sourceTree = "<group>"; };
+		CC0B51201AF3179100588E27 /* eddaCallAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaCallAnimationView.h; sourceTree = "<group>"; };
+		CC0B51211AF3179100588E27 /* eddaCallAnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaCallAnimationView.m; sourceTree = "<group>"; };
+		CC0B51231AF3279100588E27 /* QCMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QCMethod.h; sourceTree = "<group>"; };
+		CC0B51241AF3279100588E27 /* QCMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QCMethod.m; sourceTree = "<group>"; };
 		CC0D4F311A7B115000F9BB0F /* arrowCyan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = arrowCyan.png; path = images/arrowCyan.png; sourceTree = "<group>"; };
 		CC0D4F3B1A7B409700F9BB0F /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = arrow.png; path = images/arrow.png; sourceTree = "<group>"; };
 		CC0D4F3C1A7B409700F9BB0F /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "arrow@2x.png"; path = "images/arrow@2x.png"; sourceTree = "<group>"; };
@@ -377,6 +383,10 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
+				CC0B51231AF3279100588E27 /* QCMethod.h */,
+				CC0B51241AF3279100588E27 /* QCMethod.m */,
+				CC0B51201AF3179100588E27 /* eddaCallAnimationView.h */,
+				CC0B51211AF3179100588E27 /* eddaCallAnimationView.m */,
 				CC5619521AD1FB64005FCEB7 /* MKMapView+ZoomLevel.h */,
 				CC5619531AD1FB64005FCEB7 /* MKMapView+ZoomLevel.m */,
 				CCD2DDB219EE1F140029BD6C /* QBHelper.h */,
@@ -696,8 +706,10 @@
 				CCA397E219B6A00B00754BEB /* geodesic.c in Sources */,
 				CCBF45441A76CA88005E2750 /* KPGridClusteringAlgorithm.m in Sources */,
 				CCE1DB921A3E2ADD00119867 /* EXTRuntimeExtensions.m in Sources */,
+				CC0B51251AF3279100588E27 /* QCMethod.m in Sources */,
 				CC77D4FD19B003E8009BA59F /* main.m in Sources */,
 				CCBF45411A76CA88005E2750 /* KPAnnotation.m in Sources */,
+				CC0B51221AF3179100588E27 /* eddaCallAnimationView.m in Sources */,
 				CC77D50719B003E8009BA59F /* eddaMainViewController.m in Sources */,
 				CCD5963F1A75A7680094E2EA /* eddaInfoViewController.m in Sources */,
 				CC5B4F9719D8D67B001BA61D /* LSViewController.m in Sources */,

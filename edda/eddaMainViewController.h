@@ -17,6 +17,7 @@
 #import "eddaInfoViewController.h"
 #import "eddaOtherView.h"
 #import "eddaTutorialContentViewController.h"
+#import "eddaCallAnimationView.h"
 
 @class eddaMainViewController;
 
@@ -50,6 +51,7 @@ typedef struct sViewAngle sViewAngle;
 @property (strong) UIAlertView *callAlert;
 
 @property (nonatomic) eddaOtherView *otherView;
+@property (nonatomic) eddaCallAnimationView *callAnimation;
 
 @property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIView *videoView;
