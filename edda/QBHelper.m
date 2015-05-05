@@ -27,8 +27,8 @@
 		eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
 		appDelegate.userTitle = nickname;
 		appDelegate.bFullyLoggedIn = YES;
-		
-		[self saveCurrentUserToQB];
+
+		[QBHelper initQBSession];
 	}
 }
 
@@ -91,10 +91,9 @@
 		[defaults synchronize];
 		
 		[QBHelper changeLoginToLogin:login];
-		
-		//fire appdelegate timer
-		[self saveCurrentUserToQB];
-    }
+
+		[QBHelper initQBSession];
+	}
     else if (kUIAlertViewTagIncomingCall == alertView.tag)
     {
         if (buttonIndex != [alertView cancelButtonIndex])   //accept the call
@@ -109,16 +108,46 @@
     }
 }
 
-+ (void) saveCurrentUserToQB
-{
-	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
++ (void)initQBSession {
+	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
+	NSString *login = [QBHelper uniqueDeviceIdentifier];
+	NSString *password = [QBHelper uniqueDeviceIdentifier];
+	NSString *username = appDelegate.userTitle;
+	[QBRequest logInWithUserLogin:login password:password successBlock:^(QBResponse *response, QBUUser *user) {
+		// success
+		NSLog(@"log in success: %lu, %@", (unsigned long)user.ID, user);
+		appDelegate.loggedInUser = user;
+		appDelegate.userTitle = username;
+		appDelegate.bFullyLoggedIn = YES;
+
+		// update any local stuff with whatever is in the remote (if any)
+		NSDictionary * custom = [QBHelper QBCustomDataToObject:appDelegate.loggedInUser.customData];
+		BOOL _isPrivate = [[custom valueForKey:@"privacy"] boolValue];
+		NSString *secret = [QBHelper decodeText:[custom valueForKey:@"password"]];
+
+		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+		[defaults setObject:[NSNumber numberWithBool:_isPrivate] forKey:@"privacy"];
+		[defaults setObject:username forKey:@"nickname"];
+		[defaults setObject:secret forKey:@"password"];
+		[defaults synchronize];
+
+		[QBHelper changeLoginToLogin:username];
+
+		[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kLoggedInNotification object:nil]];
+	} errorBlock:^(QBResponse *response) {
+		// error / try sign up
+		[QBHelper signUpUser:username];
+	}];
 }
 
 + (void) changeLoginToLogin:(NSString *)newlogin
 {
 	eddaAppDelegate * appDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
 	
-	if (appDelegate.loggedInUser == nil) return;
+	if (appDelegate.loggedInUser == nil) {
+		NSLog(@"had no login");
+		return;
+	}
 	
 	NSDictionary * oldCustom = [QBHelper QBCustomDataToObject:appDelegate.loggedInUser.customData];
 	
@@ -128,7 +157,7 @@
 	
 	appDelegate.userTitle = newlogin;
 
-	[self saveCustomToQB:newCustom];
+	[QBHelper saveCustomToQB:newCustom];
 }
 
 + (void) setPassword:(NSString *)password

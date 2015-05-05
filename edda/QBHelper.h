@@ -28,7 +28,6 @@ static bool bPollingTimerOn = NO;
 + (void) saveUserPrivacyToQB:(BOOL)privacy;
 + (NSDictionary *)QBCustomDataToObject:(NSString *)customData;
 + (NSString *)decodeText:(NSString *)encodedText;
-+ (void)saveCurrentUserToQB;
 + (void) saveUserWithLocationToQB:(QBLPlace *)place altitude:(NSNumber *)altitude;
 + (void) processPushedCall:(NSDictionary *)userInfo;
 + (void)signUpUser:(NSString *)username;
@@ -36,5 +35,6 @@ static bool bPollingTimerOn = NO;
 + (void) showUserTitlePrompt;
 + (NSString *) uniqueDeviceIdentifier;
 + (void) anonymousLogin;
++ (void) initQBSession;
 
 @end

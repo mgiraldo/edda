@@ -429,19 +429,19 @@ static int _maxZoom = 10;
 	if(ti < 1) {
 		return @"never";
 	} else 	if (ti < 60) {
-		return @"less than a minute ago";
+		return @"a moment ago";
 	} else if (ti < 3600) {
 		int diff = round(ti / 60);
-		return [NSString stringWithFormat:@"%d minutes ago", diff];
+		return [NSString stringWithFormat:@"%d minute%@ ago", diff, (diff>1 ? @"s" : @"")];
 	} else if (ti < 86400) {
 		int diff = round(ti / 60 / 60);
-		return[NSString stringWithFormat:@"%d hours ago", diff];
+		return[NSString stringWithFormat:@"%d hour%@ ago", diff, (diff>1 ? @"s" : @"")];
 	} else if (ti < 2629743) {
 		int diff = round(ti / 60 / 60 / 24);
-		return[NSString stringWithFormat:@"%d days ago", diff];
+		return[NSString stringWithFormat:@"%d day%@ ago", diff, (diff>1 ? @"s" : @"")];
 	} else {
 		int diff = round(ti / 604800);
-		return[NSString stringWithFormat:@"%d weeks ago", diff];
+		return[NSString stringWithFormat:@"%d week%@ ago", diff, (diff>1 ? @"s" : @"")];
 	}
 }
 

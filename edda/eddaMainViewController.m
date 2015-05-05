@@ -9,6 +9,7 @@
 #import <Accelerate/Accelerate.h>
 #import <ImageIO/ImageIO.h>
 #import "eddaMainViewController.h"
+#import "eddaWelcomeViewController.h"
 #import "LSViewController.h"
 #import "geodesic.h"
 #import "utils.h"
@@ -29,11 +30,15 @@
 	NSDate *alignedTimerStart;
 }
 
+// first run
+static bool _cameraEnabled = false;
+static bool _locationEnabled = false;
+static bool _microphoneEnabled = false;
+
 // self preview size
 static const float _myDiameter = 80;
 static const float _opponentDiameter = 260;
 
-static CLLocationManager *locationManager;
 static CMMotionManager *motionManager;
 
 static BOOL _videoActive = NO;
@@ -79,21 +84,29 @@ static int callSize = 160;
     [super viewDidLoad];
 
 	// tutorial stuff
+	self.pageTitles = @[@"Tap \"START CALL\" to access the list.", @"Use the list or map to find your friend.", @"Follow the arrows. The circle indicates your friend's location.", @"Maintain orientation during the call or the view will be obscured!"];
+	self.pageImages = @[@"tutorial1.mp4", @"tutorial2.mp4", @"tutorial3.mp4", @"tutorial4.mp4"];
+
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	BOOL didTutorial = [[defaults valueForKey:@"tutorial"] boolValue];
 
-	self.pageTitles = @[@"Tap \"START CALL\" to access the list.", @"Use the list or map to find your friend.", @"Follow the arrows. The circle indicates your friend's location.", @"Maintain orientation during the call or the view will be obscured!"];
-	self.pageImages = @[@"tutorial1.mp4", @"tutorial2.mp4", @"tutorial3.mp4", @"tutorial4.mp4"];
-	
+	_cameraEnabled = [[defaults valueForKey:@"cameraEnabled"] boolValue];
+	_locationEnabled = [[defaults valueForKey:@"locationEnabled"] boolValue];
+	_microphoneEnabled = [[defaults valueForKey:@"microphoneEnabled"] boolValue];
+
 	if (!didTutorial) {
 		[self startTutorial:nil];
+	}
+
+	if (!_locationEnabled || !_cameraEnabled || !_microphoneEnabled) {
+		[self requestPermissions];
 	}
 
 	// the rest
 	videoChatOpponentID = 0;
 	
 	self.appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
-
+	
 	self.statusLabel.text = @"";
 
 	self.blockingView.hidden = YES;
@@ -103,33 +116,6 @@ static int callSize = 160;
 	self.otherView.hidden = YES;
 	self.otherView.delegate = self;
 	[self.view insertSubview:self.otherView belowSubview:self.controlsView];
-
-	// init motion manager
-	motionManager = [[CMMotionManager alloc] init];
-	NSTimeInterval updateInterval = 0.015;
-	
-	eddaMainViewController * __weak weakSelf = self;
-	
-	if ([motionManager isDeviceMotionAvailable] == YES) {
-		[motionManager setDeviceMotionUpdateInterval:updateInterval];
-		[motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *deviceMotion, NSError *error) {
-			// attitude
-			weakSelf.currentMotion = deviceMotion;
-		}];
-	}
-
-	// init location manager
-	locationManager = [[CLLocationManager alloc] init];
-	locationManager.delegate = self;
-	locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-
-	// now get the location
-
-	// init Proj.4 params
-	if (!(pj_geod = pj_init_plus("+proj=latlong +datum=WGS84 +units=m")) )
-        NSLog(@"Could not initialise MERCATOR");
-	if (!(pj_geoc = pj_init_plus("+proj=geocent +datum=WGS84")) )
-        NSLog(@"Could not initialise CARTESIAN");
 	
 	self.tutorialButton.alpha = 0.0;
 	self.backgroundView.alpha = 0.0;
@@ -170,6 +156,42 @@ static int callSize = 160;
 
 - (void) viewDidAppear:(BOOL)animated
 {
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	
+	_cameraEnabled = [[defaults valueForKey:@"cameraEnabled"] boolValue];
+	_locationEnabled = [[defaults valueForKey:@"locationEnabled"] boolValue];
+	_microphoneEnabled = [[defaults valueForKey:@"microphoneEnabled"] boolValue];
+
+	if (!_locationEnabled || !_cameraEnabled || !_microphoneEnabled) return;
+
+	// init motion manager
+	motionManager = [[CMMotionManager alloc] init];
+	NSTimeInterval updateInterval = 0.015;
+	
+	eddaMainViewController * __weak weakSelf = self;
+	
+	if ([motionManager isDeviceMotionAvailable] == YES) {
+		[motionManager setDeviceMotionUpdateInterval:updateInterval];
+		[motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *deviceMotion, NSError *error) {
+			// attitude
+			weakSelf.currentMotion = deviceMotion;
+		}];
+	}
+	
+	// init location manager
+	self.locationManager = [[CLLocationManager alloc] init];
+	self.locationManager.delegate = self;
+	self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+	
+	// now get the location
+	
+	// init Proj.4 params
+	if (!(pj_geod = pj_init_plus("+proj=latlong +datum=WGS84 +units=m")) )
+		NSLog(@"Could not initialise MERCATOR");
+	if (!(pj_geoc = pj_init_plus("+proj=geocent +datum=WGS84")) )
+		NSLog(@"Could not initialise CARTESIAN");
+	
+	[self userHasLoggedIn];
 	[self setupArrows];
 	[self hideArrows];
 	[self refreshBackCameraFeed];
@@ -204,13 +226,27 @@ static int callSize = 160;
 
 #pragma mark - Startup
 
+- (void)requestPermissions {
+	// Create page view controller
+	eddaWelcomeViewController *welcomeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
+	
+	// Change the size of page view controller
+	welcomeViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+	
+	[self addChildViewController:welcomeViewController];
+	[self.view addSubview:welcomeViewController.view];
+	[welcomeViewController didMoveToParentViewController:self];
+}
+
 - (void) userHasLoggedIn
 {
+	if (!self.appDelegate.bFullyLoggedIn) return;
 	[[QBChat instance] addDelegate:self];
 	QBUUser *currentUser = [QBUUser user];
 	currentUser.ID = self.appDelegate.loggedInUser.ID;
 	currentUser.password = [QBHelper uniqueDeviceIdentifier];
 	[[QBChat instance] loginWithUser:currentUser];
+	NSLog(@"log in: %@", self.appDelegate.loggedInUser);
 	[NSTimer scheduledTimerWithTimeInterval:30
 									 target:[QBChat instance]
 								   selector:@selector(sendPresence)
@@ -218,12 +254,12 @@ static int callSize = 160;
 									repeats:YES];
 	
 	// iOS 8 not authorized by default
-	if([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-		[locationManager requestWhenInUseAuthorization];
+	if([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+		[self.locationManager requestWhenInUseAuthorization];
 	}
 	
-	[locationManager startUpdatingLocation];
-	[locationManager startUpdatingHeading];
+	[self.locationManager startUpdatingLocation];
+	[self.locationManager startUpdatingHeading];
 
 	// interface refresh timer
 	[NSTimer scheduledTimerWithTimeInterval:0.05
@@ -238,7 +274,7 @@ static int callSize = 160;
 - (void) registerNotifs
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showReceiverBusyMsg) name:kReceiverBusyNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin) name:kLoggedInNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userHasLoggedIn) name:kLoggedInNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCallCancel) name:kCallCancelledNotification object:nil];
 }
 
@@ -275,12 +311,6 @@ static int callSize = 160;
 -(void)goBack
 {
 	[self removeCallAnimation];
-}
-
-- (void) didLogin
-{
-	NSLog(@"logged in!");
-	[self initQBSession];
 }
 
 - (void)updateInterface:(NSTimer *)timer {
@@ -650,6 +680,7 @@ static int callSize = 160;
 
 - (IBAction)endButtonTapped:(id)sender {
 	[self playSound:@"hangup" type:@"mp3"];
+	[self removeCallAnimation];
 	[self disconnectAndGoBack];
 }
 
@@ -691,7 +722,7 @@ static int callSize = 160;
 	self.currentLocation = newLocation;
 	
 	if (self.currentLocation != nil) {
-		[locationManager stopUpdatingLocation];
+		[self.locationManager stopUpdatingLocation];
 		self.appDelegate.currentLocation = self.currentLocation;
 		QBLPlace *place = [QBLPlace place];
 		place.latitude = self.currentLocation.coordinate.latitude;
@@ -798,7 +829,7 @@ static int callSize = 160;
 
 - (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
 {
-//	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
+	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
 
 	self.blockingView.hidden = NO;
 	
@@ -839,24 +870,6 @@ static int callSize = 160;
 
 #pragma mark -
 #pragma mark QBChatDelegate
-
--(void) initQBSession {
-	NSString *login = [QBHelper uniqueDeviceIdentifier];
-	NSString *password = [QBHelper uniqueDeviceIdentifier];
-	NSString *username = self.appDelegate.userTitle;
-	@weakify(self);
-	[QBRequest logInWithUserLogin:login password:password successBlock:^(QBResponse *response, QBUUser *user) {
-		@strongify(self);
-		// success
-		NSLog(@"log in success!");
-		eddaAppDelegate * mainDelegate = (eddaAppDelegate *)[[UIApplication sharedApplication] delegate];
-		mainDelegate.loggedInUser = user;
-		[self userHasLoggedIn];
-	} errorBlock:^(QBResponse *response) {
-		// error / try sign up
-		[QBHelper signUpUser:username];
-	}];
-}
 
 - (void)reject{
 	NSLog(@"reject");

@@ -43,6 +43,8 @@ typedef struct sViewAngle sViewAngle;
 @property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CMDeviceMotion *currentMotion;
 
+@property (nonatomic) CLLocationManager * locationManager;
+
 @property (nonatomic) UIImageView *N_arrowView;
 @property (nonatomic) UIImageView *S_arrowView;
 @property (nonatomic) UIImageView *E_arrowView;

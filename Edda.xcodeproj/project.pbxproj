@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		CC09289819DB9FD500B358F2 /* AppIcon180x180.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289619DB9FD500B358F2 /* AppIcon180x180.png */; };
 		CC09289919DB9FD500B358F2 /* AppIcon180x180@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */; };
+		CC0B42331AF8417E00EBF780 /* eddaWelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0B42321AF8417E00EBF780 /* eddaWelcomeViewController.m */; };
 		CC0B51221AF3179100588E27 /* eddaCallAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0B51211AF3179100588E27 /* eddaCallAnimationView.m */; };
 		CC0B51251AF3279100588E27 /* QCMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0B51241AF3279100588E27 /* QCMethod.m */; };
 		CC0D4F331A7B115000F9BB0F /* arrowCyan.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0D4F311A7B115000F9BB0F /* arrowCyan.png */; };
@@ -123,6 +124,8 @@
 /* Begin PBXFileReference section */
 		CC09289619DB9FD500B358F2 /* AppIcon180x180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon180x180.png; path = edda/icons/AppIcon180x180.png; sourceTree = "<group>"; };
 		CC09289719DB9FD500B358F2 /* AppIcon180x180@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon180x180@2x.png"; path = "edda/icons/AppIcon180x180@2x.png"; sourceTree = "<group>"; };
+		CC0B42311AF8417E00EBF780 /* eddaWelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaWelcomeViewController.h; sourceTree = "<group>"; };
+		CC0B42321AF8417E00EBF780 /* eddaWelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaWelcomeViewController.m; sourceTree = "<group>"; };
 		CC0B51201AF3179100588E27 /* eddaCallAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaCallAnimationView.h; sourceTree = "<group>"; };
 		CC0B51211AF3179100588E27 /* eddaCallAnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaCallAnimationView.m; sourceTree = "<group>"; };
 		CC0B51231AF3279100588E27 /* QCMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QCMethod.h; sourceTree = "<group>"; };
@@ -383,6 +386,8 @@
 		CC77D4F619B003E8009BA59F /* edda */ = {
 			isa = PBXGroup;
 			children = (
+				CC0B42311AF8417E00EBF780 /* eddaWelcomeViewController.h */,
+				CC0B42321AF8417E00EBF780 /* eddaWelcomeViewController.m */,
 				CC0B51231AF3279100588E27 /* QCMethod.h */,
 				CC0B51241AF3279100588E27 /* QCMethod.m */,
 				CC0B51201AF3179100588E27 /* eddaCallAnimationView.h */,
@@ -698,6 +703,7 @@
 				CCBF45421A76CA88005E2750 /* KPAnnotationTree.m in Sources */,
 				CC77D50119B003E8009BA59F /* eddaAppDelegate.m in Sources */,
 				CC450F881A7482D600CC195B /* eddaMapAnnotation.m in Sources */,
+				CC0B42331AF8417E00EBF780 /* eddaWelcomeViewController.m in Sources */,
 				CC5619541AD1FB64005FCEB7 /* MKMapView+ZoomLevel.m in Sources */,
 				CCD2DDB419EE1F140029BD6C /* QBHelper.m in Sources */,
 				CCBF45451A76CA88005E2750 /* NSArray+KP.m in Sources */,

@@ -7,6 +7,81 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
+        <!--Edda Welcome View Controller-->
+        <scene sceneID="BUA-4X-Uuh">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6du-cm-FNg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController storyboardIdentifier="WelcomeViewController" id="THN-Vq-gEE" customClass="eddaWelcomeViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Wl6-Ia-94U"/>
+                        <viewControllerLayoutGuide type="bottom" id="tm4-15-ty6"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="F7C-LD-zCf">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Edda requires that you enable these features for proper functionality:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QwA-MW-1IN">
+                                <rect key="frame" x="40" y="238" width="240" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="Hr4-42-ooU"/>
+                                    <constraint firstAttribute="height" constant="60" id="f40-cx-hWd"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DKr-of-YnI">
+                                <rect key="frame" x="66" y="308" width="172" height="37"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
+                                <state key="normal" title="ENABLE LOCATION ACCESS">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="locationButtonTapped:" destination="THN-Vq-gEE" eventType="touchUpInside" id="GCe-5Q-F4G"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P1w-kx-bOV">
+                                <rect key="frame" x="71" y="355" width="162" height="37"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
+                                <state key="normal" title="ENABLE CAMERA ACCESS">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="cameraButtonTapped:" destination="THN-Vq-gEE" eventType="touchUpInside" id="0Nd-4Y-5Fc"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C8M-qS-DjL">
+                                <rect key="frame" x="52" y="402" width="200" height="37"/>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
+                                <state key="normal" title="ENABLE MICROPHONE ACCESS">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="microphoneButtonTapped:" destination="THN-Vq-gEE" eventType="touchUpInside" id="p5u-Oj-5o2"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerX" secondItem="QwA-MW-1IN" secondAttribute="centerX" id="JjZ-Aa-0t4"/>
+                            <constraint firstItem="C8M-qS-DjL" firstAttribute="top" secondItem="P1w-kx-bOV" secondAttribute="bottom" constant="10" id="SZM-mn-x8V"/>
+                            <constraint firstAttribute="centerX" secondItem="P1w-kx-bOV" secondAttribute="centerX" constant="8" id="WN0-4o-gTd"/>
+                            <constraint firstAttribute="centerY" secondItem="QwA-MW-1IN" secondAttribute="centerY" constant="16" id="Z0z-UP-zOT"/>
+                            <constraint firstAttribute="centerX" secondItem="DKr-of-YnI" secondAttribute="centerX" constant="8" id="hCM-Kf-H7r"/>
+                            <constraint firstAttribute="centerX" secondItem="C8M-qS-DjL" secondAttribute="centerX" constant="8" id="k3y-LM-T8A"/>
+                            <constraint firstItem="DKr-of-YnI" firstAttribute="top" secondItem="QwA-MW-1IN" secondAttribute="bottom" constant="10" id="wQ5-0v-9Vm"/>
+                            <constraint firstItem="P1w-kx-bOV" firstAttribute="top" secondItem="DKr-of-YnI" secondAttribute="bottom" constant="10" id="wWJ-dR-leK"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="cameraButton" destination="P1w-kx-bOV" id="Ykm-mx-Yuf"/>
+                        <outlet property="locationButton" destination="DKr-of-YnI" id="iFK-yY-xLs"/>
+                        <outlet property="microphoneButton" destination="C8M-qS-DjL" id="w7X-cM-FbI"/>
+                    </connections>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="-630" y="-366"/>
+        </scene>
         <!--Edda Main View Controller-->
         <scene sceneID="rV5-Y2-ghB">
             <objects>
@@ -156,6 +231,7 @@
                             <constraint firstAttribute="centerY" secondItem="IC9-XV-DMc" secondAttribute="centerY" id="yYV-az-FoX"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="udj-iV-qcV"/>
                     <connections>
                         <outlet property="backgroundView" destination="zPT-Aq-6ge" id="Epa-pc-Ht4"/>
                         <outlet property="blockingView" destination="XB1-jt-4UG" id="uWD-gP-gqd"/>

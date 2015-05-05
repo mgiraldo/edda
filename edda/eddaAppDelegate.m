@@ -7,7 +7,6 @@
 //
 
 #import "eddaAppDelegate.h"
-#import "eddaMainViewController.h"
 
 @implementation eddaAppDelegate
 
