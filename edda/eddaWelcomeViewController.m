@@ -80,6 +80,7 @@ static bool _microphoneEnabled = false;
 - (IBAction)locationButtonTapped:(id)sender {
 	if ([CLLocationManager authorizationStatus]) {
 		_locationEnabled = true;
+		[self updateEnabledStatuses];
 		return;
 	}
 
