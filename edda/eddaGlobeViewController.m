@@ -1,0 +1,151 @@
+//
+//  eddaGlobeViewController.m
+//  Edda
+//
+//  Created by Mauricio Giraldo on 10/5/15.
+//  Copyright (c) 2015 Ping Pong Estudio. All rights reserved.
+//
+
+#import "eddaGlobeViewController.h"
+#import "eddaAppDelegate.h"
+
+@interface eddaGlobeViewController ()
+
+@end
+
+@implementation eddaGlobeViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+	NSString *path = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"globe"];
+	NSURL *url = [NSURL fileURLWithPath:path];
+
+	NSURLRequest *request = [NSURLRequest requestWithURL:url];
+
+	self.globeView.delegate = self;
+	
+	[self.globeView loadRequest:request];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+- (IBAction)shareButtonTapped:(id)sender {
+	NSString *textToShare = @"test";
+	
+	[self takeScreenShot];
+	
+	NSArray *objectsToShare = @[textToShare, self.screenShot];
+	
+	UIActivityViewController *activityViewController =
+	[[UIActivityViewController alloc] initWithActivityItems:objectsToShare
+									  applicationActivities:nil];
+
+	NSArray *excludeActivities = @[UIActivityTypePrint,
+								   UIActivityTypeAssignToContact,
+								   UIActivityTypeAddToReadingList,
+								   UIActivityTypePostToFlickr,
+								   UIActivityTypeAirDrop,
+								   UIActivityTypeMessage,
+								   UIActivityTypeMail,
+								   UIActivityTypePostToVimeo,
+								   UIActivityTypePostToTencentWeibo];
+
+	activityViewController.excludedActivityTypes = excludeActivities;
+
+	[self presentViewController:activityViewController
+									   animated:YES
+									 completion:^{
+										 // ...
+									 }];
+}
+
+- (IBAction)closeGlobe:(id)sender {
+	[self.delegate globeViewControllerDidFinish:self];
+}
+
+#pragma mark - activity view delegate stuff
+
+- (void)takeScreenShot {
+	// now pass it to the web view and parse the result
+	NSString * base64String = [self.globeView stringByEvaluatingJavaScriptFromString:
+							  [NSString stringWithFormat:@"takeScreenshot()"]];
+	if (base64String != nil) [self processWebString: base64String];
+}
+
+- (void)processWebString:(NSString *)base64String {
+	NSData *encodedData = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+
+	//Now data is decoded. You can convert them to UIImage
+	self.screenShot = [UIImage imageWithData:encodedData];
+}
+
+- (id)activityViewController:(UIActivityViewController *)activityViewController
+		 itemForActivityType:(NSString *)activityType {
+	if ([activityType isEqualToString:UIActivityTypePostToFacebook]) {
+		return @"Like this!";
+	} else if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {
+		return @"Retweet this!";
+	} else {
+		return nil;
+	}
+}
+
+#pragma mark - web view delegate stuff
+
+// In your implementation file
+-(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+	NSLog(@"web view jump: %@", request);
+	// Break apart request URL
+	NSString *requestString = [[request URL] absoluteString];
+	NSArray *components = [requestString componentsSeparatedByString:@":"];
+	
+	// Check for your protocol
+	if ([components count] > 1 &&
+		[(NSString *)[components objectAtIndex:0] isEqualToString:@"edda"])
+	{
+		// Look for specific actions
+		if ([(NSString *)[components objectAtIndex:1] isEqualToString:@"screenshot"])
+		{
+			// Your parameters can be found at
+			NSString *imageString = [components objectAtIndex:2];
+			[self processWebString:imageString];
+			// where 'n' is the ordinal position of the colon-delimited parameter
+		}
+		
+		// Return 'NO' to prevent navigation
+		return NO;
+	}
+	
+	// Return 'YES', navigate to requested URL as normal
+	return YES;
+}
+
+-(void) webViewDidFinishLoad:(UIWebView *)webView {
+	eddaAppDelegate* appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
+	
+	NSLog(@"me: %@ them:%@", appDelegate.currentLocation, appDelegate.callReceiverLocation);
+	
+	[self.globeView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"createGlobe(%f, %f, %f, %f)",
+															appDelegate.currentLocation.coordinate.latitude,
+															appDelegate.currentLocation.coordinate.longitude,
+															(float)(random()*180-90), // appDelegate.callReceiverLocation.coordinate.latitude
+															(float)(random()*360-180) // appDelegate.callReceiverLocation.coordinate.longitude
+															]];
+	
+}
+
+@end

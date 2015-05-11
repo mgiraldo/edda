@@ -10,7 +10,6 @@
         <!--Edda Welcome View Controller-->
         <scene sceneID="BUA-4X-Uuh">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6du-cm-FNg" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="WelcomeViewController" id="THN-Vq-gEE" customClass="eddaWelcomeViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Wl6-Ia-94U"/>
@@ -20,7 +19,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Edda requires that you enable these features for proper functionality:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QwA-MW-1IN">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Edda requires that you enable these features for proper functionality:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="240" translatesAutoresizingMaskIntoConstraints="NO" id="QwA-MW-1IN">
                                 <rect key="frame" x="40" y="238" width="240" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="240" id="Hr4-42-ooU"/>
@@ -79,6 +78,7 @@
                         <outlet property="microphoneButton" destination="C8M-qS-DjL" id="w7X-cM-FbI"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6du-cm-FNg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-630" y="-366"/>
         </scene>
@@ -135,7 +135,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="LFd-9Q-Hi8" kind="modal" identifier="showInfo" modalTransitionStyle="flipHorizontal" id="wTL-fD-Nyn"/>
+                                    <segue destination="qLV-qs-w2Z" kind="modal" identifier="showGlobe" id="0Uk-8x-h9W"/>
                                 </connections>
                             </button>
                             <view userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="IC9-XV-DMc">
@@ -445,17 +445,6 @@
                                     <action selector="privacyChanged:" destination="kIf-nA-PKG" eventType="valueChanged" id="25X-Bv-IFV"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hide nickname from user list" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="t7b-DM-Fg8">
-                                <rect key="frame" x="33" y="281" width="179" height="40"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="179" id="byi-3q-l7S"/>
-                                    <constraint firstAttribute="height" constant="40" id="ivW-9o-Nso"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="14"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                                <size key="shadowOffset" width="0.0" height="0.0"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Whoever wants to call you has to type this secret phrase:" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="bft-ko-nQL">
                                 <rect key="frame" x="71" y="326" width="179" height="40"/>
                                 <constraints>
@@ -479,7 +468,7 @@
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" returnKeyType="done"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mnb-p7-R9t">
-                                <rect key="frame" x="106" y="426" width="108" height="37"/>
+                                <rect key="frame" x="106" y="456" width="108" height="37"/>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
                                 <state key="normal" title="SEND FEEDBACK">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -488,6 +477,17 @@
                                     <action selector="feedbackPressed:" destination="kIf-nA-PKG" eventType="touchUpInside" id="TFL-Bc-lM6"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hide nickname from user list:" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="t7b-DM-Fg8">
+                                <rect key="frame" x="33" y="281" width="179" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="179" id="byi-3q-l7S"/>
+                                    <constraint firstAttribute="height" constant="40" id="ivW-9o-Nso"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="14"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <size key="shadowOffset" width="0.0" height="0.0"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -508,7 +508,7 @@
                             <constraint firstItem="YuU-kN-3Gv" firstAttribute="top" secondItem="Rh9-xD-R3d" secondAttribute="top" constant="20" id="aDn-HY-Qc7"/>
                             <constraint firstItem="yQW-H1-TqX" firstAttribute="top" secondItem="clI-F6-jWf" secondAttribute="bottom" constant="20" id="bpt-Ir-tI6"/>
                             <constraint firstItem="bQH-2l-117" firstAttribute="top" secondItem="0Jt-81-7DK" secondAttribute="bottom" constant="120" id="fds-eX-v53"/>
-                            <constraint firstItem="Mnb-p7-R9t" firstAttribute="top" secondItem="0eN-lz-vNj" secondAttribute="bottom" constant="10" id="mgP-mx-qeg"/>
+                            <constraint firstItem="Mnb-p7-R9t" firstAttribute="top" secondItem="0eN-lz-vNj" secondAttribute="bottom" constant="40" id="mgP-mx-qeg"/>
                             <constraint firstItem="0eN-lz-vNj" firstAttribute="top" secondItem="bft-ko-nQL" secondAttribute="bottom" constant="10" id="mt8-d8-SL5"/>
                             <constraint firstItem="w4c-pk-0z5" firstAttribute="leading" secondItem="t7b-DM-Fg8" secondAttribute="trailing" constant="20" id="tPY-n8-ZXh"/>
                         </constraints>
@@ -524,6 +524,76 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xlJ-1o-FvB" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="467" y="-466"/>
+        </scene>
+        <!--Edda Globe View Controller-->
+        <scene sceneID="f07-dU-gkT">
+            <objects>
+                <viewController id="qLV-qs-w2Z" customClass="eddaGlobeViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ut7-wK-29u"/>
+                        <viewControllerLayoutGuide type="bottom" id="29v-Z3-3YD"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="iy0-yK-Dpl">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView opaque="NO" contentMode="center" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B6f-Ck-WAC">
+                                <rect key="frame" x="0.0" y="40" width="320" height="320"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="B6f-Ck-WAC" secondAttribute="height" multiplier="1:1" id="hOL-AN-fg5"/>
+                                </constraints>
+                                <dataDetectorType key="dataDetectorTypes"/>
+                            </webView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9ex-Al-DEz">
+                                <rect key="frame" x="138" y="380" width="44" height="37"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="37" id="NrT-Bw-Mjy"/>
+                                    <constraint firstAttribute="width" constant="44" id="RTG-xn-5t5"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
+                                <state key="normal" title="SHARE">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="shareButtonTapped:" destination="qLV-qs-w2Z" eventType="touchUpInside" id="Si5-ay-gLa"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pep-sV-ujN">
+                                <rect key="frame" x="285" y="35" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="pep-sV-ujN" secondAttribute="height" multiplier="1:1" id="2ts-td-U8u"/>
+                                    <constraint firstAttribute="height" constant="20" id="FLR-pB-1o5"/>
+                                </constraints>
+                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <size key="titleShadowOffset" width="-1" height="1"/>
+                                <state key="normal" image="cross.png">
+                                    <color key="titleColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="closeGlobe:" destination="qLV-qs-w2Z" eventType="touchUpInside" id="kFV-R0-Aga"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerX" secondItem="9ex-Al-DEz" secondAttribute="centerX" id="A5A-3J-jzV"/>
+                            <constraint firstAttribute="trailing" secondItem="pep-sV-ujN" secondAttribute="trailing" constant="15" id="SgQ-CB-3aR"/>
+                            <constraint firstAttribute="centerX" secondItem="B6f-Ck-WAC" secondAttribute="centerX" id="Zyb-S2-EYW"/>
+                            <constraint firstItem="pep-sV-ujN" firstAttribute="top" secondItem="ut7-wK-29u" secondAttribute="bottom" constant="15" id="f0c-94-Rzd"/>
+                            <constraint firstItem="B6f-Ck-WAC" firstAttribute="top" secondItem="ut7-wK-29u" secondAttribute="bottom" constant="20" id="heM-zk-g3X"/>
+                            <constraint firstItem="9ex-Al-DEz" firstAttribute="top" secondItem="B6f-Ck-WAC" secondAttribute="bottom" constant="20" id="mPq-ss-vuL"/>
+                            <constraint firstAttribute="width" secondItem="B6f-Ck-WAC" secondAttribute="width" id="vVp-LD-wSR"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="globeView" destination="B6f-Ck-WAC" id="v2U-fj-ick"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FVW-jR-wVX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-541" y="701"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="h0h-XH-en2">

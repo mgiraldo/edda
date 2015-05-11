@@ -7,26 +7,26 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>3B40F4BE-18DB-4F77-868E-09826722AD7F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>Edda</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>43E48969AB834C98133F4F66DEBB455ACE272805</key>
 		<string>github.com:QuickBlox/quickblox-ios-sdk.git</string>
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>
 		<string>github.com:mgiraldo/edda.git</string>
-		<key>E609DD15689CC93D8F4D219EB393F30F9F726178</key>
-		<string>github.com:BradLarson/GPUImage.git</string>
+		<key>67309F6DC43A114F141EC2902C10ECA6E21AAD5A</key>
+		<string>github.com:mgiraldo/edda-globe.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Edda.xcodeproj</string>
+	<string>Edda.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>43E48969AB834C98133F4F66DEBB455ACE272805</key>
 		<string>../../../stuff/xcode/quickblox-ios-sdk</string>
 		<key>4BBAB82F0C59F744605AEB69C8251D82BB476EB0</key>
 		<string>../..</string>
-		<key>E609DD15689CC93D8F4D219EB393F30F9F726178</key>
-		<string>../../../stuff/xcode/GPUImage</string>
+		<key>67309F6DC43A114F141EC2902C10ECA6E21AAD5A</key>
+		<string>../../globe/</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>github.com:mgiraldo/edda.git</string>
@@ -48,9 +48,9 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>E609DD15689CC93D8F4D219EB393F30F9F726178</string>
+			<string>67309F6DC43A114F141EC2902C10ECA6E21AAD5A</string>
 			<key>IDESourceControlWCCName</key>
-			<string>GPUImage</string>
+			<string>globe</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

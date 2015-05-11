@@ -221,6 +221,8 @@ static int callSize = 160;
 		[[segue destinationViewController] setDelegate:self];
 	} else if ([[segue identifier] isEqualToString:@"showInfo"]) {
 		[[segue destinationViewController] setDelegate:self];
+	} else if ([[segue identifier] isEqualToString:@"showGlobe"]) {
+		[[segue destinationViewController] setDelegate:self];
 	}
 }
 
@@ -864,6 +866,11 @@ static int callSize = 160;
 }
 
 - (void)infoViewControllerDidFinish:(eddaInfoViewController *)controller
+{
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)globeViewControllerDidFinish:(eddaGlobeViewController *)controller
 {
 	[self dismissViewControllerAnimated:YES completion:nil];
 }

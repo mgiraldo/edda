@@ -31,6 +31,8 @@
 		CC450F681A744C9800CC195B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC450F671A744C9800CC195B /* MapKit.framework */; };
 		CC450F881A7482D600CC195B /* eddaMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CC450F871A7482D600CC195B /* eddaMapAnnotation.m */; };
 		CC4B70831A6C8E540016257C /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC4B70721A6C784D0016257C /* GLKit.framework */; };
+		CC51F9F31B00344A00C8B449 /* eddaGlobeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC51F9F21B00344A00C8B449 /* eddaGlobeViewController.m */; };
+		CC51F9F51B003B7000C8B449 /* globe in Resources */ = {isa = PBXBuildFile; fileRef = CC51F9F41B003B6F00C8B449 /* globe */; };
 		CC5619321AD08633005FCEB7 /* cross.png in Resources */ = {isa = PBXBuildFile; fileRef = CC5619301AD08633005FCEB7 /* cross.png */; };
 		CC5619331AD08633005FCEB7 /* cross@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC5619311AD08633005FCEB7 /* cross@2x.png */; };
 		CC5619391AD18732005FCEB7 /* tutorial1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = CC5619381AD18732005FCEB7 /* tutorial1.mp4 */; };
@@ -154,6 +156,9 @@
 		CC450F871A7482D600CC195B /* eddaMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaMapAnnotation.m; sourceTree = "<group>"; };
 		CC4B70721A6C784D0016257C /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		CC4B70811A6C8A0A0016257C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		CC51F9F11B00344A00C8B449 /* eddaGlobeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eddaGlobeViewController.h; sourceTree = "<group>"; };
+		CC51F9F21B00344A00C8B449 /* eddaGlobeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eddaGlobeViewController.m; sourceTree = "<group>"; };
+		CC51F9F41B003B6F00C8B449 /* globe */ = {isa = PBXFileReference; lastKnownFileType = folder; path = globe; sourceTree = "<group>"; };
 		CC5619301AD08633005FCEB7 /* cross.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cross.png; path = images/cross.png; sourceTree = "<group>"; };
 		CC5619311AD08633005FCEB7 /* cross@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cross@2x.png"; path = "images/cross@2x.png"; sourceTree = "<group>"; };
 		CC5619361AD180FA005FCEB7 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
@@ -332,6 +337,7 @@
 		CC77D4E419B003E8009BA59F = {
 			isa = PBXGroup;
 			children = (
+				CC51F9F41B003B6F00C8B449 /* globe */,
 				CC3F1C0B19BE8A1B00F6AD43 /* utils */,
 				CCBF45301A76CA88005E2750 /* kingpin */,
 				CC5989EA1A6B33AA0047D119 /* sounds */,
@@ -388,6 +394,8 @@
 			children = (
 				CC0B42311AF8417E00EBF780 /* eddaWelcomeViewController.h */,
 				CC0B42321AF8417E00EBF780 /* eddaWelcomeViewController.m */,
+				CC51F9F11B00344A00C8B449 /* eddaGlobeViewController.h */,
+				CC51F9F21B00344A00C8B449 /* eddaGlobeViewController.m */,
 				CC0B51231AF3279100588E27 /* QCMethod.h */,
 				CC0B51241AF3279100588E27 /* QCMethod.m */,
 				CC0B51201AF3179100588E27 /* eddaCallAnimationView.h */,
@@ -631,6 +639,7 @@
 				CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */,
 				CC0D4F521A7B409700F9BB0F /* arrowMagenta.png in Resources */,
 				CC0D4F331A7B115000F9BB0F /* arrowCyan.png in Resources */,
+				CC51F9F51B003B7000C8B449 /* globe in Resources */,
 				CCD596311A759BBB0094E2EA /* default.png in Resources */,
 				CCFFAF6A19CF9782008555A1 /* AppIcon72x72@2x.png in Resources */,
 				CC5619391AD18732005FCEB7 /* tutorial1.mp4 in Resources */,
@@ -718,6 +727,7 @@
 				CC0B51221AF3179100588E27 /* eddaCallAnimationView.m in Sources */,
 				CC77D50719B003E8009BA59F /* eddaMainViewController.m in Sources */,
 				CCD5963F1A75A7680094E2EA /* eddaInfoViewController.m in Sources */,
+				CC51F9F31B00344A00C8B449 /* eddaGlobeViewController.m in Sources */,
 				CC5B4F9719D8D67B001BA61D /* LSViewController.m in Sources */,
 				CCE1DB931A3E2ADD00119867 /* EXTScope.m in Sources */,
 			);
