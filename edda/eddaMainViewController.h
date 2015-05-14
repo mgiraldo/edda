@@ -36,6 +36,7 @@ enum streamingMode
 struct sViewAngle {
 	double azimuth;
 	double elevation;
+	double distance;
 };
 typedef struct sViewAngle sViewAngle;
 

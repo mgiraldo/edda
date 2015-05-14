@@ -76,6 +76,7 @@ static float _arrowSize = 44.0f;
 static float _arrowMargin = 5.0f;
 
 static int callSize = 160;
+static int callTop = 200;
 
 #pragma mark - View lifecycle
 
@@ -214,7 +215,7 @@ static int callSize = 160;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-	NSLog(@"prepare for segue: [%@] sender: [%@]", [segue identifier], sender);
+//	NSLog(@"prepare for segue: [%@] sender: [%@]", [segue identifier], sender);
 	if ([[segue identifier] isEqualToString:@"showSettings"]) {
 		[[segue destinationViewController] setDelegate:self];
 	} else if ([[segue identifier] isEqualToString:@"showList"]) {
@@ -248,7 +249,7 @@ static int callSize = 160;
 	currentUser.ID = self.appDelegate.loggedInUser.ID;
 	currentUser.password = [QBHelper uniqueDeviceIdentifier];
 	[[QBChat instance] loginWithUser:currentUser];
-	NSLog(@"log in: %@", self.appDelegate.loggedInUser);
+//	NSLog(@"log in: %@", self.appDelegate.loggedInUser);
 	[NSTimer scheduledTimerWithTimeInterval:30
 									 target:[QBChat instance]
 								   selector:@selector(sendPresence)
@@ -305,7 +306,7 @@ static int callSize = 160;
 
 -(void) showReceiverBusyMsg
 {
-	NSLog(@"Receiver is busy on another call. Please try later.");
+//	NSLog(@"Receiver is busy on another call. Please try later.");
 	self.statusLabel.text = @"Receiver is busy. Please try later.";
 	[self performSelector:@selector(goBack) withObject:nil afterDelay:5.0];
 }
@@ -479,7 +480,7 @@ static int callSize = 160;
 			self.rearPreviewLayer.frame = self.videoView.bounds; // Assume you want the preview layer to fill the view.
 		} else {
 			// Handle the failure.
-			NSLog(@"Cannot handle video");
+//			NSLog(@"Cannot handle video");
 			_rearVideoInited = NO;
 		}
 	}
@@ -524,7 +525,7 @@ static int callSize = 160;
 }
 
 - (void)createVideoChatViews {
-	NSLog(@"createChatViews");
+//	NSLog(@"createChatViews");
 	CGRect viewBounds = self.view.bounds;
 	CGFloat topBarOffset = self.topLayoutGuide.length + _arrowSize + (_arrowMargin * 2);
 	
@@ -563,7 +564,7 @@ static int callSize = 160;
 
 		[self.videoChat callUser:self.appDelegate.callReceiverID.integerValue conferenceType:QBVideoChatConferenceTypeAudioAndVideo];
 		
-		NSLog(@"calling: %@ chat: %@", self.appDelegate.callReceiverID, self.videoChat);
+//		NSLog(@"calling: %@ chat: %@", self.appDelegate.callReceiverID, self.videoChat);
 
 		[self createVideoChatViews];
 		
@@ -579,17 +580,17 @@ static int callSize = 160;
 		myMessage.additionalInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@",[NSNumber numberWithInt:(int)self.appDelegate.loggedInUser.ID]], @"callerID", self.appDelegate.userTitle, @"callerTitle", nil];
 		
 		[QBRequest sendPush:myMessage toUsers:userid successBlock:^(QBResponse *response, QBMEvent *event) {
-			NSLog(@"sent push: %@",response);
+//			NSLog(@"sent push: %@",response);
 			[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 		} errorBlock:^(QBError *error) {
-			NSLog(@"Errors=%@", [error.reasons description]);
+//			NSLog(@"Errors=%@", [error.reasons description]);
 			[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 		}];
 	}
 }
 
 -(void) setupVideoCapture{
-	NSLog(@"setupVideoCapture");
+//	NSLog(@"setupVideoCapture");
 	self.frontSession = [[AVCaptureSession alloc] init];
  
 	__block NSError *error = nil;
@@ -677,13 +678,86 @@ static int callSize = 160;
 - (void)pointToUser {
 	self.otherView.hidden = NO;
 	[self updateViewAngle];
-	NSLog(@"from %f %f %f to %f %f %f", _fromLat, _fromLon, _fromAlt, _toLat, _toLon, _toAlt);
+//	NSLog(@"from %f %f %f to %f %f %f", _fromLat, _fromLon, _fromAlt, _toLat, _toLon, _toAlt);
 }
 
 - (IBAction)endButtonTapped:(id)sender {
 	[self playSound:@"hangup" type:@"mp3"];
+
+	[self saveLastLatLon];
+
 	[self removeCallAnimation];
 	[self disconnectAndGoBack];
+}
+
+#pragma mark - Globe view
+
+- (void)saveLastLatLon {
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+	NSData *dataOut = [defaults objectForKey:@"callLog"];
+	
+	NSMutableArray *callLog;
+	
+	if (dataOut != nil) {
+		callLog = [NSKeyedUnarchiver unarchiveObjectWithData:dataOut];
+	} else {
+		callLog = [[NSMutableArray alloc] init];
+	}
+
+//	NSLog(@"callLog 1: %@", callLog);
+
+	NSArray *keys = [NSArray arrayWithObjects:
+					 @"fromLat",
+					 @"fromLon",
+					 @"toLat",
+					 @"toLon",
+					 @"distance",
+					 @"toNick",
+					 nil];
+	NSLog(@"a:%@: b:%@:", self.appDelegate.callerTitle, self.appDelegate.callReceiverTitle);
+	NSString *nick = (self.appDelegate.callerTitle != nil) ? [NSString stringWithString:self.appDelegate.callerTitle] : [NSString stringWithString:self.appDelegate.callReceiverTitle];
+
+	NSArray *objects = [NSArray arrayWithObjects:
+						[NSNumber numberWithFloat:self.appDelegate.currentLocation.coordinate.latitude],
+						[NSNumber numberWithFloat:self.appDelegate.currentLocation.coordinate.longitude],
+						[NSNumber numberWithFloat:_toLat],
+						[NSNumber numberWithFloat:_toLon],
+						[NSNumber numberWithFloat:viewAngle.distance],
+						nick,
+						nil];
+	
+//	NSLog(@"objects: %@", objects);
+//	NSLog(@"keys: %@", keys);
+	
+	NSDictionary *newLog = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+	[callLog addObject:newLog];
+
+//	NSLog(@"callLog: %@", callLog);
+
+	NSData *dataIn = [NSKeyedArchiver archivedDataWithRootObject:callLog];
+
+	[defaults setObject:dataIn forKey:@"callLog"];
+	
+	[defaults setObject:[objects objectAtIndex:0] forKey:@"last_fromLat"];
+	[defaults setObject:[objects objectAtIndex:1] forKey:@"last_fromLon"];
+	[defaults setObject:[objects objectAtIndex:2] forKey:@"last_toLat"];
+	[defaults setObject:[objects objectAtIndex:3] forKey:@"last_toLon"];
+	[defaults setObject:[objects objectAtIndex:4] forKey:@"last_distance"];
+
+	[defaults synchronize];
+}
+
+- (void)showGlobeView {
+	if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] != NSOrderedAscending) {
+		[self performSegueWithIdentifier:@"showGlobe" sender:self];
+	}
+}
+
+- (void)globeViewControllerDidFinish:(eddaGlobeViewController *)controller
+{
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - eddaOtherViewDelegate
@@ -720,7 +794,7 @@ static int callSize = 160;
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-	NSLog(@"didUpdateToLocation: %@", newLocation);
+//	NSLog(@"didUpdateToLocation: %@", newLocation);
 	self.currentLocation = newLocation;
 	
 	if (self.currentLocation != nil) {
@@ -781,6 +855,8 @@ static int callSize = 160;
 	dx = toX-x;
 	dy = toY-y;
 	dz = toZ-z;
+	
+	double distance = sqrt(dx*dx + dy*dy + dz*dz);
 		
 	double cosElevation = (x*dx + y*dy + z*dz) / sqrt(((x*x)+(y*y)+(z*z))*((dx*dx)+(dy*dy)+(dz*dz)));
 	
@@ -806,6 +882,7 @@ static int callSize = 160;
 		
 	output.azimuth = azimuth;
 	output.elevation = elevation;
+	output.distance = distance;
 
 	return output;
 }
@@ -815,9 +892,9 @@ static int callSize = 160;
 - (void)showCallAnimation {
 	self.statusLabel.text = [NSString stringWithFormat:@"waiting for\n%@\nto accept",  self.appDelegate.callReceiverTitle];
 	if (self.callAnimation == nil) {
-		self.callAnimation = [[eddaCallAnimationView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - callSize) *.5, 200, callSize, callSize)];
+		self.callAnimation = [[eddaCallAnimationView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - callSize) *.5, callTop, callSize, callSize)];
 	}
-	[self.view addSubview:self.callAnimation];
+	[self.view insertSubview:self.callAnimation belowSubview:self.statusLabel];
 	[self.callAnimation startAllAnimations:nil];
 }
 
@@ -831,7 +908,7 @@ static int callSize = 160;
 
 - (IBAction)unwindToVideoChat:(UIStoryboardSegue *)unwindSegue
 {
-	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
+//	NSLog(@"came back with nickname: %@ location: %@ altitude: %@", self.appDelegate.callReceiverTitle, self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
 
 	self.blockingView.hidden = NO;
 	
@@ -844,7 +921,7 @@ static int callSize = 160;
 
 - (IBAction)unwindToMainViewController:(UIStoryboardSegue *)unwindSegue
 {
-	NSLog(@"canceled");
+//	NSLog(@"canceled");
 	m_receiverID = nil;
 	self.appDelegate.callReceiverID = m_receiverID;
 	self.appDelegate.callReceiverTitle = @"";
@@ -870,16 +947,11 @@ static int callSize = 160;
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)globeViewControllerDidFinish:(eddaGlobeViewController *)controller
-{
-	[self dismissViewControllerAnimated:YES completion:nil];
-}
-
 #pragma mark -
 #pragma mark QBChatDelegate
 
 - (void)reject{
-	NSLog(@"reject");
+//	NSLog(@"reject");
 	_isChatting = NO;
 	// Reject call
 	//
@@ -893,7 +965,7 @@ static int callSize = 160;
 }
 
 - (void)accept{
-	NSLog(@"accept id: %@", sessionID);
+//	NSLog(@"accept id: %@", sessionID);
 	_isChatting = YES;
 	
 	ringingPlayer = nil;
@@ -934,7 +1006,7 @@ static int callSize = 160;
 	NSDictionary *custom = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
 	[self.videoChat acceptCallWithOpponentID:videoChatOpponentID conferenceType:QBVideoChatConferenceTypeAudioAndVideo customParameters:custom];
 	
-	NSLog(@"sent custom: %@", custom);
+//	NSLog(@"sent custom: %@", custom);
 	
 	[self createVideoChatViews];
 }
@@ -947,16 +1019,16 @@ static int callSize = 160;
 // Chat delegate
 -(void) chatDidLogin{
 	// You have successfully signed in to QuickBlox Chat
-	NSLog(@"chat logged in!");
+//	NSLog(@"chat logged in!");
 }
 
 -(void) chatDidNotLogin{
 	// Sign in to QuickBlox Chat failed
-	NSLog(@"ERROR! chat NOT logged in!");
+//	NSLog(@"ERROR! chat NOT logged in!");
 }
 
 -(void) chatDidReceiveCallRequestFromUser:(NSUInteger)userID withSessionID:(NSString *)_sessionID conferenceType:(enum QBVideoChatConferenceType)conferenceType{
-	NSLog(@"RIIIING! id:%lu session:%@", (unsigned long)userID, _sessionID);
+//	NSLog(@"RIIIING! id:%lu session:%@", (unsigned long)userID, _sessionID);
 	videoChatOpponentID = userID;
 	sessionID = _sessionID;
 	m_mode = streamingModeIncoming; //connect, publish, subscribe
@@ -967,6 +1039,7 @@ static int callSize = 160;
 
 -(void) chatCallUserDidNotAnswer:(NSUInteger)userID{
 //	NSLog(@"chatCallUserDidNotAnswer %lu", (unsigned long)userID);
+	_isChatting = NO;
 	[self removeCallAnimation];
 	NSString *msg = [NSString stringWithFormat:@"%@\nisn't answering.\nPlease try again later.", self.appDelegate.callReceiverTitle];
 	[self disconnectAndGoBack];
@@ -979,7 +1052,7 @@ static int callSize = 160;
  eg: opponent has moved since they last used the app
  */
 -(void) chatCallDidAcceptByUser:(NSUInteger)userID customParameters:(NSDictionary *)customParameters{
-	NSLog(@"call accepted by: %d params: %@", (int)userID, customParameters);
+//	NSLog(@"call accepted by: %d params: %@", (int)userID, customParameters);
 	[self removeCallAnimation];
 	self.blockingView.hidden = YES;
 	
@@ -994,10 +1067,10 @@ static int callSize = 160;
 		self.appDelegate.callReceiverLocation = opponentLocation;
 		self.appDelegate.callReceiverAltitude = [NSNumber numberWithDouble:opponentLocation.altitude];
 		
-		NSLog(@"opponentLocation: %@ alt: %f", opponentLocation, alt);
+//		NSLog(@"opponentLocation: %@ alt: %f", opponentLocation, alt);
 	}
 
-	NSLog(@"callReceiverLocation: %@ callReceiverAltitude %@", self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
+//	NSLog(@"callReceiverLocation: %@ callReceiverAltitude %@", self.appDelegate.callReceiverLocation, self.appDelegate.callReceiverAltitude);
 
 	_toLat = self.appDelegate.callReceiverLocation.coordinate.latitude;
 	_toLon = self.appDelegate.callReceiverLocation.coordinate.longitude;
@@ -1009,6 +1082,7 @@ static int callSize = 160;
 -(void) chatCallDidRejectByUser:(NSUInteger)userID{
 //	NSLog(@"chatCallDidRejectByUser %lu", (unsigned long)userID);
 	NSString *msg = [NSString stringWithFormat:@"%@\nhas rejected your call.", self.appDelegate.callReceiverTitle];
+	_isChatting = NO;
 	[self removeCallAnimation];
 	[self disconnectAndGoBack];
 	[self playSound:@"rechaza" type:@"mp3"];
@@ -1023,24 +1097,24 @@ static int callSize = 160;
 	[self fireOpponentAlignedTimer];
 }
 
--(void) chatCallDidStopByUser:(NSUInteger)userID status:(NSString *)status{
+-(void) chatCallDidStopByUser:(NSUInteger)userID status:(NSString *)status {
 //	NSLog(@"chatCallDidStopByUser %lu purpose %@", (unsigned long)userID, status);
 
+	[self playSound:@"hangup" type:@"mp3"];
+
 	if([status isEqualToString:kStopVideoChatCallStatus_OpponentDidNotAnswer]){
-		
 		self.callAlert.delegate = nil;
 		[self.callAlert dismissWithClickedButtonIndex:0 animated:YES];
 		self.callAlert = nil;
-		
+	} else {
+		[self saveLastLatLon];
 	}
-	
-	[self playSound:@"hangup" type:@"mp3"];
 
 	[self disconnectAndGoBack];
 }
 
 - (void)didReceiveAudioBuffer:(AudioBuffer)buffer{
-	NSLog(@"received audio buffer");
+//	NSLog(@"received audio buffer");
 }
 
 #pragma mark -
@@ -1106,7 +1180,7 @@ static int callSize = 160;
 
 -(void) findCallerData
 {
-	NSLog(@"PUSH!");
+//	NSLog(@"PUSH!");
 	@weakify(self);
 	[QBRequest userWithID:videoChatOpponentID successBlock:^(QBResponse *response, QBUUser *user) {
 		@strongify(self);
@@ -1121,8 +1195,8 @@ static int callSize = 160;
 		CLLocation * location = [[CLLocation alloc] initWithLatitude:[[custom valueForKey:@"latitude"] doubleValue] longitude:[[custom valueForKey:@"longitude"] doubleValue]];
 		NSNumber *userAltitude = [custom valueForKey:@"altitude"];
 		
-		self.appDelegate.callerTitle = userTitle;
-		self.appDelegate.callerID = userID.stringValue;
+		self.appDelegate.callerTitle = [NSString stringWithString:userTitle];
+		self.appDelegate.callerID = [NSString stringWithString:userID.stringValue];
 		
 		[self opponentDidCall];
 
@@ -1137,7 +1211,7 @@ static int callSize = 160;
 
 - (void)connect
 {
-	NSLog(@"connecting");
+//	NSLog(@"connecting");
 	[self.view bringSubviewToFront:self.myVideoView];
 	[self.view bringSubviewToFront:self.controlsView];
 	[self.view bringSubviewToFront:self.statusLabel];
@@ -1147,7 +1221,7 @@ static int callSize = 160;
 	self.myVideoView.hidden = NO;
 	self.opponentVideoView.hidden = NO;
 	self.blackView.hidden = NO;
-	NSLog(@"me: %@, opponent: %@", self.myVideoView,self.opponentVideoView);
+//	NSLog(@"me: %@, opponent: %@", self.myVideoView,self.opponentVideoView);
 }
 
 - (void)disconnect
@@ -1167,6 +1241,9 @@ static int callSize = 160;
 }
 
 - (void) disconnectAndGoBack {
+	if (_isChatting)
+		[self showGlobeView];
+
 	_isChatting = NO;
 	_videoActive = NO;
 	
@@ -1182,6 +1259,8 @@ static int callSize = 160;
 	self.appDelegate.callReceiverTitle = @"";
 	self.appDelegate.callReceiverLocation = nil;
 	self.appDelegate.callReceiverAltitude = 0;
+	self.appDelegate.callerTitle = nil;
+	self.appDelegate.callerID = nil;
 	
 	videoChatOpponentID = 0;
 	

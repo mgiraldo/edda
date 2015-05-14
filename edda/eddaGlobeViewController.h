@@ -16,6 +16,11 @@
 
 @interface eddaGlobeViewController : UIViewController <UIWebViewDelegate>
 
+@property (nonatomic) float fromLat;
+@property (nonatomic) float fromLon;
+@property (nonatomic) float toLat;
+@property (nonatomic) float toLon;
+
 @property (nonatomic) UIImage *screenShot;
 @property (weak, nonatomic) IBOutlet UIWebView *globeView;
 @property (weak, nonatomic) id <eddaGlobeViewControllerDelegate> delegate;

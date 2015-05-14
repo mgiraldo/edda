@@ -13,11 +13,25 @@
 
 @end
 
+static float fromLat;
+static float fromLon;
+static float toLat;
+static float toLon;
+static float distance;
+
 @implementation eddaGlobeViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	
+	fromLat = [[defaults valueForKey:@"last_fromLat"] floatValue];
+	fromLon = [[defaults valueForKey:@"last_fromLon"] floatValue];
+	toLat = [[defaults valueForKey:@"last_toLat"] floatValue];
+	toLon = [[defaults valueForKey:@"last_toLon"] floatValue];
+	distance = [[defaults valueForKey:@"last_distance"] floatValue];
+
 	NSString *path = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"globe"];
 	NSURL *url = [NSURL fileURLWithPath:path];
 
@@ -44,7 +58,20 @@
 */
 
 - (IBAction)shareButtonTapped:(id)sender {
-	NSString *textToShare = @"test";
+	float km = distance / 1000;
+	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+	[formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	[formatter setMaximumFractionDigits:0];
+	
+	NSString *formattedOutput;
+	
+	if (km > 5) {
+		formattedOutput = [formatter stringFromNumber:[NSNumber numberWithFloat:km]];
+	} else {
+		formattedOutput = [formatter stringFromNumber:[NSNumber numberWithFloat:distance]];
+	}
+	
+	NSString *textToShare = [NSString stringWithFormat:@"I just had a connection %@%@ away!", formattedOutput, (km > 5 ? @"km" : @"m")];
 	
 	[self takeScreenShot];
 	
@@ -57,7 +84,6 @@
 	NSArray *excludeActivities = @[UIActivityTypePrint,
 								   UIActivityTypeAssignToContact,
 								   UIActivityTypeAddToReadingList,
-								   UIActivityTypePostToFlickr,
 								   UIActivityTypeAirDrop,
 								   UIActivityTypeMessage,
 								   UIActivityTypeMail,
@@ -135,15 +161,13 @@
 }
 
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
-	eddaAppDelegate* appDelegate = (eddaAppDelegate*)[[UIApplication sharedApplication] delegate];
-	
-	NSLog(@"me: %@ them:%@", appDelegate.currentLocation, appDelegate.callReceiverLocation);
+	NSLog(@"me: %f,%f them:%f,%f dist:%f", fromLat, fromLon, toLat, toLon, distance);
 	
 	[self.globeView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"createGlobe(%f, %f, %f, %f)",
-															appDelegate.currentLocation.coordinate.latitude,
-															appDelegate.currentLocation.coordinate.longitude,
-															(float)(random()*180-90), // appDelegate.callReceiverLocation.coordinate.latitude
-															(float)(random()*360-180) // appDelegate.callReceiverLocation.coordinate.longitude
+															fromLat,
+															fromLon,
+															toLat,
+															toLon
 															]];
 	
 }
