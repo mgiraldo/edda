@@ -41,6 +41,7 @@
 	textView.backgroundColor = [UIColor clearColor];
 	textView.editable = NO;
 	textView.linkTextAttributes = attributes;
+	textView.selectable = NO;
 	
 	// blur
 	CAGradientLayer* maskLayer = [CAGradientLayer layer];
