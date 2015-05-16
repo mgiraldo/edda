@@ -609,7 +609,7 @@ static int _maxZoom = 10;
 }
 
 - (BOOL)clusteringControllerShouldClusterAnnotations:(KPClusteringController *)clusteringController {
-	return self.mapView.zoomLevel <= _maxZoom; // Find zoom level that suits your dataset
+	return self.mapView.zoomLevel <= _maxZoom-1; // Find zoom level that suits your dataset
 }
 
 - (void)clusteringControllerWillUpdateVisibleAnnotations:(KPClusteringController *)clusteringController {
