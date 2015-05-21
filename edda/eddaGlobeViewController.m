@@ -13,12 +13,6 @@
 
 @end
 
-static float fromLat;
-static float fromLon;
-static float toLat;
-static float toLon;
-static float distance;
-
 @implementation eddaGlobeViewController
 
 - (void)viewDidLoad {
@@ -26,11 +20,12 @@ static float distance;
 
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
-	fromLat = [[defaults valueForKey:@"last_fromLat"] floatValue];
-	fromLon = [[defaults valueForKey:@"last_fromLon"] floatValue];
-	toLat = [[defaults valueForKey:@"last_toLat"] floatValue];
-	toLon = [[defaults valueForKey:@"last_toLon"] floatValue];
-	distance = [[defaults valueForKey:@"last_distance"] floatValue];
+	self.fromLat = [[defaults valueForKey:@"last_fromLat"] floatValue];
+	self.fromLon = [[defaults valueForKey:@"last_fromLon"] floatValue];
+	self.toLat = [[defaults valueForKey:@"last_toLat"] floatValue];
+	self.toLon = [[defaults valueForKey:@"last_toLon"] floatValue];
+	self.distance = [[defaults valueForKey:@"last_distance"] floatValue];
+	self.toNickname = [defaults valueForKey:@"last_nickname"];
 
 	NSString *path = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"globe"];
 	NSURL *url = [NSURL fileURLWithPath:path];
@@ -58,7 +53,7 @@ static float distance;
 */
 
 - (IBAction)shareButtonTapped:(id)sender {
-	float km = distance / 1000;
+	float km = self.distance / 1000;
 	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
 	[formatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	[formatter setMaximumFractionDigits:0];
@@ -68,10 +63,10 @@ static float distance;
 	if (km > 5) {
 		formattedOutput = [formatter stringFromNumber:[NSNumber numberWithFloat:km]];
 	} else {
-		formattedOutput = [formatter stringFromNumber:[NSNumber numberWithFloat:distance]];
+		formattedOutput = [formatter stringFromNumber:[NSNumber numberWithFloat:self.distance]];
 	}
 	
-	NSString *textToShare = [NSString stringWithFormat:@"I just had a connection %@%@ away!", formattedOutput, (km > 5 ? @"km" : @"m")];
+	NSString *textToShare = [NSString stringWithFormat:@"I just had a connection %@%@ away with %@!", formattedOutput, (km > 5 ? @"km" : @"m"), self.toNickname];
 	
 	[self takeScreenShot];
 	
@@ -161,13 +156,13 @@ static float distance;
 }
 
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
-	NSLog(@"me: %f,%f them:%f,%f dist:%f", fromLat, fromLon, toLat, toLon, distance);
+	NSLog(@"me: %f,%f them:%f,%f dist:%f", self.fromLat, self.fromLon, self.toLat, self.toLon, self.distance);
 	
 	[self.globeView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"createGlobe(%f, %f, %f, %f)",
-															fromLat,
-															fromLon,
-															toLat,
-															toLon
+															self.fromLat,
+															self.fromLon,
+															self.toLat,
+															self.toLon
 															]];
 	
 }

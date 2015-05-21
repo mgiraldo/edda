@@ -11,9 +11,6 @@
 @protocol eddaOtherViewDelegate;
 
 @interface eddaOtherView : UIView {
-	UIColor *_cyanColor;
-	UIColor *_magentaColor;
-	UIColor *_yellowColor;
 }
 
 @property (nonatomic, assign) id <eddaOtherViewDelegate> delegate;

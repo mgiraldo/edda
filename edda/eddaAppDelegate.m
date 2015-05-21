@@ -19,9 +19,9 @@
 	NSDictionary *configuration = [[NSDictionary alloc] initWithContentsOfFile:plistPath];
 	
 	UIPageControl *pageControl = [UIPageControl appearance];
-	pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+	pageControl.pageIndicatorTintColor = [UIColor blackColor];
 	pageControl.currentPageIndicatorTintColor = [UIColor yellowColor];
-	pageControl.backgroundColor = [UIColor blackColor];
+	pageControl.backgroundColor = [UIColor magentaColor];
 	
 	// Quickblox
 	[QBApplication sharedApplication].applicationId = [configuration[@"Quickblox"][@"ApplicationID"] integerValue];

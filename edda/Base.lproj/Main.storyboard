@@ -101,7 +101,11 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6NN-ma-Zd3" userLabel="tutorial button">
-                                <rect key="frame" x="20" y="40" width="30" height="34"/>
+                                <rect key="frame" x="20" y="40" width="60" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="2Bd-Wb-vqT"/>
+                                    <constraint firstAttribute="width" constant="60" id="qPP-uE-LXB"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="16"/>
                                 <state key="normal" title="HELP"/>
                                 <connections>
@@ -162,9 +166,9 @@
                                 <rect key="frame" x="50" y="388" width="220" height="180"/>
                                 <subviews>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sfP-WX-KSq">
-                                        <rect key="frame" x="40" y="70" width="140" height="40"/>
+                                        <rect key="frame" x="40" y="50" width="140" height="80"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="Ew0-6v-IBI"/>
+                                            <constraint firstAttribute="height" constant="80" id="Ew0-6v-IBI"/>
                                             <constraint firstAttribute="width" constant="140" id="HlT-A7-rM1"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="24"/>
@@ -179,10 +183,10 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cCn-TC-ql3">
-                                        <rect key="frame" x="40" y="70" width="140" height="40"/>
+                                        <rect key="frame" x="40" y="50" width="140" height="80"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="140" id="H5W-Uu-aUK"/>
-                                            <constraint firstAttribute="height" constant="40" id="mLb-Pe-Og7"/>
+                                            <constraint firstAttribute="height" constant="80" id="mLb-Pe-Og7"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="24"/>
                                         <size key="titleShadowOffset" width="-1" height="1"/>
@@ -330,11 +334,13 @@
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
+                                <color key="shadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <size key="shadowOffset" width="-1" height="1"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GLe-8d-SB1">
-                                <rect key="frame" x="285" y="35" width="20" height="20"/>
+                                <rect key="frame" x="275" y="30" width="40" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="JM6-a6-zRP"/>
+                                    <constraint firstAttribute="height" constant="40" id="JM6-a6-zRP"/>
                                     <constraint firstAttribute="width" secondItem="GLe-8d-SB1" secondAttribute="height" multiplier="1:1" id="vOY-Ms-jWn"/>
                                 </constraints>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -348,14 +354,14 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="GLe-8d-SB1" secondAttribute="trailing" constant="15" id="EvY-gM-S5q"/>
+                            <constraint firstAttribute="trailing" secondItem="GLe-8d-SB1" secondAttribute="trailing" constant="5" id="EvY-gM-S5q"/>
                             <constraint firstItem="Igl-Hj-2TH" firstAttribute="width" secondItem="ieN-HA-wEv" secondAttribute="width" id="Io5-KW-VWd"/>
                             <constraint firstItem="Igl-Hj-2TH" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="10" id="Pfl-0M-4pP"/>
                             <constraint firstItem="ieN-HA-wEv" firstAttribute="top" secondItem="Igl-Hj-2TH" secondAttribute="bottom" constant="20" id="Z00-K0-FWd"/>
                             <constraint firstAttribute="centerX" secondItem="Igl-Hj-2TH" secondAttribute="centerX" id="dcD-M2-4Be"/>
-                            <constraint firstItem="GLe-8d-SB1" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="15" id="pnu-uf-MiR"/>
+                            <constraint firstItem="GLe-8d-SB1" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="10" id="pnu-uf-MiR"/>
                             <constraint firstAttribute="centerX" secondItem="ieN-HA-wEv" secondAttribute="centerX" id="uWL-hN-G4l"/>
                         </constraints>
                     </view>
@@ -469,7 +475,11 @@
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" returnKeyType="done"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mnb-p7-R9t">
-                                <rect key="frame" x="106" y="436" width="108" height="37"/>
+                                <rect key="frame" x="90" y="436" width="140" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="140" id="HPO-pl-GkZ"/>
+                                    <constraint firstAttribute="height" constant="44" id="tZA-2Z-L1S"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
                                 <state key="normal" title="SEND FEEDBACK">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -547,10 +557,10 @@
                                 <dataDetectorType key="dataDetectorTypes"/>
                             </webView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9ex-Al-DEz">
-                                <rect key="frame" x="109" y="408" width="103" height="37"/>
+                                <rect key="frame" x="100" y="408" width="120" height="44"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="37" id="NrT-Bw-Mjy"/>
-                                    <constraint firstAttribute="width" constant="103" id="RTG-xn-5t5"/>
+                                    <constraint firstAttribute="height" constant="44" id="NrT-Bw-Mjy"/>
+                                    <constraint firstAttribute="width" constant="120" id="RTG-xn-5t5"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="18"/>
                                 <state key="normal" title="SAVE OR SHARE">
@@ -561,10 +571,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pep-sV-ujN">
-                                <rect key="frame" x="285" y="35" width="20" height="20"/>
+                                <rect key="frame" x="275" y="30" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="pep-sV-ujN" secondAttribute="height" multiplier="1:1" id="2ts-td-U8u"/>
-                                    <constraint firstAttribute="height" constant="20" id="FLR-pB-1o5"/>
+                                    <constraint firstAttribute="height" constant="40" id="FLR-pB-1o5"/>
                                 </constraints>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <size key="titleShadowOffset" width="-1" height="1"/>
@@ -576,7 +586,7 @@
                                     <action selector="closeGlobe:" destination="qLV-qs-w2Z" eventType="touchUpInside" id="1VS-g8-j2a"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This is a relic of the connection you just had. Save it to the Photos app or share it with anyone." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lzS-8X-vkv">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This is a relic of the connection you just had. Save it to the Photos app or share it with anyone." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="282" translatesAutoresizingMaskIntoConstraints="NO" id="lzS-8X-vkv">
                                 <rect key="frame" x="19" y="358" width="282" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="Dm5-qW-iFx"/>
@@ -593,9 +603,9 @@
                             <constraint firstItem="9ex-Al-DEz" firstAttribute="top" secondItem="lzS-8X-vkv" secondAttribute="bottom" id="Ddb-Lt-sFh"/>
                             <constraint firstAttribute="centerX" secondItem="lzS-8X-vkv" secondAttribute="centerX" id="Ke3-wp-Jty"/>
                             <constraint firstItem="lzS-8X-vkv" firstAttribute="top" secondItem="B6f-Ck-WAC" secondAttribute="bottom" constant="8" id="Pzt-Dc-Fst"/>
-                            <constraint firstAttribute="trailing" secondItem="pep-sV-ujN" secondAttribute="trailing" constant="15" id="SgQ-CB-3aR"/>
+                            <constraint firstAttribute="trailing" secondItem="pep-sV-ujN" secondAttribute="trailing" constant="5" id="SgQ-CB-3aR"/>
                             <constraint firstAttribute="centerX" secondItem="B6f-Ck-WAC" secondAttribute="centerX" id="Zyb-S2-EYW"/>
-                            <constraint firstItem="pep-sV-ujN" firstAttribute="top" secondItem="ut7-wK-29u" secondAttribute="bottom" constant="15" id="f0c-94-Rzd"/>
+                            <constraint firstItem="pep-sV-ujN" firstAttribute="top" secondItem="ut7-wK-29u" secondAttribute="bottom" constant="10" id="f0c-94-Rzd"/>
                             <constraint firstItem="B6f-Ck-WAC" firstAttribute="top" secondItem="ut7-wK-29u" secondAttribute="bottom" constant="10" id="heM-zk-g3X"/>
                             <constraint firstAttribute="width" secondItem="B6f-Ck-WAC" secondAttribute="width" id="vVp-LD-wSR"/>
                         </constraints>

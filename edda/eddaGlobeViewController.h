@@ -20,6 +20,8 @@
 @property (nonatomic) float fromLon;
 @property (nonatomic) float toLat;
 @property (nonatomic) float toLon;
+@property (nonatomic) float distance;
+@property (nonatomic) NSString *toNickname;
 
 @property (nonatomic) UIImage *screenShot;
 @property (weak, nonatomic) IBOutlet UIWebView *globeView;

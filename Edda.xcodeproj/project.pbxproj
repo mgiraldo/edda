@@ -82,6 +82,7 @@
 		CC78A55319C268BB00C73E59 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC78A55219C268BB00C73E59 /* QuartzCore.framework */; };
 		CC78A55B19C26B4500C73E59 /* configuration.plist.example in Resources */ = {isa = PBXBuildFile; fileRef = CC78A55A19C26B4500C73E59 /* configuration.plist.example */; };
 		CC9FD32C1A2C143F0037DD43 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC9FD32B1A2C143F0037DD43 /* libxml2.dylib */; };
+		CCA037D11B0D66D7005E499D /* pickup.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CCA037D01B0D66D7005E499D /* pickup.mp3 */; };
 		CCA397D219B5303D00754BEB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCA397D019B529B000754BEB /* Accelerate.framework */; };
 		CCA397E219B6A00B00754BEB /* geodesic.c in Sources */ = {isa = PBXBuildFile; fileRef = CCA397E119B6A00B00754BEB /* geodesic.c */; };
 		CCAE15DA1ADAF6B50026D835 /* Quickblox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCAE15D91ADAF6B50026D835 /* Quickblox.framework */; };
@@ -221,6 +222,7 @@
 		CC78A55419C268C500C73E59 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		CC78A55A19C26B4500C73E59 /* configuration.plist.example */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = configuration.plist.example; sourceTree = "<group>"; };
 		CC9FD32B1A2C143F0037DD43 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		CCA037D01B0D66D7005E499D /* pickup.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = pickup.mp3; sourceTree = "<group>"; };
 		CCA397D019B529B000754BEB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		CCA397D919B6987A00754BEB /* geodesic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geodesic.h; sourceTree = "<group>"; };
 		CCA397E119B6A00B00754BEB /* geodesic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geodesic.c; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 		CC5989EA1A6B33AA0047D119 /* sounds */ = {
 			isa = PBXGroup;
 			children = (
+				CCA037D01B0D66D7005E499D /* pickup.mp3 */,
 				CCD5962F1A759BBB0094E2EA /* hangup.mp3 */,
 				CCD596301A759BBB0094E2EA /* rechaza.mp3 */,
 				CC5989EB1A6B33BE0047D119 /* Zen_mg_JFK_LO_short.wav */,
@@ -636,6 +639,7 @@
 				CC0D4F5A1A7B409700F9BB0F /* splash-icon.png in Resources */,
 				CC77D50C19B003E8009BA59F /* Images.xcassets in Resources */,
 				CC77D53C19B02740009BA59F /* arrowLong.png in Resources */,
+				CCA037D11B0D66D7005E499D /* pickup.mp3 in Resources */,
 				CCFFAF6219CF9782008555A1 /* AppIcon40x40@2x.png in Resources */,
 				CC0D4F521A7B409700F9BB0F /* arrowMagenta.png in Resources */,
 				CC0D4F331A7B115000F9BB0F /* arrowCyan.png in Resources */,

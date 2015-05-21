@@ -21,9 +21,6 @@ static const float _magentaDiameter = 250.0f;
 
 - (id)initWithFrame:(CGRect)frame
 {
-	_cyanColor = [UIColor colorWithRed:0 green:1 blue:1 alpha:.8];
-	_magentaColor = [UIColor colorWithRed:1 green:0 blue:1 alpha:.8];
-	_yellowColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:.8];
 	CGRect f = CGRectMake(-_otherDiameterOut, -_otherDiameterOut, _otherDiameterOut, _otherDiameterOut);
     self = [super initWithFrame:self.window.frame];
     if (self) {
@@ -38,11 +35,11 @@ static const float _magentaDiameter = 250.0f;
 
 		// squares behind "hole"
 		self.sqCyanView = [[UIView alloc] initWithFrame:f];
-		self.sqCyanView.layer.backgroundColor = _cyanColor.CGColor;
+		self.sqCyanView.layer.backgroundColor = [UIColor cyanColor].CGColor;
 		self.sqMagentaView = [[UIView alloc] initWithFrame:f];
-		self.sqMagentaView.layer.backgroundColor = _magentaColor.CGColor;
+		self.sqMagentaView.layer.backgroundColor = [UIColor magentaColor].CGColor;
 		self.sqYellowView = [[UIView alloc] initWithFrame:f];
-		self.sqYellowView.layer.backgroundColor = _yellowColor.CGColor;
+		self.sqYellowView.layer.backgroundColor = [UIColor yellowColor].CGColor;
 		self.sqCyanView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * 180);
 		self.sqMagentaView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * 300);
 		self.sqYellowView.transform = CGAffineTransformMakeRotation(DEG_TO_RAD * 60);
@@ -61,12 +58,12 @@ static const float _magentaDiameter = 250.0f;
 
 		self.cyanView.layer.cornerRadius = _otherDiameterOut * .5;
 		self.cyanView.layer.backgroundColor = [UIColor clearColor].CGColor;
-		self.cyanView.layer.borderColor = _cyanColor.CGColor;
+		self.cyanView.layer.borderColor = [UIColor cyanColor].CGColor;
 		self.cyanView.layer.borderWidth = 1;
 		self.cyanView.hidden = YES;
 		self.magentaView.layer.cornerRadius = _otherDiameterOut * .5;
 		self.magentaView.layer.backgroundColor = [UIColor clearColor].CGColor;
-		self.magentaView.layer.borderColor = _magentaColor.CGColor;
+		self.magentaView.layer.borderColor = [UIColor magentaColor].CGColor;
 		self.magentaView.layer.borderWidth = 1;
 		self.magentaView.hidden = YES;
 		self.blackView.layer.cornerRadius = _otherDiameterOut * .5;
@@ -159,7 +156,7 @@ static const float _magentaDiameter = 250.0f;
 		CGRect frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
 		self.magentaView.layer.cornerRadius = _newSize * .5;
 		self.magentaView.layer.borderWidth = _borderWidthIn;
-		self.magentaView.layer.borderColor = _magentaColor.CGColor;
+		self.magentaView.layer.borderColor = [UIColor magentaColor].CGColor;
 		self.magentaView.frame = frame;
 		
 		self.cyanView.hidden = NO;
@@ -167,7 +164,7 @@ static const float _magentaDiameter = 250.0f;
 		frame = CGRectMake((self.window.bounds.size.width-_newSize)*.5, (self.window.bounds.size.width-_newSize)*.5, _newSize, _newSize);
 		self.cyanView.layer.cornerRadius = _newSize * .5;
 		self.cyanView.layer.borderWidth = _borderWidthIn;
-		self.cyanView.layer.borderColor = _cyanColor.CGColor;
+		self.cyanView.layer.borderColor = [UIColor cyanColor].CGColor;
 		self.cyanView.frame = frame;
 		self.cyanView.hidden = NO;
 		

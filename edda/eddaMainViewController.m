@@ -48,6 +48,7 @@ static BOOL _isChatting = NO;
 static BOOL _isAligned = NO;
 static BOOL _isOpponentAligned = NO;
 static BOOL _hasFirstAligned = NO;
+static BOOL _conversationStarted = NO;
 
 static float _headingThreshold = 20.0f;
 static float _pitchThreshold = 10.0f;
@@ -745,6 +746,7 @@ static int callTop = 200;
 	[defaults setObject:[objects objectAtIndex:2] forKey:@"last_toLat"];
 	[defaults setObject:[objects objectAtIndex:3] forKey:@"last_toLon"];
 	[defaults setObject:[objects objectAtIndex:4] forKey:@"last_distance"];
+	[defaults setObject:[objects objectAtIndex:5] forKey:@"last_nickname"];
 
 	[defaults synchronize];
 }
@@ -890,6 +892,7 @@ static int callTop = 200;
 #pragma mark - Call Animation
 
 - (void)showCallAnimation {
+	[self playSound:@"Zen_mg_JFK_LO_short" type:@"wav"];
 	self.statusLabel.text = [NSString stringWithFormat:@"waiting for\n%@\nto accept",  self.appDelegate.callReceiverTitle];
 	if (self.callAnimation == nil) {
 		self.callAnimation = [[eddaCallAnimationView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - callSize) *.5, callTop, callSize, callSize)];
@@ -970,6 +973,8 @@ static int callTop = 200;
 	
 	ringingPlayer = nil;
 	_videoActive = YES;
+	
+	_conversationStarted = YES;
 
 	// dismiss any modal dialogs
 	[self dismissViewControllerAnimated:YES completion:nil];
@@ -1056,6 +1061,10 @@ static int callTop = 200;
 	[self removeCallAnimation];
 	self.blockingView.hidden = YES;
 	
+	_conversationStarted = YES;
+	
+	[self playSound:@"pickup" type:@"mp3"];
+
 	_videoActive = YES;
 	[self refreshBackCameraFeed];
 	
@@ -1241,9 +1250,10 @@ static int callTop = 200;
 }
 
 - (void) disconnectAndGoBack {
-	if (_isChatting)
+	if (_conversationStarted)
 		[self showGlobeView];
 
+	_conversationStarted = NO;
 	_isChatting = NO;
 	_videoActive = NO;
 	
@@ -1377,12 +1387,20 @@ static int callTop = 200;
 	[self.pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 	
 	// Change the size of page view controller
-	self.pageViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-	self.pageViewController.view.backgroundColor = [UIColor blackColor];
+	self.pageViewController.view.backgroundColor = [UIColor magentaColor];
 	
+	self.pageViewController.view.frame = CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
 	[self addChildViewController:self.pageViewController];
 	[self.view addSubview:self.pageViewController.view];
+
 	[self.pageViewController didMoveToParentViewController:self];
+
+	[UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionCalculationModeLinear animations:^{
+		[UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:1.0 animations:^{
+			self.pageViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+		}];
+	} completion:nil];
+
 }
 
 @end

@@ -66,9 +66,18 @@
 }
 
 - (IBAction)closeTutorial:(id)sender {
-	[self.parentViewController willMoveToParentViewController:nil];
-	[self.parentViewController.view removeFromSuperview];
-	[self.parentViewController removeFromParentViewController];
+	@weakify(self);
+	[UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionCalculationModeLinear animations:^{
+		[UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:1.0 animations:^{
+			@strongify(self);
+			self.parentViewController.view.frame = CGRectMake(0, self.parentViewController.view.frame.size.height, self.parentViewController.view.frame.size.width, self.parentViewController.view.frame.size.height);
+		}];
+	} completion:^(BOOL finished) {
+		@strongify(self);
+		[self.parentViewController willMoveToParentViewController:nil];
+		[self.parentViewController.view removeFromSuperview];
+		[self.parentViewController removeFromParentViewController];
+	}];
 }
 
 /*
