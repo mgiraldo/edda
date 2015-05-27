@@ -70,7 +70,9 @@
 	
 	[self takeScreenShot];
 	
-	NSArray *objectsToShare = @[textToShare, self.screenShot];
+	NSArray *objectsToShare;
+	
+	objectsToShare = @[textToShare, self.screenShot];
 	
 	UIActivityViewController *activityViewController =
 	[[UIActivityViewController alloc] initWithActivityItems:objectsToShare
@@ -101,10 +103,18 @@
 #pragma mark - activity view delegate stuff
 
 - (void)takeScreenShot {
+	UIGraphicsBeginImageContextWithOptions(self.globeView.bounds.size,
+										   YES, 0.0);
+	[self.globeView drawViewHierarchyInRect:self.globeView.bounds afterScreenUpdates:NO];
+	self.screenShot = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
 	// now pass it to the web view and parse the result
-	NSString * base64String = [self.globeView stringByEvaluatingJavaScriptFromString:
-							  [NSString stringWithFormat:@"takeScreenshot()"]];
-	if (base64String != nil) [self processWebString: base64String];
+//	NSString * base64String;
+//
+//	base64String = [self.globeView stringByEvaluatingJavaScriptFromString:
+//						[NSString stringWithFormat:@"takeScreenshot()"]];
+//
+//	if (base64String != nil) [self processWebString: base64String];
 }
 
 - (void)processWebString:(NSString *)base64String {
@@ -128,32 +138,32 @@
 #pragma mark - web view delegate stuff
 
 // In your implementation file
--(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	NSLog(@"web view jump: %@", request);
-	// Break apart request URL
-	NSString *requestString = [[request URL] absoluteString];
-	NSArray *components = [requestString componentsSeparatedByString:@":"];
-	
-	// Check for your protocol
-	if ([components count] > 1 &&
-		[(NSString *)[components objectAtIndex:0] isEqualToString:@"edda"])
-	{
-		// Look for specific actions
-		if ([(NSString *)[components objectAtIndex:1] isEqualToString:@"screenshot"])
-		{
-			// Your parameters can be found at
-			NSString *imageString = [components objectAtIndex:2];
-			[self processWebString:imageString];
-			// where 'n' is the ordinal position of the colon-delimited parameter
-		}
-		
-		// Return 'NO' to prevent navigation
-		return NO;
-	}
-	
-	// Return 'YES', navigate to requested URL as normal
-	return YES;
-}
+//-(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+//	NSLog(@"web view jump: %@", request);
+//	// Break apart request URL
+//	NSString *requestString = [[request URL] absoluteString];
+//	NSArray *components = [requestString componentsSeparatedByString:@":"];
+//	
+//	// Check for your protocol
+//	if ([components count] > 1 &&
+//		[(NSString *)[components objectAtIndex:0] isEqualToString:@"edda"])
+//	{
+//		// Look for specific actions
+//		if ([(NSString *)[components objectAtIndex:1] isEqualToString:@"screenshot"])
+//		{
+//			// Your parameters can be found at
+//			NSString *imageString = [components objectAtIndex:2];
+//			[self processWebString:imageString];
+//			// where 'n' is the ordinal position of the colon-delimited parameter
+//		}
+//		
+//		// Return 'NO' to prevent navigation
+//		return NO;
+//	}
+//	
+//	// Return 'YES', navigate to requested URL as normal
+//	return YES;
+//}
 
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
 	NSLog(@"me: %f,%f them:%f,%f dist:%f", self.fromLat, self.fromLon, self.toLat, self.toLon, self.distance);
