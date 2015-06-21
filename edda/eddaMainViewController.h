@@ -18,12 +18,13 @@
 #import "eddaTutorialContentViewController.h"
 #import "eddaCallAnimationView.h"
 
+#import "eddaWelcomeViewController.h"
 #import "eddaInfoViewController.h"
 #import "eddaGlobeViewController.h"
 
 @class eddaMainViewController;
 
-@interface eddaMainViewController : UIViewController <UIPageViewControllerDataSource, eddaGlobeViewControllerDelegate, eddaInfoViewControllerDelegate, eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
+@interface eddaMainViewController : UIViewController <UIPageViewControllerDataSource, eddaWelcomeViewControllerDelegate, eddaGlobeViewControllerDelegate, eddaInfoViewControllerDelegate, eddaFlipsideViewControllerDelegate, eddaOtherViewDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, QBChatDelegate, CLLocationManagerDelegate, NSFileManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
 	AVAudioPlayer *ringingPlayer;
 }
 

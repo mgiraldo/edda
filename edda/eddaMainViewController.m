@@ -9,7 +9,6 @@
 #import <Accelerate/Accelerate.h>
 #import <ImageIO/ImageIO.h>
 #import "eddaMainViewController.h"
-#import "eddaWelcomeViewController.h"
 #import "LSViewController.h"
 #import "geodesic.h"
 #import "utils.h"
@@ -51,7 +50,7 @@ static BOOL _hasFirstAligned = NO;
 static BOOL _conversationStarted = NO;
 
 static float _headingThreshold = 20.0f;
-static float _pitchThreshold = 10.0f;
+static float _pitchThreshold = 20.0f;
 
 static NSArray *_places;
 static NSArray *_placeCoordinates;
@@ -85,20 +84,16 @@ static int callTop = 200;
 {
     [super viewDidLoad];
 
-	// tutorial stuff
-	self.pageTitles = @[@"Tap \"START CALL\" to access the list.", @"Use the list or map to find your friend.", @"Follow the arrows. The circle indicates your friend's location.", @"Maintain orientation during the call or the view will be obscured!"];
-	self.pageImages = @[@"tutorial1.mp4", @"tutorial2.mp4", @"tutorial3.mp4", @"tutorial4.mp4"];
-
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	BOOL didTutorial = [[defaults valueForKey:@"tutorial"] boolValue];
-
-	_cameraEnabled = [[defaults valueForKey:@"cameraEnabled"] boolValue];
-	_locationEnabled = [[defaults valueForKey:@"locationEnabled"] boolValue];
-	_microphoneEnabled = [[defaults valueForKey:@"microphoneEnabled"] boolValue];
 
 	if (!didTutorial) {
 		[self startTutorial:nil];
 	}
+	
+	_cameraEnabled = [[defaults valueForKey:@"cameraEnabled"] boolValue];
+	_locationEnabled = [[defaults valueForKey:@"locationEnabled"] boolValue];
+	_microphoneEnabled = [[defaults valueForKey:@"microphoneEnabled"] boolValue];
 
 	if (!_locationEnabled || !_cameraEnabled || !_microphoneEnabled) {
 		[self requestPermissions];
@@ -234,12 +229,28 @@ static int callTop = 200;
 	// Create page view controller
 	eddaWelcomeViewController *welcomeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
 	
+	welcomeViewController.delegate = self;
+	
 	// Change the size of page view controller
 	welcomeViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
 	
 	[self addChildViewController:welcomeViewController];
 	[self.view addSubview:welcomeViewController.view];
 	[welcomeViewController didMoveToParentViewController:self];
+}
+
+- (void)eddaWelcomeViewControllerFinished:(eddaWelcomeViewController *)viewController
+{
+	[viewController willMoveToParentViewController:nil];
+	[viewController.view removeFromSuperview];
+	[viewController removeFromParentViewController];
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	BOOL didTutorial = [[defaults valueForKey:@"tutorial"] boolValue];
+	
+	if (!didTutorial) {
+		[self startTutorial:nil];
+	}
 }
 
 - (void) userHasLoggedIn
@@ -340,10 +351,10 @@ static int callTop = 200;
 	BOOL rightHead = YES;
 	BOOL rightPitch = YES;
 	
-	if ((correctHeading > 180 && correctHeading < 360 - _headingThreshold) || (correctHeading < 0 && headingAdjusted < 180)) {
+	if ((correctHeading > 180 && correctHeading < 360 - _headingThreshold) || (correctHeading < -_headingThreshold && headingAdjusted < 180)) {
 		self.E_arrowView.hidden = NO;
 		rightHead = NO;
-	} else if ((correctHeading <= 180 && correctHeading > _headingThreshold) || (correctHeading < 0 && headingAdjusted >= 180)) {
+	} else if ((correctHeading <= 180 && correctHeading > _headingThreshold) || (correctHeading < -_headingThreshold && headingAdjusted >= 180)) {
 		self.W_arrowView.hidden = NO;
 		rightHead = NO;
 	}
@@ -800,7 +811,7 @@ static int callTop = 200;
 	self.currentLocation = newLocation;
 	
 	if (self.currentLocation != nil) {
-		[self.locationManager stopUpdatingLocation];
+//		[self.locationManager stopUpdatingLocation];
 		self.appDelegate.currentLocation = self.currentLocation;
 		QBLPlace *place = [QBLPlace place];
 		place.latitude = self.currentLocation.coordinate.latitude;
@@ -1373,10 +1384,15 @@ static int callTop = 200;
 	return 0;
 }
 
+#pragma mark - Tutorial stuff
+
 - (IBAction)startTutorial:(id)sender {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:@"tutorial"];
 	[defaults synchronize];
+	
+	self.pageTitles = @[@"Use the list or map to find your friend. →", @"Follow the arrows. The circle indicates your friend's location. →", @"Maintain orientation during the call or the view will be obscured!"];
+	self.pageImages = @[@"tutorial2.mp4", @"tutorial3.mp4", @"tutorial4.mp4"];
 	
 	// Create page view controller
 	self.pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TutorialViewController"];

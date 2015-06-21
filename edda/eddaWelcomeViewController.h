@@ -10,8 +10,11 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
+@protocol eddaWelcomeViewControllerDelegate;
+
 @interface eddaWelcomeViewController : UIViewController <CLLocationManagerDelegate>
 
+@property (nonatomic, assign) id <eddaWelcomeViewControllerDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UIButton *locationButton;
 @property (weak, nonatomic) IBOutlet UIButton *cameraButton;
 @property (weak, nonatomic) IBOutlet UIButton *microphoneButton;
@@ -20,4 +23,10 @@
 - (IBAction)locationButtonTapped:(id)sender;
 - (IBAction)cameraButtonTapped:(id)sender;
 - (IBAction)microphoneButtonTapped:(id)sender;
+@end
+
+@protocol eddaWelcomeViewControllerDelegate
+
+- (void)eddaWelcomeViewControllerFinished:(eddaWelcomeViewController *)viewController;
+
 @end

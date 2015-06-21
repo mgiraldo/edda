@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rQl-PL-IFJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rQl-PL-IFJ">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -319,19 +319,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Igl-Hj-2TH">
-                                <rect key="frame" x="40" y="30" width="240" height="360"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="360" id="09w-Z4-kU4"/>
-                                    <constraint firstAttribute="width" constant="240" id="4vD-mT-eUs"/>
-                                </constraints>
-                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Maintain orientation throughout the call for betterment" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="ieN-HA-wEv">
-                                <rect key="frame" x="40" y="410" width="240" height="44"/>
+                                <rect key="frame" x="40" y="400" width="240" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="bGY-EW-ehF"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="16"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <color key="shadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <size key="shadowOffset" width="-1" height="1"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TUTORIAL" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="2ob-ca-u90">
+                                <rect key="frame" x="40" y="30" width="240" height="40"/>
+                                <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="tHe-cI-6KU"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Medium" family="Avenir Next Condensed" pointSize="21"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                                 <color key="shadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -353,14 +358,25 @@
                                     <action selector="closeTutorial:" destination="h9I-fS-ybl" eventType="touchUpInside" id="0ox-zK-uSH"/>
                                 </connections>
                             </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Igl-Hj-2TH">
+                                <rect key="frame" x="40" y="70" width="240" height="320"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="320" id="09w-Z4-kU4"/>
+                                    <constraint firstAttribute="width" constant="240" id="4vD-mT-eUs"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstAttribute="centerX" secondItem="2ob-ca-u90" secondAttribute="centerX" id="0LN-OX-EN7"/>
                             <constraint firstAttribute="trailing" secondItem="GLe-8d-SB1" secondAttribute="trailing" constant="5" id="EvY-gM-S5q"/>
                             <constraint firstItem="Igl-Hj-2TH" firstAttribute="width" secondItem="ieN-HA-wEv" secondAttribute="width" id="Io5-KW-VWd"/>
-                            <constraint firstItem="Igl-Hj-2TH" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="10" id="Pfl-0M-4pP"/>
-                            <constraint firstItem="ieN-HA-wEv" firstAttribute="top" secondItem="Igl-Hj-2TH" secondAttribute="bottom" constant="20" id="Z00-K0-FWd"/>
+                            <constraint firstItem="Igl-Hj-2TH" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="50" id="Pfl-0M-4pP"/>
+                            <constraint firstItem="ieN-HA-wEv" firstAttribute="top" secondItem="Igl-Hj-2TH" secondAttribute="bottom" constant="10" id="Z00-K0-FWd"/>
                             <constraint firstAttribute="centerX" secondItem="Igl-Hj-2TH" secondAttribute="centerX" id="dcD-M2-4Be"/>
+                            <constraint firstItem="2ob-ca-u90" firstAttribute="width" secondItem="ieN-HA-wEv" secondAttribute="width" id="e8Z-hC-UnN"/>
+                            <constraint firstItem="2ob-ca-u90" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="10" id="f3i-5H-74y"/>
                             <constraint firstItem="GLe-8d-SB1" firstAttribute="top" secondItem="42Y-4i-J9K" secondAttribute="bottom" constant="10" id="pnu-uf-MiR"/>
                             <constraint firstAttribute="centerX" secondItem="ieN-HA-wEv" secondAttribute="centerX" id="uWL-hN-G4l"/>
                         </constraints>
@@ -368,7 +384,8 @@
                     <connections>
                         <outlet property="closeButton" destination="GLe-8d-SB1" id="x60-Ui-bHw"/>
                         <outlet property="imageView" destination="Igl-Hj-2TH" id="WD2-pR-LeS"/>
-                        <outlet property="titleLabel" destination="ieN-HA-wEv" id="IJY-oV-SYu"/>
+                        <outlet property="titleLabel" destination="ieN-HA-wEv" id="Iru-dD-uzw"/>
+                        <outlet property="windowLabel" destination="2ob-ca-u90" id="XHe-od-Tyo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="buG-VN-oUp" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -686,6 +703,7 @@
                                 </constraints>
                             </mapView>
                         </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="cOp-IR-Von" firstAttribute="top" secondItem="NgX-f6-1Y9" secondAttribute="bottom" id="7cy-cX-vUp"/>
                             <constraint firstAttribute="trailing" secondItem="NgX-f6-1Y9" secondAttribute="trailing" id="GCU-VT-Y0v"/>

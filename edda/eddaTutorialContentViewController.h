@@ -18,6 +18,7 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *windowLabel;
 @property (weak, nonatomic) IBOutlet UIButton *closeButton;
 @property (nonatomic) MPMoviePlayerController *player;
 

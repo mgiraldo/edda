@@ -71,9 +71,7 @@ static bool _microphoneEnabled = false;
 	[defaults synchronize];
 
 	if (_locationEnabled && _cameraEnabled && _microphoneEnabled) {
-		[self willMoveToParentViewController:nil];
-		[self.view removeFromSuperview];
-		[self removeFromParentViewController];
+		[self.delegate eddaWelcomeViewControllerFinished:self];
 	}
 }
 
@@ -101,8 +99,8 @@ static bool _microphoneEnabled = false;
 	[[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
 		if (granted) {
 			_microphoneEnabled = true;
-			[self updateEnabledStatuses];
 		}
+		[self updateEnabledStatuses];
 	}];
 }
 
@@ -115,10 +113,10 @@ static bool _microphoneEnabled = false;
 				// Permission has been granted. Use dispatch_async for any UI updating
 				// code because this block may be executed in a thread.
 				_cameraEnabled = true;
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[self updateEnabledStatuses];
-				});
 			}
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self updateEnabledStatuses];
+			});
 		}];
 	}
 }
