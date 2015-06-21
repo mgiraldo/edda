@@ -1329,7 +1329,7 @@ static int callTop = 200;
 	self.callAlert = nil;
 }
 
-#pragma mark - Page View Controller Data Source
+#pragma mark - Tutorial stuff
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
@@ -1383,8 +1383,6 @@ static int callTop = 200;
 {
 	return 0;
 }
-
-#pragma mark - Tutorial stuff
 
 - (IBAction)startTutorial:(id)sender {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
