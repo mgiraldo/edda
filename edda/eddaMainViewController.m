@@ -914,8 +914,10 @@ static int callTop = 200;
 
 - (void)removeCallAnimation {
 	self.statusLabel.text = @"";
-	[self.callAnimation removeFromSuperview];
-	self.callAnimation = nil;
+	if (self.callAnimation != nil) {
+		[self.callAnimation removeFromSuperview];
+		self.callAnimation = nil;
+	}
 }
 
 #pragma mark - LS View
@@ -980,6 +982,16 @@ static int callTop = 200;
 
 - (void)accept{
 //	NSLog(@"accept id: %@", sessionID);
+	// Setup video chat
+	//
+	if(self.videoChat == nil){
+		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:sessionID];
+	} else {
+		// another call is in progress
+		[self removeCallAnimation];
+		[self disconnectAndGoBack];
+	}
+
 	_isChatting = YES;
 	
 	ringingPlayer = nil;
@@ -1001,12 +1013,6 @@ static int callTop = 200;
 	[self refreshBackCameraFeed];
 	
 	[self pointToUser];
-
-	// Setup video chat
-	//
-	if(self.videoChat == nil){
-		self.videoChat = [[QBChat instance] createAndRegisterVideoChatInstanceWithSessionID:sessionID];
-	}
 
 	self.videoChat.isUseCustomVideoChatCaptureSession = YES;
 	self.videoChat.useHeadphone = [self isHeadsetPluggedIn];
